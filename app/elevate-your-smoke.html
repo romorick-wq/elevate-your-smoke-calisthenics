@@ -166,9 +166,14 @@ p.lede{font-size:15px;line-height:1.5;color:#33372E;margin:14px 0 0}
 .figmini{width:52px;flex:0 0 52px;border:1px solid var(--grid);background:var(--paper2)}
 .fighero{padding:10px 6px}
 .fighero .fig{max-height:42vh}
+.eximg{display:block;width:100%;height:auto;border:1.5px solid var(--ink);background:var(--paper2)}
+.eximg.mini{width:64px;flex:0 0 64px;border-width:1px;border-color:var(--grid)}
+.eximg.hero{max-height:38vh;width:auto;max-width:100%;margin:0 auto}
+.eximg.card{max-height:none}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .grid4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .grid4 .figbox{padding:4px 2px}
+.grid4 .eximg{border-width:1px}
 .mcard{display:flex;gap:10px;align-items:center;border:1.5px solid var(--ink);background:var(--paper2);
   padding:7px 9px;width:100%;text-align:left;cursor:pointer;font-family:var(--body);margin-bottom:8px;color:inherit}
 .mcard .nm{font-family:var(--disp);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.03em;line-height:1.05}
@@ -519,6 +524,20 @@ function staticFigure(name,cls){
   wrap.innerHTML='<svg class="fig" viewBox="0 0 120 84" aria-hidden="true">'+propsSVG(ex.props)+bodySVG(ex.b)+'</svg>';
   return wrap;
 }
+function exerciseSlug(name){
+  return String(name).normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+function exerciseImgSrc(name){return 'exercises/'+exerciseSlug(name)+'.svg'}
+function exerciseImg(name,cls){
+  const img=document.createElement('img');
+  img.className='eximg'+(cls?' '+cls:'');
+  img.src=exerciseImgSrc(name);
+  img.alt='How to do '+name+' — start and finish positions';
+  img.loading='lazy';
+  img.onerror=()=>{img.replaceWith(staticFigure(name,cls==='mini'?'figmini':''))};
+  return img;
+}
 /* =========================================================
    QUIZ + PLAN
    ========================================================= */
@@ -644,16 +663,19 @@ function showMove(name){
   const ex=EX[name];if(!ex)return;
   document.querySelectorAll('.overlay').forEach(n=>n.remove());
   const ov=el(`<div class="overlay"><div class="card" role="dialog" aria-label="${esc(name)}">
-    <p class="eyebrow">${esc(CATNAME[catOf(name)]||'Movement')} \u00b7 sample</p>
+    <p class="eyebrow">${esc(CATNAME[catOf(name)]||'Movement')} \u00b7 how to</p>
     <h2 class="display h-lg">${esc(name)}</h2>
-    <div id="figslot" style="margin:14px 0 0"></div>
-    <p class="fine" style="margin:8px 0 0;text-align:center">Looping diagram of the full rep</p>
+    <div id="imgslot" style="margin:14px 0 0"></div>
+    <p class="fine" style="margin:8px 0 0;text-align:center">Start position \u2192 finish position</p>
+    <div id="figslot" style="margin:12px 0 0"></div>
+    <p class="fine" style="margin:6px 0 0;text-align:center">Animated rep</p>
     <p class="eyebrow" style="margin:16px 0 4px">How it goes</p>
     <ol class="steps">${ex.how.map(h=>`<li><span>${esc(h)}</span></li>`).join('')}</ol>
     <div class="watch"><b>Watch for</b>${esc(ex.watch)}</div>
     <button class="btn ghost sm" id="close" style="margin-top:16px">Close</button>
   </div></div>`);
   document.body.appendChild(ov);
+  ov.querySelector('#imgslot').appendChild(exerciseImg(name,'card'));
   ov.querySelector('#figslot').appendChild(figureNode(name,'fighero'));
   ov.querySelector('#close').onclick=()=>ov.remove();
   ov.onclick=e=>{if(e.target===ov)ov.remove()};
@@ -951,7 +973,7 @@ function manual(a){
   a.appendChild(el(`<div class="sheet">${head('MANUAL')}
     <p class="eyebrow">Every movement in the program</p>
     <h2 class="display h-lg">The<br>manual</h2>
-    <p class="fine" style="margin:12px 0 18px">Tap any movement for the diagram, the three cues that matter, and the mistake to watch for.</p>
+    <p class="fine" style="margin:12px 0 18px">Tap any movement for the start/finish form image, an animated rep, the three cues that matter, and the mistake to watch for.</p>
     <div id="cats"></div>
     <button class="btn" id="back" style="margin-top:8px">Back</button></div>`));
   const C=document.getElementById('cats');
@@ -960,7 +982,7 @@ function manual(a){
     M[cat].forEach((m,i)=>{
       const card=el(`<button class="mcard"><span class="figholder"></span>
         <span><span class="nm">${esc(m.n)}</span><span class="sub">${cat==='warm'||cat==='cool'?'\u2014':'Level '+(i+1)}</span></span></button>`);
-      card.querySelector('.figholder').replaceWith(staticFigure(m.n,'figmini'));
+      card.querySelector('.figholder').replaceWith(exerciseImg(m.n,'mini'));
       card.onclick=()=>showMove(m.n);
       C.appendChild(card);
     });
@@ -974,7 +996,7 @@ function brief(a){
     <p class="eyebrow">Day ${s.day+1} of 30 \u00b7 ${FOCUS[s.type]}</p>
     <h2 class="display h-lg">Nine minutes.<br>${s.rounds} rounds.</h2>
     <div class="rule"></div>
-    <p class="eyebrow">Watch the sample, then tap any move for cues</p>
+    <p class="eyebrow">Watch the form images, then tap any move for cues</p>
     <div id="figs" class="grid4"></div>
     <div class="block" style="margin-top:12px"><p class="eyebrow">The circuit</p><ul class="movelist" id="ml"></ul></div>
     <p class="fine">During the session each move shows a looping diagram plus a rotating cue. Work at a pace you could hold for one more round. Skip anything that hurts and the session still counts.</p>
@@ -984,15 +1006,12 @@ function brief(a){
   const F=document.getElementById('figs');
   const labels=['Push','Legs','Core','Pace'];
   s.main.forEach((m,i)=>{
-    const cell=el(`<button type="button" class="figbox" style="cursor:pointer;padding:6px 2px 8px;width:100%">
-      <span class="figholder"></span>
-      <span style="display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite);margin-top:4px">${esc(labels[i])}</span>
+    const cell=el(`<button type="button" style="cursor:pointer;padding:0;width:100%;border:0;background:transparent;text-align:center;font:inherit;color:inherit">
+      <span class="imgholder"></span>
+      <span style="display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite);margin-top:6px">${esc(labels[i])}</span>
       <span style="display:block;font-family:var(--disp);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em;line-height:1.05;margin-top:2px">${esc(m.n)}</span>
     </button>`);
-    const holder=cell.querySelector('.figholder');
-    const fig=figureNode(m.n);
-    fig.style.cssText='border:0;background:transparent;padding:0;width:100%';
-    holder.replaceWith(fig);
+    cell.querySelector('.imgholder').replaceWith(exerciseImg(m.n,'card'));
     cell.onclick=()=>showMove(m.n);
     F.appendChild(cell);
   });
@@ -1051,7 +1070,7 @@ function paintStep(){
     </div>
     <div style="text-align:center;padding-bottom:16px"><button class="linkbtn" id="quit">End session</button></div>`;
   if(st.kind==='work'&&EX[st.n]){
-    p.querySelector('#figslot').appendChild(figureNode(st.n,'fighero'));
+    p.querySelector('#figslot').appendChild(exerciseImg(st.n,'hero'));
   }
   if(st.kind==='work'&&tipLines.length>1){
     S.tipTick=setInterval(()=>{
