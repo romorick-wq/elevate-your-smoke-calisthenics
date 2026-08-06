@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Elevate Your Smoke — Calisthenics</title>
+<meta name="description" content="A 30-day bodyweight challenge. Nine minutes a day, guided and timed, with a diagram for every movement.">
+<meta name="theme-color" content="#47573A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Smoke">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0AgMAAABAo+6hAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJUExURUdXOunk1v///4X+bM8AAAABYktHRAJmC3xkAAAAB3RJTUUH6ggFFTssaCLL9wAAAShJREFUaN7tmF0OgzAMg8lDj9D7cAQmkftfZTQwrUibYo9lv/HzN+S6TgsbhlQqlUqlni5RnXG6quoI0wusE2GEsFKWB1fFbbdfoMZrcwEbNxCnm4lK0QUNxeJAaTFavpSOyWTbHY6eUHoaiJ40EwI3tnUb73fReRk2ECbn0k4IfOgL/HCzYXJR7eWFIjvaM14O0N4yj9BeKPtVeqFIZwKIsBsBZu+tK9zdQ9AFacpuxRzthdKJDoWjuVBCIwwLJbJXnxNKdK9y2I7RQaEYhtJixzIaynpLnCgavcCvNBLKozQSCkfXUHquFH15W0Hpbf9Rev1QQuiNgnpCDc3f0CMOS9K3aBxuI//zNHowmNi/Tz6FFup7sZ1PTKneLb2n8dV0KpVKpVKmMwboxNQMQ/tCAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0AgMAAABAo+6hAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJUExURUdXOunk1v///4X+bM8AAAABYktHRAJmC3xkAAAAB3RJTUUH6ggFFTssaCLL9wAAAShJREFUaN7tmF0OgzAMg8lDj9D7cAQmkftfZTQwrUibYo9lv/HzN+S6TgsbhlQqlUqlni5RnXG6quoI0wusE2GEsFKWB1fFbbdfoMZrcwEbNxCnm4lK0QUNxeJAaTFavpSOyWTbHY6eUHoaiJ40EwI3tnUb73fReRk2ECbn0k4IfOgL/HCzYXJR7eWFIjvaM14O0N4yj9BeKPtVeqFIZwKIsBsBZu+tK9zdQ9AFacpuxRzthdKJDoWjuVBCIwwLJbJXnxNKdK9y2I7RQaEYhtJixzIaynpLnCgavcCvNBLKozQSCkfXUHquFH15W0Hpbf9Rev1QQuiNgnpCDc3f0CMOS9K3aBxuI//zNHowmNi/Tz6FFup7sZ1PTKneLb2n8dV0KpVKpVKmMwboxNQMQ/tCAAAAAElFTkSuQmCC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E9E4D6; --paper2:#DFD9C6; --grid:#CCC4AC; --ink:#181B16;
+  --olive:#47573A; --olive-d:#2F3B25; --stamp:#A63428; --graphite:#6C7062;
+  --disp:'Barlow Condensed','Oswald','Arial Narrow',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:#8E8A78;background-image:radial-gradient(circle at 50% 0%,#9C9885,#78745F);
+  font-family:var(--body);color:var(--ink);min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:460px;min-height:100vh;background:var(--paper);
+  background-image:repeating-linear-gradient(to bottom,transparent 0 27px,var(--grid) 27px 27.5px),
+    repeating-linear-gradient(to right,transparent 0 27px,var(--grid) 27px 27.5px);
+  background-blend-mode:multiply;box-shadow:0 0 0 1px var(--ink),0 24px 60px rgba(0,0,0,.35);
+  position:relative;overflow:hidden;display:flex;flex-direction:column}
+.sheet{padding:0 18px 40px;flex:1;display:flex;flex-direction:column}
+.masthead{background:var(--olive);color:var(--paper);margin:0 -18px 18px;padding:12px 18px 10px;
+  display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--ink)}
+.masthead h1{font-family:var(--disp);font-weight:700;font-size:22px;letter-spacing:.09em;margin:0;text-transform:uppercase;line-height:1}
+.masthead .sub{font-family:var(--mono);font-size:9px;letter-spacing:.34em;text-transform:uppercase;opacity:.72;margin-top:4px;display:block}
+.masthead .brand{min-width:0}
+@media (max-width:400px){.masthead h1{font-size:19px;letter-spacing:.06em}.masthead .sub{letter-spacing:.24em}}
+.masthead .no{font-family:var(--mono);font-size:10px;letter-spacing:.12em;opacity:.85}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--graphite);margin:0 0 8px}
+.display{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.02em;line-height:.94;margin:0}
+.h-xl{font-size:52px}.h-lg{font-size:34px}.h-md{font-size:24px;letter-spacing:.05em}
+p.lede{font-size:15px;line-height:1.5;color:#33372E;margin:14px 0 0}
+.fine{font-size:12px;line-height:1.5;color:var(--graphite)}
+.rule{height:2px;background:var(--ink);margin:16px 0}
+.rule.thin{height:1px;background:var(--grid)}
+.block{border:1.5px solid var(--ink);background:var(--paper2);padding:14px;margin:0 0 12px}
+.block.invert{background:var(--olive);color:var(--paper);border-color:var(--ink)}
+.block.invert .eyebrow{color:rgba(233,228,214,.7)}
+.btn{display:block;width:100%;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);
+  font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:.12em;text-transform:uppercase;
+  padding:15px;cursor:pointer;box-shadow:4px 4px 0 var(--olive-d);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--olive-d)}
+.btn[disabled]{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none}
+.btn.ghost:active{transform:none}
+.btn.sm{font-size:15px;padding:11px}
+.linkbtn{background:none;border:0;font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--graphite);cursor:pointer;padding:8px 0;text-decoration:underline;text-underline-offset:3px}
+:focus-visible{outline:2.5px solid var(--stamp);outline-offset:2px}
+.progress{display:flex;gap:4px;margin-bottom:6px}
+.progress i{flex:1;height:6px;background:transparent;border:1.5px solid var(--ink)}
+.progress i.on{background:var(--ink)}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--ink);
+  background:var(--paper2);padding:13px 14px;margin-bottom:9px;cursor:pointer;font-family:var(--body);transition:background .1s}
+.opt:hover{background:#D6CFB9}
+.opt .box{flex:0 0 21px;height:21px;border:1.5px solid var(--ink);display:grid;place-items:center;
+  font-family:var(--disp);font-weight:700;font-size:17px;line-height:1;color:transparent}
+.opt.sel{background:var(--ink);color:var(--paper)}
+.opt.sel .box{border-color:var(--paper);color:var(--paper)}
+.opt .t{font-weight:600;font-size:15px;display:block}
+.opt .s{font-size:12.5px;color:var(--graphite);display:block;margin-top:2px}
+.opt.sel .s{color:rgba(233,228,214,.72)}
+.buildline{font-family:var(--mono);font-size:12.5px;padding:7px 0;border-bottom:1px dashed var(--grid);
+  display:flex;justify-content:space-between;opacity:0;animation:fadein .35s forwards}
+.buildline b{color:var(--olive);font-weight:600}
+@keyframes fadein{to{opacity:1}}
+.statrow{display:flex;border:1.5px solid var(--ink);background:var(--paper2)}
+.statrow div{flex:1;padding:11px 8px;text-align:center;border-right:1.5px solid var(--ink)}
+.statrow div:last-child{border-right:0}
+.statrow .n{font-family:var(--disp);font-weight:700;font-size:29px;line-height:1}
+.statrow .l{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite);margin-top:3px}
+.weeks{display:flex;flex-direction:column;gap:7px}
+.wk{display:flex;align-items:center;gap:7px}
+.wk .lab{font-family:var(--mono);font-size:9.5px;color:var(--graphite);width:20px;letter-spacing:.06em}
+.cells{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;flex:1}
+.cells.six{grid-template-columns:repeat(6,1fr);gap:6px}
+.cell{aspect-ratio:1;border:1.5px solid var(--grid);display:grid;place-items:center;font-family:var(--disp);
+  font-weight:700;font-size:14px;color:var(--graphite);background:transparent;position:relative}
+.cell.train{border-color:var(--ink);color:var(--ink);background:var(--paper2)}
+.cell.next{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.cell.done{border-color:var(--stamp);color:rgba(24,27,22,.25)}
+.cell.done::after{content:"\2715";position:absolute;inset:0;display:grid;place-items:center;color:var(--stamp);
+  font-size:22px;font-family:var(--disp);transform:rotate(-9deg);opacity:.9}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:0 0 4px 27px}
+.dow span{text-align:center;font-family:var(--mono);font-size:9px;color:var(--graphite)}
+.movelist{margin:0;padding:0;list-style:none}
+.movelist li{border-bottom:1px dashed var(--grid)}
+.movelist li:last-child{border-bottom:0}
+.mrow{display:flex;gap:10px;align-items:center;width:100%;background:none;border:0;padding:9px 0;
+  font-family:var(--body);font-size:14px;text-align:left;cursor:pointer;color:inherit}
+.mrow .k{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--graphite);flex:0 0 50px;text-transform:uppercase}
+.mrow .m{flex:1;font-weight:500}
+.mrow .d{font-family:var(--mono);font-size:11.5px;color:var(--graphite)}
+.mrow .see{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--olive);letter-spacing:.05em}
+.mrow:hover .m{text-decoration:underline;text-underline-offset:3px}
+.player{position:fixed;inset:0;background:var(--paper);z-index:50;display:flex;flex-direction:column;
+  max-width:460px;margin:0 auto;background-image:repeating-linear-gradient(to bottom,transparent 0 27px,var(--grid) 27px 27.5px);
+  background-blend-mode:multiply}
+.player.rest{background:var(--olive);background-image:none;color:var(--paper)}
+.ptop{padding:13px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid currentColor}
+.ptop .st{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.pmid{flex:1;display:flex;flex-direction:column;justify-content:center;padding:8px 18px 10px;text-align:center;overflow:hidden;min-height:0}
+.timer{font-family:var(--disp);font-weight:700;font-size:52px;line-height:.85;font-variant-numeric:tabular-nums;margin:0}
+.timer.big{font-size:84px}
+.movename{font-family:var(--disp);font-weight:700;font-size:26px;text-transform:uppercase;letter-spacing:.03em;line-height:1;margin:8px 0 0}
+.cue{font-size:13.5px;line-height:1.45;margin:7px 0 0;color:#3A3E34}
+.player.rest .cue{color:rgba(233,228,214,.85)}
+.nextup{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:10px;opacity:.7}
+.figslot{flex:0 0 auto;display:flex;justify-content:center;align-items:center;margin:0 0 4px;min-height:0}
+.figslot .figbox{border:0;background:transparent;padding:0;width:min(72vw,280px)}
+.figslot .fig{width:100%;max-height:34vh}
+.demotip{margin:8px auto 0;max-width:340px;text-align:left;border-left:3px solid var(--olive);padding:6px 0 6px 10px}
+.demotip .lab{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--graphite);display:block;margin-bottom:3px}
+.demotip .txt{font-size:12.5px;line-height:1.4;color:#3A3E34}
+.player.rest .demotip{display:none}
+.howdots{display:flex;justify-content:center;gap:5px;margin-top:6px}
+.howdots i{width:6px;height:6px;border:1.5px solid var(--ink);border-radius:50%;opacity:.35}
+.howdots i.on{background:var(--ink);opacity:1}
+.pbot{padding:12px 18px 6px;display:flex;gap:10px}
+.pbot .btn{margin:0}
+.player.rest .btn{background:var(--paper);color:var(--olive-d);border-color:var(--ink);box-shadow:4px 4px 0 var(--olive-d)}
+.player.rest .btn.ghost{background:transparent;color:var(--paper);border-color:var(--paper);box-shadow:none}
+.bar{height:5px;background:rgba(0,0,0,.12)}
+.bar i{display:block;height:100%;background:var(--ink);transition:width .3s linear}
+.player.rest .bar i{background:var(--paper)}
+.stampwrap{display:grid;place-items:center;padding:26px 0 10px}
+.stamp{width:158px;height:158px;border:4px solid var(--stamp);border-radius:50%;display:grid;place-items:center;
+  color:var(--stamp);transform:rotate(-11deg);box-shadow:inset 0 0 0 2px var(--paper),inset 0 0 0 5px var(--stamp);
+  animation:press .5s cubic-bezier(.2,1.4,.5,1) both}
+.stamp span{font-family:var(--disp);font-weight:700;font-size:31px;letter-spacing:.1em;text-align:center;line-height:.95}
+.stamp small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;margin-top:6px}
+@keyframes press{from{transform:rotate(-11deg) scale(2.4);opacity:0}to{transform:rotate(-11deg) scale(1);opacity:1}}
+.field{margin:14px 0 6px}
+.field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--graphite);margin-bottom:6px}
+.field input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
+  font-family:var(--disp);font-weight:700;font-size:26px;letter-spacing:.02em;color:var(--ink);
+  padding:4px 2px;border-radius:0;-webkit-appearance:none}
+.field input::placeholder{color:var(--grid)}
+.person{border-bottom:1px dashed var(--grid);padding:11px 0}
+.person.cold{opacity:.45}
+.prow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.pn{font-family:var(--disp);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.03em}
+.pd,.pm{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--graphite)}
+.pbar{height:7px;border:1.5px solid var(--ink);margin:7px 0 5px}
+.pbar i{display:block;height:100%;background:var(--olive)}
+.note{border-left:3px solid var(--olive);padding:8px 0 8px 11px;margin:16px 0 0;font-size:12.5px;line-height:1.5;color:var(--graphite)}
+.hidden{display:none}
+/* ---- figures ---- */
+.figbox{border:1.5px solid var(--ink);background:var(--paper2);display:grid;place-items:center;padding:6px 4px}
+.fig{display:block;color:var(--ink);width:100%;height:auto}
+.figmini{width:52px;flex:0 0 52px;border:1px solid var(--grid);background:var(--paper2)}
+.fighero{padding:10px 6px}
+.fighero .fig{max-height:42vh}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid4 .figbox{padding:4px 2px}
+.mcard{display:flex;gap:10px;align-items:center;border:1.5px solid var(--ink);background:var(--paper2);
+  padding:7px 9px;width:100%;text-align:left;cursor:pointer;font-family:var(--body);margin-bottom:8px;color:inherit}
+.mcard .nm{font-family:var(--disp);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.03em;line-height:1.05}
+.mcard .sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;color:var(--graphite);text-transform:uppercase;margin-top:3px}
+.mcard:hover{background:#D6CFB9}
+.overlay{position:fixed;inset:0;z-index:70;background:rgba(24,27,22,.55);display:flex;justify-content:center;align-items:flex-end}
+.card{width:100%;max-width:460px;max-height:92vh;overflow:auto;background:var(--paper);border-top:3px solid var(--ink);
+  padding:16px 18px 26px;animation:slideup .22s ease-out}
+@keyframes slideup{from{transform:translateY(30px);opacity:.3}to{transform:none;opacity:1}}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:11px;padding:9px 0;border-bottom:1px dashed var(--grid);font-size:14px;line-height:1.45}
+.steps li:last-child{border-bottom:0}
+.steps li::before{content:counter(s);font-family:var(--disp);font-weight:700;font-size:17px;color:var(--olive);flex:0 0 16px;line-height:1.2}
+.watch{background:var(--olive);color:var(--paper);padding:11px 13px;margin-top:12px;font-size:13.5px;line-height:1.45}
+.watch b{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:4px;opacity:.75;font-weight:500}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* =========================================================
+   ELEVATE YOUR SMOKE — 9 minutes a day, 30-day card
+   =========================================================
+
+   ================= SETUP: EDIT THESE LINES =================
+   SYNC_URL   Railway API base. Use '/api' when this app is hosted
+              by the same Railway service (default). Leave empty
+              to keep progress on-device only. Or paste a full
+              https://….up.railway.app/api URL if hosting the
+              HTML separately.
+   CHALLENGE  short tag for this round. Change it when you start
+              a new group so the rosters stay separate.
+   Organizer code lives in the Railway ORGANIZER_CODE env var.
+   ================================================================ */
+const CONFIG={
+  SYNC_URL:'/api',
+  CHALLENGE:'smoke-30'
+};
+
+const KEY='smoke30:v1';
+let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,si:0,timeLeft:0,paused:false,tick:null,tipTick:null,rafs:[],back:'plan'};
+
+/* ---------- movement library ---------- */
+const M={
+ warm:[
+  {n:'March in place',c:'Drive the knees to hip height. Keep the arms swinging.',t:[]},
+  {n:'Arm circles',c:'Big slow circles forward, then back. Open the chest.',t:[]},
+  {n:'Hip openers',c:'Knee up, sweep it out to the side, step down. Alternate.',t:[]},
+  {n:'Shoulder rolls',c:'Roll them up, back and down. Slow and full.',t:[]},
+  {n:'Standing side bend',c:'Reach one arm overhead, lean away, feel the ribs open.',t:[]}
+ ],
+ push:[
+  {n:'Wall push-up',c:'Hands on the wall at chest height. Lower slow, press away.',t:[]},
+  {n:'Incline push-up',c:'Hands on a counter or sturdy table. Elbows at 45\u00b0, chest to the edge.',t:[]},
+  {n:'Push-up',c:'Hands under the shoulders. Ribs down, full lockout at the top.',t:['shoulder']},
+  {n:'Diamond push-up',c:'Thumbs and index fingers touching. Elbows brush the ribs.',t:['shoulder']}
+ ],
+ pull:[
+  {n:'Doorway row',c:'Grip both sides of a door frame, lean back, pull your chest to your hands.',t:[]},
+  {n:'Table row',c:'Lie under a sturdy table, grip the edge, pull your chest up. Body in one line.',t:[]},
+  {n:'Table row, legs out',c:'Same pull, heels further away. Slower on the way down.',t:['shoulder']},
+  {n:'Pull-up',c:'Full hang to chin over the bar. Control the descent.',t:['shoulder']}
+ ],
+ squat:[
+  {n:'Sit-to-stand',c:'From a chair. Stand without hands if you can, sit down slow.',t:[]},
+  {n:'Box squat',c:'Squat to a chair, touch, drive up. Knees track over the toes.',t:[]},
+  {n:'Bodyweight squat',c:'Feet shoulder-width. Down until the hips break parallel.',t:['knee']},
+  {n:'Split squat',c:'One foot back. Drop the back knee straight down. Swap halfway.',t:['knee']}
+ ],
+ hinge:[
+  {n:'Glute bridge',c:'Heels close, drive the hips up, squeeze at the top.',t:[]},
+  {n:'Glute bridge march',c:'Hips up and held. Lift one foot, then the other.',t:[]},
+  {n:'Hip hinge reach',c:'Soft knees, push the hips back, flat back, stand tall.',t:['back']},
+  {n:'Single-leg bridge',c:'One foot planted, other leg straight. Hips level. Swap halfway.',t:['back']}
+ ],
+ core:[
+  {n:'Dead bug',c:'Low back pressed to the floor. Opposite arm and leg reach out slow.',t:[]},
+  {n:'Bird dog',c:'On all fours. Opposite arm and leg out, pause, return. No wobble.',t:[]},
+  {n:'Forearm plank',c:'Elbows under the shoulders. Squeeze the glutes, breathe.',t:['shoulder']},
+  {n:'Hollow hold',c:'Low back glued down, arms and legs off the floor.',t:['back']}
+ ],
+ cardio:[
+  {n:'Fast march',c:'Pick up the pace. Pump the arms, keep it light on the feet.',t:[]},
+  {n:'Step-back lunge',c:'Step back, tap the knee down, come up. Alternate legs.',t:['knee']},
+  {n:'Mountain climber',c:'Plank position. Drive the knees in, one after the other.',t:['shoulder','knee']},
+  {n:'Burpee',c:'Down, step or hop back, up. Stand tall each rep.',t:['knee','back','shoulder']}
+ ],
+ cool:[
+  {n:'Chest doorway stretch',c:'Forearm on the frame, step through, breathe into it.',t:[]},
+  {n:'Standing hamstring stretch',c:'Heel forward, hips back, soft knee. Long spine.',t:['back']},
+  {n:'Figure-four stretch',c:'Ankle over the opposite knee, sit back into it.',t:[]},
+  {n:'Child\u2019s pose',c:'Knees wide, hips to the heels, reach long. Slow breathing.',t:['knee']}
+ ]
+};
+const CATNAME={warm:'Warm-up',push:'Push',pull:'Pull',squat:'Legs',hinge:'Hips',core:'Core',cardio:'Pace',cool:'Cool-down'};
+function catOf(name){for(const k in M){if(M[k].some(m=>m.n===name))return k}return ''}
+function cueOf(name){for(const k in M){const m=M[k].find(x=>x.n===name);if(m)return m.c}return ''}
+
+/* =========================================================
+   FIGURES — angle 0 points down, 90 points right
+   ========================================================= */
+const SEG={sp:24,hd:9,hr:5.5,ua:11,fa:10,th:15,sn:15,ft:6};
+const P=o=>Object.assign({x:60,y:44,t:180,s:[0,0],e:[0,0],h:[0,0],k:[0,0],f:[95,95]},o);
+const pt=(x,y,a,l)=>{const r=a*Math.PI/180;return [x+l*Math.sin(r),y+l*Math.cos(r)]};
+
+function joints(p){
+  const pel=[p.x,p.y];
+  const nk=pt(p.x,p.y,p.t,SEG.sp);
+  const hd=pt(nk[0],nk[1],p.t,SEG.hd);
+  const arms=[0,1].map(i=>{const e=pt(nk[0],nk[1],p.s[i],SEG.ua);return [e,pt(e[0],e[1],p.e[i],SEG.fa)]});
+  const legs=[0,1].map(i=>{const k=pt(pel[0],pel[1],p.h[i],SEG.th);const f=pt(k[0],k[1],p.k[i],SEG.sn);
+    return [k,f,pt(f[0],f[1],p.f[i],SEG.ft)]});
+  return {pel,nk,hd,arms,legs};
+}
+const dlt=(a,b)=>((b-a+540)%360)-180;
+function lerpPose(a,b,u){
+  const o={x:a.x+(b.x-a.x)*u,y:a.y+(b.y-a.y)*u,t:a.t+dlt(a.t,b.t)*u};
+  ['s','e','h','k','f'].forEach(kk=>o[kk]=[0,1].map(i=>a[kk][i]+dlt(a[kk][i],b[kk][i])*u));
+  return o;
+}
+function bodySVG(p){
+  const J=joints(p);
+  const L=(A,B,w,o)=>`<line x1="${A[0].toFixed(1)}" y1="${A[1].toFixed(1)}" x2="${B[0].toFixed(1)}" y2="${B[1].toFixed(1)}" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" opacity="${o}"/>`;
+  let s='';
+  s+=L(J.nk,J.arms[1][0],3,.32)+L(J.arms[1][0],J.arms[1][1],3,.32);
+  s+=L(J.pel,J.legs[1][0],3.2,.32)+L(J.legs[1][0],J.legs[1][1],3.2,.32)+L(J.legs[1][1],J.legs[1][2],2.4,.32);
+  s+=L(J.pel,J.nk,4.6,1);
+  s+=`<circle cx="${J.hd[0].toFixed(1)}" cy="${J.hd[1].toFixed(1)}" r="${SEG.hr}" fill="none" stroke="currentColor" stroke-width="3"/>`;
+  s+=L(J.nk,J.arms[0][0],3.4,1)+L(J.arms[0][0],J.arms[0][1],3.4,1);
+  s+=L(J.pel,J.legs[0][0],3.8,1)+L(J.legs[0][0],J.legs[0][1],3.8,1)+L(J.legs[0][1],J.legs[0][2],2.6,1);
+  return s;
+}
+const PR={
+ floor:'<line x1="4" y1="75" x2="116" y2="75" stroke="currentColor" stroke-width="1.6" opacity=".45"/>'+
+   [10,26,42,58,74,90,106].map(x=>`<line x1="${x}" y1="75" x2="${x-4}" y2="80" stroke="currentColor" stroke-width="1" opacity=".25"/>`).join(''),
+ wall:'<line x1="94" y1="4" x2="94" y2="76" stroke="currentColor" stroke-width="1.6" opacity=".45"/>'+
+   [10,24,38,52,66].map(y=>`<line x1="94" y1="${y}" x2="99" y2="${y-4}" stroke="currentColor" stroke-width="1" opacity=".25"/>`).join(''),
+ frame:'<line x1="88" y1="2" x2="88" y2="76" stroke="currentColor" stroke-width="1.6" opacity=".45"/><line x1="93" y1="2" x2="93" y2="76" stroke="currentColor" stroke-width="1.6" opacity=".3"/>',
+ box:'<rect x="54" y="68" width="54" height="8" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".45"/>',
+ chair:'<line x1="70" y1="57" x2="110" y2="57" stroke="currentColor" stroke-width="1.6" opacity=".45"/><line x1="106" y1="57" x2="106" y2="28" stroke="currentColor" stroke-width="1.6" opacity=".45"/><line x1="74" y1="57" x2="74" y2="75" stroke="currentColor" stroke-width="1.4" opacity=".35"/><line x1="106" y1="57" x2="106" y2="75" stroke="currentColor" stroke-width="1.4" opacity=".35"/>',
+ table:'<line x1="24" y1="46" x2="110" y2="46" stroke="currentColor" stroke-width="2" opacity=".45"/><line x1="30" y1="46" x2="30" y2="75" stroke="currentColor" stroke-width="1.4" opacity=".3"/><line x1="104" y1="46" x2="104" y2="75" stroke="currentColor" stroke-width="1.4" opacity=".3"/>',
+ bar:'<line x1="24" y1="10" x2="106" y2="10" stroke="currentColor" stroke-width="2.4" opacity=".5"/><line x1="30" y1="10" x2="30" y2="3" stroke="currentColor" stroke-width="1.6" opacity=".35"/><line x1="100" y1="10" x2="100" y2="3" stroke="currentColor" stroke-width="1.6" opacity=".35"/>'
+};
+const propsSVG=list=>(list||[]).map(k=>PR[k]||'').join('');
+/* =========================================================
+   EXERCISE DEMONSTRATIONS
+   ========================================================= */
+const EX={
+'March in place':{props:['floor'],
+ a:P({h:[115,4],k:[15,4],s:[45,320],e:[45,320],f:[105,95]}),
+ b:P({h:[4,115],k:[4,15],s:[320,45],e:[320,45],f:[95,105]}),
+ how:['Stand tall, weight even across both feet.','Drive one knee up to hip height, then the other.','Swing the opposite arm with every step.'],
+ watch:'Leaning back as the knee comes up. Keep the ribs stacked over the hips.'},
+'Arm circles':{props:['floor'],
+ a:P({s:[85,275],e:[85,275],h:[8,352],k:[8,352]}),
+ b:P({s:[150,210],e:[150,210],h:[8,352],k:[8,352]}),
+ how:['Feet hip-width, arms straight out to the sides.','Draw slow circles forward for half the time.','Reverse the direction, circles just as big.'],
+ watch:'Shrugging. Keep the shoulders down and away from the ears.'},
+'Hip openers':{props:['floor'],
+ a:P({h:[118,2],k:[25,2],s:[70,290],e:[70,290]}),
+ b:P({h:[152,2],k:[70,2],s:[85,275],e:[85,275]}),
+ how:['Hold a wall or chair if you need the balance.','Lift one knee to hip height.','Sweep it out to the side and step it down. Alternate.'],
+ watch:'Rushing it. This is a slow circle, not a swing.'},
+'Shoulder rolls':{props:['floor'],
+ a:P({s:[20,340],e:[155,205],h:[6,354],k:[6,354]}),
+ b:P({s:[42,318],e:[178,182],h:[6,354],k:[6,354]}),
+ how:['Rest the fingertips on the shoulders.','Draw big circles with the elbows, up and back.','Ten one direction, ten the other.'],
+ watch:'Small tight circles. Make them as large as the joint allows.'},
+'Standing side bend':{props:['floor'],
+ a:P({t:196,s:[140,10],e:[120,10],h:[6,354],k:[6,354]}),
+ b:P({t:164,s:[220,350],e:[240,350],h:[6,354],k:[6,354]}),
+ how:['Feet under the hips, one arm reaching overhead.','Lean away from the raised arm and let the ribs open.','Come back tall, then switch sides.'],
+ watch:'Folding forward. The bend travels straight out to the side.'},
+
+'Wall push-up':{props:['floor','wall'],
+ a:P({x:52,y:54,t:134,s:[95,95],e:[95,95],h:[314,314],k:[314,314],f:[100,100]}),
+ b:P({x:56,y:53,t:134,s:[110,110],e:[65,65],h:[314,314],k:[314,314],f:[100,100]}),
+ how:['Hands on the wall at chest height, a step back from it.','Body in one line from head to heels.','Lower the chest to the wall, then press away.'],
+ watch:'Hips sagging or piking. Squeeze the glutes to hold the line.'},
+'Incline push-up':{props:['floor','box'],
+ a:P({x:44,y:60,t:118,s:[8,8],e:[8,8],h:[298,298],k:[298,298],f:[25,25]}),
+ b:P({x:48,y:63,t:118,s:[22,22],e:[335,335],h:[298,298],k:[298,298],f:[25,25]}),
+ how:['Hands on a counter, bench or sturdy table, shoulder-width.','Walk the feet back until the body is one straight line.','Lower the chest to the edge, press back up.'],
+ watch:'Elbows flaring wide. Keep them tucked toward 45 degrees.'},
+'Push-up':{props:['floor'],
+ a:P({x:50,y:62,t:110,s:[0,0],e:[0,0],h:[290,290],k:[290,290],f:[20,20]}),
+ b:P({x:52,y:66,t:110,s:[20,20],e:[332,332],h:[290,290],k:[290,290],f:[20,20]}),
+ how:['Hands under the shoulders, fingers spread.','Ribs down, glutes tight, body in one line.','Lower until the chest is a fist off the floor, then press.'],
+ watch:'The head dropping first. Chest and hips arrive together.'},
+'Diamond push-up':{props:['floor'],
+ a:P({x:50,y:62,t:110,s:[352,8],e:[352,8],h:[290,290],k:[290,290],f:[20,20]}),
+ b:P({x:52,y:66,t:110,s:[8,352],e:[350,10],h:[290,290],k:[290,290],f:[20,20]}),
+ how:['Hands under the chest, thumbs and index fingers touching.','Elbows stay close and brush the ribs on the way down.','Press up without letting the hips lead.'],
+ watch:'Hands too far forward. They belong under the sternum.'},
+
+'Doorway row':{props:['floor','frame'],
+ a:P({x:84,y:50,t:215,s:[105,105],e:[105,105],h:[10,10],k:[10,10],f:[95,95]}),
+ b:P({x:86,y:46,t:210,s:[135,135],e:[45,45],h:[10,10],k:[10,10],f:[95,95]}),
+ how:['Grip both sides of a door frame at chest height.','Walk the feet in and lean back with straight arms.','Pull your chest to your hands, then lower slow.'],
+ watch:'Yanking with the arms alone. Start the pull from the shoulder blades.'},
+'Table row':{props:['floor','table'],
+ a:P({x:38,y:66,t:88,s:[176,176],e:[176,176],h:[95,95],k:[65,65],f:[95,95]}),
+ b:P({x:38,y:62,t:82,s:[195,195],e:[150,150],h:[95,95],k:[65,65],f:[95,95]}),
+ how:['Lie under a sturdy table with your chest below the edge.','Grip the edge just wider than the shoulders.','Pull the chest to the table, body one line, lower slow.'],
+ watch:'Hips dropping first. Move as one plank from heels to head.'},
+'Table row, legs out':{props:['floor','table'],
+ a:P({x:34,y:68,t:88,s:[176,176],e:[176,176],h:[93,93],k:[93,93],f:[20,20]}),
+ b:P({x:34,y:64,t:82,s:[195,195],e:[150,150],h:[93,93],k:[93,93],f:[20,20]}),
+ how:['Same grip, heels walked further out.','The straighter the body, the harder the pull.','Chest to the edge, pause, three seconds down.'],
+ watch:'Half reps. Start every rep from straight arms.'},
+'Pull-up':{props:['bar'],
+ a:P({x:64,y:55,t:180,s:[178,178],e:[178,178],h:[352,352],k:[320,320],f:[100,100]}),
+ b:P({x:64,y:42,t:180,s:[113,247],e:[247,113],h:[352,352],k:[320,320],f:[100,100]}),
+ how:['Hang from the bar, hands just outside the shoulders.','Pull the elbows down to the ribs until the chin clears.','Lower under control until the arms are straight.'],
+ watch:'Kicking for momentum. If the reps stall, do slow lowers only.'},
+
+'Sit-to-stand':{props:['floor','chair'],
+ a:P({x:78,y:57,t:176,s:[265,265],e:[265,265],h:[262,262],k:[352,352],f:[275,275]}),
+ b:P({x:70,y:44,t:184,s:[268,268],e:[268,268],h:[356,356],k:[356,356],f:[275,275]}),
+ how:['Sit tall on a chair, feet flat under the knees.','Stand up without using your hands if you can.','Lower back down slow \u2014 three seconds to touch.'],
+ watch:'Dropping onto the seat. The slow way down is the training.'},
+'Box squat':{props:['floor','chair'],
+ a:P({x:66,y:44,t:182,s:[265,265],e:[265,265],h:[356,356],k:[356,356],f:[275,275]}),
+ b:P({x:74,y:57,t:210,s:[275,275],e:[275,275],h:[265,265],k:[350,350],f:[275,275]}),
+ how:['Chair or box behind you, feet shoulder-width.','Push the hips back and touch the seat \u2014 don\u2019t sit down.','Drive through the heels to stand.'],
+ watch:'Knees caving in. Push them out over the middle toes.'},
+'Bodyweight squat':{props:['floor'],
+ a:P({x:62,y:44,t:182,s:[268,268],e:[268,268],h:[356,356],k:[356,356],f:[275,275]}),
+ b:P({x:68,y:60,t:212,s:[272,272],e:[272,272],h:[262,262],k:[352,352],f:[275,275]}),
+ how:['Feet shoulder-width, toes turned slightly out.','Sit down between the heels with the chest proud.','Go as deep as you can hold the shape, then stand tall.'],
+ watch:'Heels lifting. Sit back further or take less depth.'},
+'Split squat':{props:['floor'],
+ a:P({x:60,y:44,t:182,s:[0,0],e:[0,0],h:[345,15],k:[5,352],f:[280,275]}),
+ b:P({x:58,y:55,t:184,s:[0,0],e:[0,0],h:[340,58],k:[292,350],f:[280,275]}),
+ how:['One foot forward, one back, feet hip-width apart.','Drop the back knee straight down toward the floor.','Push through the front heel to stand. Swap halfway.'],
+ watch:'Lunging forward. The movement goes down, not out.'},
+
+'Glute bridge':{props:['floor'],
+ a:P({x:54,y:72,t:90,s:[275,275],e:[275,275],h:[132,132],k:[15,15],f:[95,95]}),
+ b:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[86,86],k:[15,15],f:[95,95]}),
+ how:['Lie on your back with the heels close to your seat.','Press through the heels and lift the hips into a ramp.','Squeeze for a second at the top, lower slow.'],
+ watch:'Arching the low back to get higher. Ribs down, squeeze the glutes instead.'},
+'Glute bridge march':{props:['floor'],
+ a:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[86,86],k:[15,15],f:[95,95]}),
+ b:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[130,86],k:[95,15],f:[95,95]}),
+ how:['Bridge up and hold the hips level.','Lift one foot an inch off the floor without dropping a hip.','Set it down and lift the other. Slow alternation.'],
+ watch:'The hips dipping as the foot lifts. Smaller lift, level hips.'},
+'Hip hinge reach':{props:['floor'],
+ a:P({x:60,y:44,t:182,s:[0,0],e:[0,0],h:[356,356],k:[356,356],f:[275,275]}),
+ b:P({x:66,y:48,t:230,s:[350,350],e:[350,350],h:[350,350],k:[352,352],f:[275,275]}),
+ how:['Feet hip-width, knees soft rather than locked.','Push the hips straight back and let the chest come down.','Stand tall by driving the hips forward.'],
+ watch:'Rounding the back, or squatting instead. Hips move back, not down.'},
+'Single-leg bridge':{props:['floor'],
+ a:P({x:54,y:72,t:90,s:[275,275],e:[275,275],h:[132,112],k:[15,112],f:[95,20]}),
+ b:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[86,115],k:[15,115],f:[95,20]}),
+ how:['Bridge position with one leg straight, in line with the thigh.','Drive through the planted heel and lift the hips.','Keep both hips at the same height. Swap halfway.'],
+ watch:'Twisting toward the working side. Level beats high.'},
+
+'Dead bug':{props:['floor'],
+ a:P({x:52,y:72,t:90,s:[180,180],e:[180,180],h:[170,170],k:[100,100],f:[20,20]}),
+ b:P({x:52,y:72,t:90,s:[180,120],e:[180,120],h:[255,170],k:[255,100],f:[20,20]}),
+ how:['On your back, knees over hips, arms straight up.','Press the low back into the floor and keep it there.','Reach one arm back and the opposite leg long, then switch.'],
+ watch:'The low back popping up. Shorten the reach until it stays down.'},
+'Bird dog':{props:['floor'],
+ a:P({x:46,y:60,t:104,s:[0,0],e:[0,0],h:[350,350],k:[268,268],f:[300,300]}),
+ b:P({x:46,y:60,t:104,s:[0,115],e:[0,110],h:[290,350],k:[290,268],f:[290,300]}),
+ how:['All fours, hands under shoulders, knees under hips.','Reach one arm forward and the opposite leg back.','Hold two seconds, return, then switch sides.'],
+ watch:'Rotating the hips open. Imagine balancing a glass on your low back.'},
+'Forearm plank':{props:['floor'],
+ a:P({x:48,y:68,t:106,s:[10,10],e:[95,95],h:[290,290],k:[290,290],f:[20,20]}),
+ b:P({x:48,y:69,t:104,s:[12,12],e:[95,95],h:[292,292],k:[292,292],f:[20,20]}),
+ how:['Elbows under the shoulders, forearms flat on the floor.','Tuck the ribs, squeeze the glutes, one line head to heels.','Breathe normally. Stop when the hips start to sag.'],
+ watch:'Holding a sagging plank to beat the clock. Shorter and sharp is better.'},
+'Hollow hold':{props:['floor'],
+ a:P({x:50,y:74,t:108,s:[122,122],e:[122,122],h:[260,260],k:[260,260],f:[255,255]}),
+ b:P({x:50,y:73,t:115,s:[125,125],e:[125,125],h:[250,250],k:[250,250],f:[245,245]}),
+ how:['On your back, arms overhead, legs straight.','Press the low back flat and lift the shoulders and heels a few inches.','Hold the shape and breathe.'],
+ watch:'Legs too low to control. Raise them until the back stays glued down.'},
+
+'Fast march':{props:['floor'],
+ a:P({h:[125,4],k:[10,4],s:[60,310],e:[60,310],f:[110,95]}),
+ b:P({h:[4,125],k:[4,10],s:[310,60],e:[310,60],f:[95,110]}),
+ how:['March on the spot with the knees high.','Stay on the balls of the feet and land quiet.','Pick up the pace until talking gets hard.'],
+ watch:'Slowing down when it burns. Shorten the stride, keep the rhythm.'},
+'Step-back lunge':{props:['floor'],
+ a:P({x:60,y:44,t:182,s:[350,10],e:[350,10],h:[356,356],k:[356,356],f:[275,275]}),
+ b:P({x:58,y:55,t:186,s:[330,30],e:[330,30],h:[340,58],k:[292,350],f:[280,275]}),
+ how:['Stand tall, then step one foot straight back.','Drop the back knee toward the floor, front shin upright.','Push off the back foot to return. Alternate legs.'],
+ watch:'Short steps that jam the front knee. Step back far enough to make room.'},
+'Mountain climber':{props:['floor'],
+ a:P({x:50,y:62,t:110,s:[0,0],e:[0,0],h:[75,290],k:[330,290],f:[20,20]}),
+ b:P({x:50,y:62,t:110,s:[0,0],e:[0,0],h:[290,75],k:[290,330],f:[20,20]}),
+ how:['Strong plank with the hands under the shoulders.','Drive one knee toward the chest, then swap.','Hips stay low and level \u2014 no bouncing.'],
+ watch:'Hips riding up. Keep the shoulders stacked over the hands.'},
+'Burpee':{props:['floor'],
+ a:P({x:52,y:66,t:110,s:[20,20],e:[332,332],h:[290,290],k:[290,290],f:[20,20]}),
+ b:P({x:60,y:44,t:180,s:[150,210],e:[130,230],h:[356,356],k:[356,356],f:[95,95]}),
+ how:['Hands to the floor, then step or hop back to a plank.','Add a push-up if you have one in you.','Step the feet back in and stand tall \u2014 no jump needed.'],
+ watch:'Collapsing on the way down. If the form goes, step instead of hop.'},
+
+'Chest doorway stretch':{props:['floor','frame'],
+ a:P({x:66,y:46,t:186,s:[105,300],e:[105,300],h:[6,354],k:[6,354],f:[95,95]}),
+ b:P({x:60,y:46,t:190,s:[112,300],e:[112,300],h:[6,354],k:[6,354],f:[95,95]}),
+ how:['Forearm flat on the door frame, elbow at shoulder height.','Step the near foot through the doorway.','Turn the chest away until you feel a stretch. Breathe.'],
+ watch:'Pushing into pain. Stretch to a firm pull, never a pinch.'},
+'Standing hamstring stretch':{props:['floor'],
+ a:P({x:64,y:46,t:200,s:[350,350],e:[350,350],h:[345,20],k:[15,345],f:[240,250]}),
+ b:P({x:70,y:48,t:225,s:[345,345],e:[345,345],h:[340,30],k:[10,335],f:[240,250]}),
+ how:['One heel forward with the toes up, that knee soft.','Push the hips back and hinge over the front leg.','Long spine. Hold 30 seconds each side.'],
+ watch:'Rounding the back to reach further. Less range, flat back.'},
+'Figure-four stretch':{props:['floor'],
+ a:P({x:52,y:73,t:90,s:[195,195],e:[245,245],h:[178,128],k:[285,235],f:[95,95]}),
+ b:P({x:52,y:72,t:90,s:[190,190],e:[240,240],h:[170,120],k:[280,230],f:[95,95]}),
+ how:['On your back, cross one ankle over the opposite knee.','Reach through and draw the bottom thigh toward you.','Head and shoulders stay relaxed on the floor. 30 seconds a side.'],
+ watch:'Yanking the leg in. Draw it slow and let it settle.'},
+'Child\u2019s pose':{props:['floor'],
+ a:P({x:44,y:58,t:70,s:[82,82],e:[87,87],h:[310,310],k:[280,280],f:[280,280]}),
+ b:P({x:44,y:60,t:66,s:[80,80],e:[85,85],h:[310,310],k:[280,280],f:[280,280]}),
+ how:['Kneel with the knees wide and the big toes together.','Sit the hips back toward the heels and reach the arms long.','Let the head go heavy. Five slow breaths.'],
+ watch:'Holding tension in the shoulders. Let the chest sink toward the floor.'}
+};
+
+/* ---------- figure renderer ---------- */
+const REDUCED=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function clearRafs(){S.rafs.forEach(id=>cancelAnimationFrame(id));S.rafs=[]}
+function figureNode(name,cls){
+  const ex=EX[name],wrap=document.createElement('div');
+  wrap.className='figbox '+(cls||'');
+  if(!ex)return wrap;
+  wrap.innerHTML='<svg class="fig" viewBox="0 0 120 84" role="img" aria-label="Diagram of '+name+'"></svg>';
+  const svg=wrap.querySelector('svg'),props=propsSVG(ex.props);
+  const draw=u=>{svg.innerHTML=props+bodySVG(lerpPose(ex.a,ex.b,u))};
+  if(REDUCED()){draw(1);return wrap}
+  const t0=performance.now();
+  const loop=()=>{
+    if(!wrap.isConnected)return;
+    const u=(1-Math.cos((performance.now()-t0)/2400*Math.PI*2))/2;
+    draw(u);S.rafs.push(requestAnimationFrame(loop));
+  };
+  loop();
+  return wrap;
+}
+function staticFigure(name,cls){
+  const ex=EX[name],wrap=document.createElement('div');
+  wrap.className='figbox '+(cls||'');
+  if(!ex)return wrap;
+  wrap.innerHTML='<svg class="fig" viewBox="0 0 120 84" aria-hidden="true">'+propsSVG(ex.props)+bodySVG(ex.b)+'</svg>';
+  return wrap;
+}
+/* =========================================================
+   QUIZ + PLAN
+   ========================================================= */
+const Q=[
+ {k:'goal',q:'What are you after?',s:'Pick the one that matters most right now.',o:[
+   {v:'lean',t:'Lose the softness',s:'Circuits that keep the heart rate up'},
+   {v:'strong',t:'Get stronger',s:'Harder movements, longer rests'},
+   {v:'both',t:'A bit of both',s:'Balanced strength and conditioning'},
+   {v:'move',t:'Move better again',s:'Mobility first, strength built slowly'}]},
+ {k:'level',q:'Where are you starting?',s:'Be honest. The plan scales up fast either way.',o:[
+   {v:1,t:'From scratch',s:'No real training in a year or more'},
+   {v:2,t:'Rusty',s:'Active here and there, nothing structured'},
+   {v:3,t:'Some base',s:'I train, just not consistently'}]},
+ {k:'age',q:'How old are you?',s:'This sets recovery and how fast the plan ramps.',o:[
+   {v:'u30',t:'Under 30'},{v:'30s',t:'30 to 44'},{v:'45',t:'45 to 59'},{v:'60',t:'60 or over'}]},
+ {k:'days',q:'How many days a week can you actually train?',s:'Choose the number you will still hit on a bad week.',o:[
+   {v:3,t:'3 days',s:'Recommended for most people'},{v:4,t:'4 days'},{v:5,t:'5 days'},
+   {v:6,t:'6 days',s:'One rest day a week'}]},
+ {k:'gear',q:'What do you have at home?',s:'Everything here works without a gym.',o:[
+   {v:'none',t:'Nothing',s:'Floor, wall, a chair'},
+   {v:'bar',t:'A pull-up bar',s:'Doorway or wall-mounted'}]},
+ {k:'limit',q:'Anything that needs working around?',s:'Movements that load that area get swapped out.',o:[
+   {v:'none',t:'Nothing right now'},{v:'knee',t:'Knees'},{v:'back',t:'Lower back'},{v:'shoulder',t:'Shoulders'}]}
+];
+const WEEK={3:[0,2,4],4:[0,1,3,4],5:[0,1,2,4,5],6:[0,1,2,3,4,5]};
+const DAYS=30,SESSION_SEC=540;
+const FOCUS={A:'Push \u00b7 Legs \u00b7 Core',B:'Pull \u00b7 Hips \u00b7 Core',C:'Full-body conditioning'};
+
+function pick(cat,lvl,avoid,offset){
+  const list=M[cat].filter(m=>!m.t.includes(avoid));
+  const i=Math.min(list.length-1,Math.max(0,lvl-1+(offset||0)));
+  return list[i]||list[list.length-1];
+}
+function levelFor(p,block){
+  let l=p.level;
+  if(p.age==='60')l=Math.max(1,l-1);
+  if(p.age==='45'&&l>2)l=2;
+  if(p.goal==='move')l=Math.max(1,l-1);
+  if(block>=2)l=Math.min(4,l+1);
+  return l;
+}
+function schedule(p){
+  const days=WEEK[p.days],out=[];let n=0;
+  for(let i=0;i<DAYS;i++){
+    const train=days.includes(i%7);
+    out.push({i,block:Math.floor(i/10),train,type:train?['A','B','C'][n++%3]:null});
+  }
+  return out;
+}
+function buildSession(slot,p){
+  const lvl=levelFor(p,slot.block),av=p.limit==='none'?'':p.limit;
+  const work=lvl<=1?20:25,rest=30-work,rounds=3;
+  const gearPull=p.gear==='bar'?1:0;
+  let main;
+  if(slot.type==='A')main=[pick('push',lvl,av),pick('squat',lvl,av),pick('core',lvl,av),pick('cardio',lvl,av,-1)];
+  else if(slot.type==='B')main=[pick('pull',lvl+gearPull,av),pick('hinge',lvl,av),pick('core',lvl,av,1),pick('cardio',lvl,av,-1)];
+  else main=[pick('cardio',lvl,av),pick('squat',lvl,av,-1),pick('push',lvl,av,-1),pick('core',lvl,av)];
+  const steps=[],b=slot.block,d=slot.i;
+  [M.warm[d%M.warm.length],M.warm[(d+2)%M.warm.length]]
+    .forEach(m=>steps.push({kind:'work',phase:'Warm-up',n:m.n,c:m.c,sec:30}));
+  for(let r=1;r<=rounds;r++){
+    main.forEach((m,i)=>{
+      steps.push({kind:'work',phase:'Round '+r+' of '+rounds,n:m.n,c:m.c,sec:work});
+      const last=(r===rounds&&i===main.length-1);
+      steps.push({kind:'rest',phase:'Rest',n:'Rest',c:last?'Last effort coming up.':'Shake it out. Breathe through the nose.',sec:rest});
+    });
+  }
+  steps.push({kind:'work',phase:'Finisher',n:main[3].n,c:'Everything left. Steady pace, no sloppy reps.',sec:60});
+  const cd=M.cool.filter(m=>!m.t.includes(av));
+  [cd[d%cd.length],cd[(d+1)%cd.length]]
+    .forEach(m=>steps.push({kind:'work',phase:'Cool-down',n:m.n,c:m.c,sec:30}));
+  return {type:slot.type,block:b,day:d,steps,main,rounds,work,rest,lvl};
+}
+const mins=s=>Math.round(s.steps.reduce((a,b)=>a+b.sec,0)/60);
+
+/* ---------- storage ---------- */
+/* Saves through Claude's artifact storage when it is there, and through the
+   browser's own storage when the file is hosted anywhere else. */
+const DB={
+  async get(k){
+    try{if(window.storage&&window.storage.get)return await window.storage.get(k)}catch(e){}
+    try{const v=localStorage.getItem(k);return v?{key:k,value:v}:null}catch(e){return null}
+  },
+  async set(k,v){
+    try{if(window.storage&&window.storage.set)return await window.storage.set(k,v)}catch(e){}
+    try{localStorage.setItem(k,v)}catch(e){}
+    return {key:k,value:v};
+  }
+};
+async function save(){try{await DB.set(KEY,JSON.stringify({profile:S.profile,log:S.log,me:S.me}))}catch(e){}}
+async function boot(){
+  try{const r=await DB.get(KEY);
+    if(r&&r.value){const d=JSON.parse(r.value);S.profile=d.profile;S.log=d.log||{};S.me=d.me||null;
+      S.screen=S.profile?'plan':'cover'}
+  }catch(e){}
+  installable();
+  render();
+  flushQueue();
+  if(S.me)report('ping');
+}
+/* lets Android offer 'Install app'; iOS uses the meta tags above */
+function installable(){
+  try{
+    const m={name:'Elevate Your Smoke',short_name:'Smoke',display:'standalone',
+      background_color:'#E9E4D6',theme_color:'#47573A',start_url:location.href,
+      icons:[{src:document.querySelector('link[rel=\'apple-touch-icon\']').href,sizes:'180x180',type:'image/png'}]};
+    const l=document.createElement('link');l.rel='manifest';
+    l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
+    document.head.appendChild(l);
+  }catch(e){}
+}
+/* ---------- helpers ---------- */
+const el=h=>{const d=document.createElement('div');d.innerHTML=h.trim();return d.firstElementChild};
+const app=()=>document.getElementById('app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const head=sub=>`<div class="masthead"><div class="brand"><h1>Elevate Your Smoke</h1><span class="sub">Calisthenics</span></div><div class="no">${sub}</div></div>`;
+
+/* =========================================================
+   MOVE DETAIL OVERLAY
+   ========================================================= */
+function showMove(name){
+  const ex=EX[name];if(!ex)return;
+  document.querySelectorAll('.overlay').forEach(n=>n.remove());
+  const ov=el(`<div class="overlay"><div class="card" role="dialog" aria-label="${esc(name)}">
+    <p class="eyebrow">${esc(CATNAME[catOf(name)]||'Movement')} \u00b7 sample</p>
+    <h2 class="display h-lg">${esc(name)}</h2>
+    <div id="figslot" style="margin:14px 0 0"></div>
+    <p class="fine" style="margin:8px 0 0;text-align:center">Looping diagram of the full rep</p>
+    <p class="eyebrow" style="margin:16px 0 4px">How it goes</p>
+    <ol class="steps">${ex.how.map(h=>`<li><span>${esc(h)}</span></li>`).join('')}</ol>
+    <div class="watch"><b>Watch for</b>${esc(ex.watch)}</div>
+    <button class="btn ghost sm" id="close" style="margin-top:16px">Close</button>
+  </div></div>`);
+  document.body.appendChild(ov);
+  ov.querySelector('#figslot').appendChild(figureNode(name,'fighero'));
+  ov.querySelector('#close').onclick=()=>ov.remove();
+  ov.onclick=e=>{if(e.target===ov)ov.remove()};
+}
+function moveRow(label,name,dur){
+  const li=document.createElement('li');
+  const b=el(`<button class="mrow"><span class="k">${esc(label)}</span><span class="m">${esc(name)}</span>${dur?`<span class="d">${esc(dur)}</span>`:''}<span class="see">\u25B6</span></button>`);
+  b.onclick=()=>showMove(name);
+  li.appendChild(b);return li;
+}
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
+function render(){
+  clearRafs();
+  document.querySelectorAll('.overlay').forEach(n=>n.remove());
+  const a=app();a.innerHTML='';
+  ({cover,join,quiz,build:building,plan,brief,done:doneScreen,manual,coach}[S.screen]||cover)(a);
+  window.scrollTo(0,0);
+}
+function cover(a){
+  a.appendChild(el(`<div class="sheet">
+    ${head('FORM PT-01')}
+    <p class="eyebrow">Bodyweight challenge \u00b7 no gym \u00b7 no gear</p>
+    <h2 class="display h-xl">Nine<br>minutes.<br>Thirty days.</h2>
+    <div class="rule"></div>
+    <p class="lede">Six questions, then a thirty-day card built around the days you actually have and the movements your body can do today. Every session runs exactly nine minutes, guided and timed \u2014 and every exercise comes with a diagram.</p>
+    <div id="peek" class="grid2" style="margin-top:16px"></div>
+    <div class="note">Nothing here needs equipment. If something hurts beyond honest effort, stop \u2014 and check with a doctor before starting if you have a condition that affects exercise.</div>
+    <div style="flex:1;min-height:22px"></div>
+    <button class="btn" id="go">Start the card</button>
+    <div style="text-align:center"><button class="linkbtn" id="man">Open the movement manual</button>
+    <button class="linkbtn" id="org" style="margin-left:14px">Organizer</button></div>
+  </div>`));
+  const pk=document.getElementById('peek');
+  ['Push-up','Glute bridge'].forEach(n=>pk.appendChild(figureNode(n)));
+  document.getElementById('go').onclick=()=>{S.screen=S.me?'quiz':'join';S.qi=0;S.answers={};render()};
+  document.getElementById('man').onclick=()=>{S.back='cover';S.screen='manual';render()};
+  document.getElementById('org').onclick=()=>{S.screen='coach';render()};
+}
+function quiz(a){
+  const q=Q[S.qi];
+  a.appendChild(el(`<div class="sheet">
+    ${head('SECTION '+(S.qi+1)+' / '+Q.length)}
+    <div class="progress">${Q.map((_,i)=>`<i class="${i<=S.qi?'on':''}"></i>`).join('')}</div>
+    <p class="eyebrow">Question ${S.qi+1}</p>
+    <h2 class="display h-lg">${esc(q.q)}</h2>
+    <p class="fine" style="margin:10px 0 18px">${esc(q.s)}</p>
+    <div id="opts"></div><div style="flex:1"></div>
+    ${S.qi>0?'<div style="text-align:center"><button class="linkbtn" id="back">\u2190 Previous question</button></div>':''}
+  </div>`));
+  const o=document.getElementById('opts');
+  q.o.forEach(opt=>{
+    const b=el(`<button class="opt ${S.answers[q.k]===opt.v?'sel':''}"><span class="box">\u2715</span>
+      <span><span class="t">${esc(opt.t)}</span>${opt.s?`<span class="s">${esc(opt.s)}</span>`:''}</span></button>`);
+    b.onclick=()=>{S.answers[q.k]=opt.v;b.classList.add('sel');
+      setTimeout(()=>{S.qi<Q.length-1?(S.qi++,render()):finishQuiz()},170)};
+    o.appendChild(b);
+  });
+  const bk=document.getElementById('back');if(bk)bk.onclick=()=>{S.qi--;render()};
+}
+function finishQuiz(){S.profile={...S.answers,created:Date.now()};S.log={};save();S.screen='build';render()}
+function building(a){
+  const p=S.profile;
+  const lines=[['Challenge length','30 days'],['Sessions per week',p.days],['Every session','9 min'],
+    ['Starting level',['','From scratch','Rusty','Some base'][p.level]],
+    ['Emphasis',{lean:'Conditioning',strong:'Strength',both:'Balanced',move:'Mobility first'}[p.goal]],
+    ['Equipment',p.gear==='bar'?'Pull-up bar':'None needed'],
+    ['Working around',p.limit==='none'?'Nothing':{knee:'Knees',back:'Lower back',shoulder:'Shoulders'}[p.limit]],
+    ['Total sessions',schedule(p).filter(s=>s.train).length]];
+  a.appendChild(el(`<div class="sheet">${head('COMPILING')}
+    <p class="eyebrow">Building your 30-day card</p>
+    <h2 class="display h-lg">Setting<br>the plan</h2><div class="rule"></div>
+    <div id="lines"></div><div style="flex:1"></div>
+    <button class="btn hidden" id="open">Open my card</button></div>`));
+  const L=document.getElementById('lines');
+  lines.forEach((l,i)=>L.appendChild(el(`<div class="buildline" style="animation-delay:${i*180}ms"><span>${esc(l[0])}</span><b>${esc(l[1])}</b></div>`)));
+  setTimeout(()=>{const b=document.getElementById('open');
+    if(b){b.classList.remove('hidden');b.onclick=()=>{S.screen='plan';render()}}},lines.length*180+350);
+}
+/* =========================================================
+   ROSTER SYNC  —  identity, reporting, organizer dashboard
+   ========================================================= */
+const QKEY='smoke30:queue';
+const API=()=>{
+  try{const q=new URLSearchParams(location.search).get('api');if(q)return q}catch(e){}
+  const u=(CONFIG.SYNC_URL||'').trim();
+  if(!u)return '';
+  // Relative /api only works when the app is served over http(s), not from disk
+  if(u.startsWith('/')&&typeof location!=='undefined'&&location.protocol==='file:')return '';
+  return u;
+};
+const tracking=()=>!!API();
+
+/* ---- identity: a display name and a random device id, nothing else ---- */
+function setMe(name){
+  S.me={id:'p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4),
+        name:name.trim().slice(0,32),joined:Date.now()};
+  save();return S.me;
+}
+/* ---- transport: never blocks the workout; failures go in a queue ---- */
+async function apiPost(body){
+  if(!tracking())return null;
+  const r=await fetch(API(),{method:'POST',redirect:'follow',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return await r.json();
+}
+function queueAdd(b){try{const q=JSON.parse(localStorage.getItem(QKEY)||'[]');q.push(b);
+  localStorage.setItem(QKEY,JSON.stringify(q.slice(-40)))}catch(e){}}
+async function flushQueue(){
+  if(!tracking())return;
+  let q=[];try{q=JSON.parse(localStorage.getItem(QKEY)||'[]')}catch(e){return}
+  if(!q.length)return;
+  const left=[];
+  for(const b of q){try{await apiPost(b)}catch(e){left.push(b)}}
+  try{localStorage.setItem(QKEY,JSON.stringify(left))}catch(e){}
+}
+function report(action){
+  if(!tracking()||!S.me)return;
+  const sl=S.profile?schedule(S.profile):[];
+  const total=sl.filter(s=>s.train).length;
+  const nextS=S.profile?nextSlot():null;
+  const body={action,challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,
+    sessions:Object.keys(S.log).length,total,streak:S.profile?streak():0,
+    day:nextS?nextS.i+1:(S.profile?30:0),perWeek:S.profile?S.profile.days:0};
+  apiPost(body).catch(()=>queueAdd(body));
+}
+
+/* ---- join screen ---- */
+function join(a){
+  a.appendChild(el(`<div class="sheet">${head('ROSTER')}
+    <p class="eyebrow">Step one</p>
+    <h2 class="display h-lg">Put your name<br>on the roster.</h2>
+    <div class="rule"></div>
+    <div class="field"><label for="nm">Name or nickname</label>
+      <input id="nm" maxlength="32" autocomplete="off" autocapitalize="words" placeholder="e.g. Marcus R."></div>
+    <p class="fine" id="err" style="color:var(--stamp);min-height:16px"></p>
+    <div class="note">${tracking()
+      ? 'This is the only thing you type about yourself. No email, no phone, no age or weight leaves your phone \u2014 the organizer sees your name, which days you finished, and when you were last active. Everything else stays on this device.'
+      : 'Roster tracking is not switched on for this copy, so nothing is sent anywhere. Your card is saved on this device only.'}</div>
+    <div style="flex:1;min-height:20px"></div>
+    <button class="btn" id="go">Join the challenge</button>
+    <div style="text-align:center"><button class="linkbtn" id="back">Back</button></div>
+  </div>`));
+  const inp=document.getElementById('nm');
+  if(S.me)inp.value=S.me.name;
+  document.getElementById('go').onclick=()=>{
+    const v=inp.value.trim();
+    if(v.length<2){document.getElementById('err').textContent='Type a name so the organizer can find you on the roster.';inp.focus();return}
+    setMe(v);report('join');
+    S.screen=S.profile?'plan':'quiz';S.qi=0;S.answers={};render();
+  };
+  inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('go').click()};
+  document.getElementById('back').onclick=()=>{S.screen='cover';render()};
+}
+
+/* ---- organizer dashboard ---- */
+const ago=ts=>{
+  if(!ts)return 'never';
+  const d=Math.floor((Date.now()-ts)/864e5);
+  return d<=0?'today':d===1?'yesterday':d+' days ago';
+};
+function coach(a){
+  a.appendChild(el(`<div class="sheet">${head('ORGANIZER')}
+    <p class="eyebrow">Roster \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
+    <h2 class="display h-lg">Who is<br>showing up.</h2>
+    <div class="rule"></div>
+    <div id="gate"></div>
+    <div id="body"></div>
+    <div style="flex:1;min-height:16px"></div>
+    <button class="btn ghost sm" id="back">Back</button>
+  </div>`));
+  document.getElementById('back').onclick=()=>{S.screen=S.profile?'plan':'cover';render()};
+  const gate=document.getElementById('gate'),body=document.getElementById('body');
+  if(!tracking()){
+    gate.appendChild(el('<div class="note">No roster endpoint is reachable from this copy (open the Railway URL, or set CONFIG.SYNC_URL). On-device progress still works.</div>'));
+    return;
+  }
+  gate.appendChild(el(`<div class="field"><label for="pin">Organizer code</label>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off"></div>
+    <button class="btn sm" id="load" style="margin-top:4px">Load the roster</button>`));
+  const pin=document.getElementById('pin');
+  if(S.pin)pin.value=S.pin;
+  const load=async()=>{
+    S.pin=pin.value.trim();
+    body.innerHTML='<p class="fine" style="margin-top:16px">Loading\u2026</p>';
+    try{
+      const u=API()+(API().includes('?')?'&':'?')+'action=roster&challenge='+
+        encodeURIComponent(CONFIG.CHALLENGE)+'&pin='+encodeURIComponent(S.pin);
+      const r=await fetch(u,{redirect:'follow'});const d=await r.json();
+      if(!d.ok){body.innerHTML='<p class="fine" style="color:var(--stamp);margin-top:16px">'+
+        esc(d.error==='bad pin'?'That code did not match.':'Could not read the roster.')+'</p>';return}
+      renderRoster(body,d.people||[]);
+    }catch(e){
+      body.innerHTML='<p class="fine" style="color:var(--stamp);margin-top:16px">Could not reach the roster. Check the link is published to \u201canyone\u201d and try again.</p>';
+    }
+  };
+  document.getElementById('load').onclick=load;
+  pin.onkeydown=e=>{if(e.key==='Enter')load()};
+}
+function renderRoster(body,people){
+  body.innerHTML='';
+  if(!people.length){body.appendChild(el('<p class="fine" style="margin-top:16px">Nobody has joined yet.</p>'));return}
+  const wk=Date.now()-7*864e5;
+  const active=people.filter(p=>p.lastActive>wk).length;
+  const done=people.filter(p=>p.total&&p.sessions>=p.total).length;
+  body.appendChild(el(`<div class="statrow" style="margin-top:16px">
+    <div><div class="n">${people.length}</div><div class="l">On roster</div></div>
+    <div><div class="n">${active}</div><div class="l">Active 7d</div></div>
+    <div><div class="n">${done}</div><div class="l">Finished</div></div>
+  </div>`));
+  body.appendChild(el('<p class="eyebrow" style="margin-top:20px">Most recent first</p>'));
+  people.sort((a,b)=>(b.lastActive||0)-(a.lastActive||0)).forEach(p=>{
+    const pct=p.total?Math.round(100*p.sessions/p.total):0;
+    const cold=p.lastActive<wk;
+    body.appendChild(el(`<div class="person${cold?' cold':''}">
+      <div class="prow"><span class="pn">${esc(p.name||'\u2014')}</span>
+        <span class="pd">${esc(ago(p.lastActive))}</span></div>
+      <div class="pbar"><i style="width:${pct}%"></i></div>
+      <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 day ${p.day||1}</span>
+        <span class="pm">${p.streak||0} streak</span></div>
+    </div>`));
+  });
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Faded rows have not trained in the last seven days.</p>'));
+}
+/* ---------- plan ---------- */
+function nextSlot(){return schedule(S.profile).find(s=>s.train&&!S.log[s.i])}
+function streak(){
+  const sl=schedule(S.profile).filter(s=>s.train);let n=0;
+  for(const s of sl){if(S.log[s.i])n++;else break}
+  return n;
+}
+function plan(a){
+  const p=S.profile,sl=schedule(p),next=nextSlot();
+  const total=sl.filter(s=>s.train).length,doneN=Object.keys(S.log).length;
+  const sess=next?buildSession(next,p):null;
+  const num=next?sl.filter(s=>s.train).indexOf(next)+1:total;
+  a.appendChild(el(`<div class="sheet">${head('CARD \u00b7 30 DAY')}
+    <div class="statrow">
+      <div><div class="n">${doneN}</div><div class="l">Logged</div></div>
+      <div><div class="n">${streak()}</div><div class="l">Streak</div></div>
+      <div><div class="n">${total-doneN}</div><div class="l">To go</div></div>
+    </div>
+    <div id="today"></div>
+    <p class="eyebrow" style="margin-top:22px">The card \u00b7 thirty days</p>
+    <div class="weeks" id="weeks"></div>
+    <div class="rule thin" style="margin-top:22px"></div>
+    <p class="fine"><b>A</b> ${FOCUS.A} \u00b7 <b>B</b> ${FOCUS.B} \u00b7 <b>C</b> ${FOCUS.C}. Blank days are rest \u2014 they are part of the plan, not a gap in it. The last ten days step every movement up a level.</p>
+    <button class="btn ghost sm" id="man" style="margin-top:14px">Movement manual</button>
+    <div style="text-align:center"><button class="linkbtn" id="reset">Start a new card</button></div>
+  </div>`));
+  const t=document.getElementById('today');
+  if(sess){
+    t.appendChild(el(`<div class="block invert" style="margin-top:12px">
+      <p class="eyebrow">Day ${next.i+1} of 30 \u00b7 session ${num} of ${total}</p>
+      <h3 class="display h-md" style="margin:2px 0 0">${FOCUS[sess.type]}</h3>
+      <p style="font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;margin:9px 0 0;opacity:.85">
+        9 MIN \u00b7 ${sess.rounds} ROUNDS \u00b7 ${sess.work}S ON / ${sess.rest}S OFF</p></div>`));
+    const list=el('<div class="block"><p class="eyebrow">Movements today \u2014 tap to see one</p><ul class="movelist"></ul></div>');
+    const ul=list.querySelector('ul');
+    sess.main.forEach((m,i)=>ul.appendChild(moveRow(['Push','Legs','Core','Pace'][i],m.n,sess.work+'s')));
+    t.appendChild(list);
+    const b=el('<button class="btn" id="start">Begin session</button>');
+    t.appendChild(b);
+    b.onclick=()=>{S.session=sess;S.slot=next;S.screen='brief';render()};
+  }else{
+    t.appendChild(el(`<div class="block invert" style="margin-top:12px">
+      <p class="eyebrow">Card complete</p>
+      <h3 class="display h-md" style="margin:2px 0 0">All ${total} sessions logged</h3>
+      <p style="font-size:14px;line-height:1.5;margin:10px 0 0">Thirty days done. Start a fresh card and it rebuilds a level higher from where you finished.</p></div>`));
+    const b=el('<button class="btn" id="again">Build the next card</button>');
+    t.appendChild(b);
+    b.onclick=()=>{if(S.profile.level<3)S.profile.level++;S.log={};save();render()};
+  }
+  const W=document.getElementById('weeks');
+  for(let r=0;r<5;r++){
+    const row=el(`<div class="wk"><span class="lab">${String(r*6+1).padStart(2,'0')}</span><div class="cells six"></div></div>`);
+    const c=row.querySelector('.cells');
+    for(let d=0;d<6;d++){
+      const s=sl[r*6+d],isNext=next&&next.i===s.i;
+      const cls=['cell',s.train?'train':'',S.log[s.i]?'done':'',isNext?'next':''].filter(Boolean).join(' ');
+      c.appendChild(el(`<div class="${cls}">${s.train?s.type:'\u00b7'}</div>`));
+    }
+    W.appendChild(row);
+  }
+  document.getElementById('man').onclick=()=>{S.back='plan';S.screen='manual';render()};
+  document.getElementById('reset').onclick=()=>{
+    if(confirm('This clears your logged sessions and runs the questions again.')){
+      S.profile=null;S.log={};save();S.screen='cover';render();}
+  };
+}
+/* ---------- movement manual ---------- */
+function manual(a){
+  a.appendChild(el(`<div class="sheet">${head('MANUAL')}
+    <p class="eyebrow">Every movement in the program</p>
+    <h2 class="display h-lg">The<br>manual</h2>
+    <p class="fine" style="margin:12px 0 18px">Tap any movement for the diagram, the three cues that matter, and the mistake to watch for.</p>
+    <div id="cats"></div>
+    <button class="btn" id="back" style="margin-top:8px">Back</button></div>`));
+  const C=document.getElementById('cats');
+  Object.keys(M).forEach(cat=>{
+    C.appendChild(el(`<p class="eyebrow" style="margin:18px 0 8px">${esc(CATNAME[cat])}</p>`));
+    M[cat].forEach((m,i)=>{
+      const card=el(`<button class="mcard"><span class="figholder"></span>
+        <span><span class="nm">${esc(m.n)}</span><span class="sub">${cat==='warm'||cat==='cool'?'\u2014':'Level '+(i+1)}</span></span></button>`);
+      card.querySelector('.figholder').replaceWith(staticFigure(m.n,'figmini'));
+      card.onclick=()=>showMove(m.n);
+      C.appendChild(card);
+    });
+  });
+  document.getElementById('back').onclick=()=>{S.screen=S.back||'plan';render()};
+}
+/* ---------- brief ---------- */
+function brief(a){
+  const s=S.session;
+  a.appendChild(el(`<div class="sheet">${head('BRIEF')}
+    <p class="eyebrow">Day ${s.day+1} of 30 \u00b7 ${FOCUS[s.type]}</p>
+    <h2 class="display h-lg">Nine minutes.<br>${s.rounds} rounds.</h2>
+    <div class="rule"></div>
+    <p class="eyebrow">Watch the sample, then tap any move for cues</p>
+    <div id="figs" class="grid4"></div>
+    <div class="block" style="margin-top:12px"><p class="eyebrow">The circuit</p><ul class="movelist" id="ml"></ul></div>
+    <p class="fine">During the session each move shows a looping diagram plus a rotating cue. Work at a pace you could hold for one more round. Skip anything that hurts and the session still counts.</p>
+    <div style="flex:1;min-height:16px"></div>
+    <button class="btn" id="go">Start the clock</button>
+    <div style="text-align:center"><button class="linkbtn" id="back">Back to the card</button></div></div>`));
+  const F=document.getElementById('figs');
+  const labels=['Push','Legs','Core','Pace'];
+  s.main.forEach((m,i)=>{
+    const cell=el(`<button type="button" class="figbox" style="cursor:pointer;padding:6px 2px 8px;width:100%">
+      <span class="figholder"></span>
+      <span style="display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite);margin-top:4px">${esc(labels[i])}</span>
+      <span style="display:block;font-family:var(--disp);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em;line-height:1.05;margin-top:2px">${esc(m.n)}</span>
+    </button>`);
+    const holder=cell.querySelector('.figholder');
+    const fig=figureNode(m.n);
+    fig.style.cssText='border:0;background:transparent;padding:0;width:100%';
+    holder.replaceWith(fig);
+    cell.onclick=()=>showMove(m.n);
+    F.appendChild(cell);
+  });
+  const ml=document.getElementById('ml');
+  s.main.forEach((m,i)=>ml.appendChild(moveRow(labels[i],m.n,s.work+'s')));
+  document.getElementById('go').onclick=()=>startSession();
+  document.getElementById('back').onclick=()=>{S.screen='plan';render()};
+}
+/* ---------- player ---------- */
+function startSession(){
+  S.si=0;S.paused=false;
+  document.querySelectorAll('.player').forEach(n=>n.remove());
+  document.body.appendChild(el('<div class="player" id="player"></div>'));
+  loadStep();
+}
+function loadStep(){
+  const st=S.session.steps[S.si];
+  if(!st){endSession();return}
+  S.timeLeft=st.sec;paintStep();
+  clearInterval(S.tick);
+  S.tick=setInterval(()=>{
+    if(S.paused)return;
+    S.timeLeft--;
+    const t=document.getElementById('t');if(t)t.textContent=mmss(Math.max(0,S.timeLeft));
+    const b=document.getElementById('barfill');if(b)b.style.width=(100*(1-S.timeLeft/st.sec))+'%';
+    if(S.timeLeft<=0){clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}S.si++;loadStep()}
+  },1000);
+}
+function demoTips(name){
+  const ex=EX[name];
+  if(!ex)return {lines:[],watch:''};
+  return {lines:ex.how.slice(),watch:ex.watch||''};
+}
+function paintStep(){
+  const s=S.session,st=s.steps[S.si],nx=s.steps[S.si+1],p=document.getElementById('player');
+  clearRafs();
+  if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
+  const tips=st.kind==='work'?demoTips(st.n):{lines:[],watch:''};
+  const tipLines=tips.lines.length?tips.lines.concat(tips.watch?['Watch for: '+tips.watch]:[]):[st.c];
+  let tipI=0;
+  p.className='player'+(st.kind==='rest'?' rest':'');
+  p.innerHTML=`<div class="ptop"><span class="st">${esc(st.phase)}</span><span class="st">${S.si+1} / ${s.steps.length}</span></div>
+    <div class="bar"><i id="barfill" style="width:0%"></i></div>
+    <div class="pmid">
+      <div class="figslot" id="figslot"></div>
+      <p class="timer ${st.kind==='rest'?'big':''}" id="t">${mmss(st.sec)}</p>
+      <h2 class="movename">${esc(st.n)}</h2>
+      <p class="cue" id="cue">${esc(st.c)}</p>
+      ${st.kind==='work'&&tips.lines.length?`<div class="demotip" id="demotip"><span class="lab" id="demolab">How it goes</span><div class="txt" id="demotxt">${esc(tipLines[0])}</div>
+        <div class="howdots" id="howdots">${tipLines.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join('')}</div></div>`:''}
+      ${nx?`<p class="nextup">Next \u2192 ${esc(nx.n)}</p>`:'<p class="nextup">Last one</p>'}
+    </div>
+    <div class="pbot">
+      <button class="btn ghost sm" id="pause" style="flex:1">${S.paused?'Resume':'Pause'}</button>
+      <button class="btn sm" id="skip" style="flex:1.6">${st.kind==='rest'?'Skip rest':'Done \u2192'}</button>
+    </div>
+    <div style="text-align:center;padding-bottom:16px"><button class="linkbtn" id="quit">End session</button></div>`;
+  if(st.kind==='work'&&EX[st.n]){
+    p.querySelector('#figslot').appendChild(figureNode(st.n,'fighero'));
+  }
+  if(st.kind==='work'&&tipLines.length>1){
+    S.tipTick=setInterval(()=>{
+      if(S.paused)return;
+      tipI=(tipI+1)%tipLines.length;
+      const txt=document.getElementById('demotxt');
+      const lab=document.getElementById('demolab');
+      const dots=document.getElementById('howdots');
+      if(!txt)return;
+      const isWatch=tips.watch&&tipI===tipLines.length-1;
+      if(lab)lab.textContent=isWatch?'Watch for':'How it goes';
+      txt.textContent=isWatch?tips.watch:tipLines[tipI];
+      if(dots)[...dots.children].forEach((d,i)=>d.className=i===tipI?'on':'');
+    },3200);
+  }
+  p.querySelector('#pause').onclick=()=>{S.paused=!S.paused;p.querySelector('#pause').textContent=S.paused?'Resume':'Pause'};
+  p.querySelector('#skip').onclick=()=>{clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}S.si++;loadStep()};
+  p.querySelector('#quit').onclick=()=>{
+    if(confirm('End here? This session will not be marked on the card.')){
+      clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
+      clearRafs();p.remove();S.screen='plan';render();}
+  };
+}
+function endSession(){
+  clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}clearRafs();
+  const p=document.getElementById('player');if(p)p.remove();
+  S.log[S.slot.i]={at:Date.now()};save();report('log');
+  S.screen='done';render();
+}
+function doneScreen(a){
+  const total=schedule(S.profile).filter(s=>s.train).length,n=Object.keys(S.log).length;
+  a.appendChild(el(`<div class="sheet">${head('LOGGED')}
+    <div class="stampwrap"><div class="stamp"><span>Done<small>Session ${n} of ${total}</small></span></div></div>
+    <h2 class="display h-lg" style="text-align:center">${n===1?'First one<br>is on the card.':'That is '+n+'<br>on the card.'}</h2>
+    <p class="lede" style="text-align:center">${n<total?'The next session unlocks now. Rest days between are doing work too \u2014 that is when the strength actually shows up.':'Thirty days, all of it logged. Build the next card when you are ready.'}</p>
+    <div style="flex:1;min-height:20px"></div>
+    <button class="btn" id="back">Back to the card</button></div>`));
+  document.getElementById('back').onclick=()=>{S.screen='plan';render()};
+}
+boot();
+
+</script>
+</body>
+</html>
