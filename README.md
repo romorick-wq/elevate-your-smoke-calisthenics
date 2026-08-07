@@ -20,8 +20,10 @@ backend/
   db.js                      Postgres schema + queries
   package.json
   roster-backend.gs          legacy Google Sheets script (optional / unused)
+  groundwork.html            earlier 28-day prototype (not the live app)
 docs/
   SETUP-roster.md            Railway deploy + roster setup
+  SETUP-roster-sheets.md     optional Google Sheets roster setup
 railway.toml                 Railway build/start config
 README.md
 ```
