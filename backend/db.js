@@ -128,4 +128,23 @@ async function getRoster(challenge) {
   return { ok: true, people: Array.from(byKey.values()) };
 }
 
-module.exports = { init, upsertParticipant, getRoster };
+async function deleteParticipant(challenge, name) {
+  const db = getPool();
+  const c = String(challenge || '').slice(0, 64);
+  const n = String(name || '').trim().slice(0, 64);
+  if (!c || !n) return { ok: false, error: 'bad request' };
+
+  const { rowCount } = await db.query(
+    `DELETE FROM participants
+     WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
+    [c, n]
+  );
+  await db.query(
+    `DELETE FROM sessions
+     WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
+    [c, n]
+  );
+  return { ok: true, deleted: rowCount };
+}
+
+module.exports = { init, upsertParticipant, getRoster, deleteParticipant };

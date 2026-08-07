@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Elevate Your Smoke — Calisthenics</title>
-<meta name="description" content="A 30-day bodyweight challenge. Nine minutes a day, guided and timed, with a photo demo for every movement.">
+<meta name="description" content="Military calisthenics. Elevate your smoke — grit, fit, and standard. Nine minutes a day for thirty days.">
 <meta name="theme-color" content="#101412">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,7 +18,7 @@
 <style>
 :root{
   --bg:#ECEAE4; --surface:#F7F6F2; --surface2:#FFFFFF; --ink:#101412;
-  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#C8F04D; --accent-ink:#1A2408;
+  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#E85D04; --accent-ink:#1A0F08;
   --olive:#2F3B2A; --olive-soft:#3F4F38; --danger:#C43C2C; --shadow:0 18px 50px rgba(16,20,18,.18);
   --disp:'Syne',system-ui,sans-serif; --body:'Outfit',system-ui,-apple-system,sans-serif; --mono:'Outfit',system-ui,sans-serif;
   --radius:18px; --radius-sm:12px;
@@ -28,7 +28,7 @@ html,body{margin:0;padding:0}
 body{
   min-height:100vh;display:flex;justify-content:center;color:var(--ink);font-family:var(--body);
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(200,240,77,.28), transparent 55%),
+    radial-gradient(1200px 600px at 50% -10%, rgba(232,93,4,.28), transparent 55%),
     linear-gradient(165deg,#1a2218 0%, #2a3526 42%, #6d7464 100%);
 }
 #app{
@@ -102,7 +102,7 @@ p.lede{font-size:15.5px;line-height:1.55;color:#2c322e;margin:14px 0 0}
   font-weight:700;font-size:13px;color:var(--muted);background:rgba(16,20,18,.06);position:relative;border-radius:10px}
 .cell.train{color:var(--ink);background:var(--surface2)}
 .cell.next{background:var(--ink);color:var(--accent)}
-.cell.done{background:rgba(200,240,77,.35);color:var(--olive)}
+.cell.done{background:rgba(232,93,4,.35);color:var(--olive)}
 .cell.done::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:var(--olive);bottom:5px}
 .dow{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:0 0 4px 27px}
 .dow span{text-align:center;font-size:9px;color:var(--muted)}
@@ -199,6 +199,12 @@ p.lede{font-size:15.5px;line-height:1.55;color:#2c322e;margin:14px 0 0}
 .briefcard .cap{position:absolute;left:0;right:0;bottom:0;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(10,12,11,.85))}
 .briefcard .cap .k{font-size:9px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;font-weight:600}
 .briefcard .cap .n{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:-.02em;line-height:1.1;margin-top:2px}
+.quote{font-family:var(--disp);font-weight:700;font-size:17px;line-height:1.35;letter-spacing:-.02em;color:var(--ink);margin:14px 0 0}
+.quote.cardquote{font-size:14px;margin:14px 0 4px;padding:12px 14px;background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.trash{flex:0 0 auto;width:34px;height:34px;border:0;background:transparent;color:var(--danger);cursor:pointer;border-radius:8px;display:grid;place-items:center;padding:0}
+.trash:hover{background:rgba(196,60,44,.1)}
+.trash svg{width:18px;height:18px;display:block}
+.pnwrap{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
 </style>
 </head>
@@ -706,9 +712,10 @@ function render(){
 function cover(a){
   a.appendChild(el(`<div class="sheet" style="padding-top:0">
     <div class="photoframe" id="hero"></div>
-    <p class="eyebrow">Bodyweight challenge \u00b7 no gym required</p>
-    <h2 class="display h-xl">Nine minutes.<br>Thirty days.</h2>
-    <p class="lede">A guided card built around your days, your level, and what your body can do today. Every move comes with a real form photo so you know exactly what to copy.</p>
+    <p class="eyebrow">Military calisthenics \u00b7 nine minutes a day</p>
+    <h2 class="display h-xl">Elevate<br>your smoke.</h2>
+    <p class="quote">\u201CSmoke is the heat you leave on the floor. Elevate it \u2014 your grit, your fit, your standard \u2014 until the man who shows up is impossible to ignore.\u201D</p>
+    <p class="lede">Thirty days. Bodyweight only. Real form photos of the work so you copy the movement, not a guess.</p>
     <div class="note">If something hurts beyond honest effort, stop. Check with a doctor first if you have a condition that affects exercise.</div>
     <div style="flex:1;min-height:22px"></div>
     <button class="btn accent" id="go">Start the card</button>
@@ -718,7 +725,7 @@ function cover(a){
   const hero=document.getElementById('hero');
   const img=exerciseImg('push-up','cover');
   hero.appendChild(img);
-  hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>Calisthenics</span></div>`));
+  hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>Military calisthenics</span></div>`));
   document.getElementById('go').onclick=()=>{S.screen=S.me?'quiz':'join';S.qi=0;S.answers={};render()};
   document.getElementById('man').onclick=()=>{S.back='cover';S.screen='manual';render()};
   document.getElementById('org').onclick=()=>{S.screen='coach';render()};
@@ -897,18 +904,32 @@ function renderRoster(body,people){
     <div><div class="n">${done}</div><div class="l">Finished</div></div>
   </div>`));
   body.appendChild(el('<p class="eyebrow" style="margin-top:20px">Most recent first</p>'));
+  const trashIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
   people.sort((a,b)=>(b.lastActive||0)-(a.lastActive||0)).forEach(p=>{
     const pct=p.total?Math.round(100*p.sessions/p.total):0;
     const cold=p.lastActive<wk;
-    body.appendChild(el(`<div class="person${cold?' cold':''}">
-      <div class="prow"><span class="pn">${esc(p.name||'\u2014')}</span>
+    const row=el(`<div class="person${cold?' cold':''}">
+      <div class="prow"><span class="pnwrap"><span class="pn">${esc(p.name||'\u2014')}</span>
+        <button type="button" class="trash" title="Remove from roster" aria-label="Remove ${esc(p.name||'participant')}">${trashIcon}</button></span>
         <span class="pd">${esc(ago(p.lastActive))}</span></div>
       <div class="pbar"><i style="width:${pct}%"></i></div>
       <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 day ${p.day||1}</span>
         <span class="pm">${p.streak||0} streak</span></div>
-    </div>`));
+    </div>`);
+    row.querySelector('.trash').onclick=async()=>{
+      if(!p.name)return;
+      if(!confirm('Remove '+p.name+' from the roster?'))return;
+      try{
+        const r=await fetch('/api/roster/delete',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({pin:S.pin,challenge:CONFIG.CHALLENGE,name:p.name})});
+        const d=await r.json();
+        if(!d.ok){alert(d.error==='bad pin'?'Organizer code rejected.':'Could not delete.');return}
+        renderRoster(body,people.filter(x=>x!==p));
+      }catch(e){alert('Could not reach the roster.')}
+    };
+    body.appendChild(row);
   });
-  body.appendChild(el('<p class="fine" style="margin-top:14px">Faded rows have not trained in the last seven days.</p>'));
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Faded rows have not trained in the last seven days. Trash removes them from your roster.</p>'));
 }
 /* ---------- plan ---------- */
 function nextSlot(){return schedule(S.profile).find(s=>s.train&&!S.log[s.i])}
@@ -928,6 +949,7 @@ function plan(a){
       <div><div class="n">${streak()}</div><div class="l">Streak</div></div>
       <div><div class="n">${total-doneN}</div><div class="l">To go</div></div>
     </div>
+    <p class="quote cardquote">Elevate your smoke \u2014 personality, fitness, discipline. Nine minutes. No excuses.</p>
     <div id="today"></div>
     <p class="eyebrow" style="margin-top:22px">The card \u00b7 thirty days</p>
     <div class="weeks" id="weeks"></div>
