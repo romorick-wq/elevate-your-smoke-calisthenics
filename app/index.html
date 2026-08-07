@@ -1088,7 +1088,7 @@ function paintStep(){
   clearRafs();
   if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
   const tips=st.kind==='work'?demoTips(st.n):{lines:[],watch:''};
-  const tipLines=tips.lines.length?tips.lines.concat(tips.watch?['Watch for: '+tips.watch]:[]):[st.c];
+  const tipLines=tips.lines.length?tips.lines.concat(tips.watch?['Kill this fault: '+tips.watch]:[]):[st.c];
   let tipI=0;
   p.className='player'+(st.kind==='rest'?' rest':'');
   p.innerHTML=`<div class="ptop"><span class="st">${esc(st.phase)}</span><span class="st">${S.si+1} / ${s.steps.length}</span></div>
@@ -1098,7 +1098,7 @@ function paintStep(){
       <p class="timer ${st.kind==='rest'?'big':''}" id="t">${mmss(st.sec)}</p>
       <h2 class="movename">${esc(st.n)}</h2>
       <p class="cue" id="cue">${esc(st.c)}</p>
-      ${st.kind==='work'&&tips.lines.length?`<div class="demotip" id="demotip"><span class="lab" id="demolab">How it goes</span><div class="txt" id="demotxt">${esc(tipLines[0])}</div>
+      ${st.kind==='work'&&tips.lines.length?`<div class="demotip" id="demotip"><span class="lab" id="demolab">Standard</span><div class="txt" id="demotxt">${esc(tipLines[0])}</div>
         <div class="howdots" id="howdots">${tipLines.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join('')}</div></div>`:''}
       ${nx?`<p class="nextup">Next \u2192 ${esc(nx.n)}</p>`:'<p class="nextup">Last one</p>'}
     </div>
@@ -1119,7 +1119,7 @@ function paintStep(){
       const dots=document.getElementById('howdots');
       if(!txt)return;
       const isWatch=tips.watch&&tipI===tipLines.length-1;
-      if(lab)lab.textContent=isWatch?'Watch for':'Standard';
+      if(lab)lab.textContent=isWatch?'Kill this fault':'Standard';
       txt.textContent=isWatch?tips.watch:tipLines[tipI];
       if(dots)[...dots.children].forEach((d,i)=>d.className=i===tipI?'on':'');
     },3200);
