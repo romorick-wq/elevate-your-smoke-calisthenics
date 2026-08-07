@@ -70,6 +70,27 @@ async function handleDelete(req, res) {
   }
 }
 
+async function handleUpdate(req, res) {
+  try {
+    const body = parseBody(req) || {};
+    const pin = String(body.pin || '');
+    if (pin !== String(ORGANIZER_CODE)) {
+      return res.json({ ok: false, error: 'bad pin' });
+    }
+    const challenge = String(body.challenge || '');
+    const name = String(body.name || '');
+    const result = await db.updateParticipantDetails(challenge, name, {
+      phone: body.phone,
+      startingWeight: body.startingWeight,
+      dateStarted: body.dateStarted,
+    });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: String(err.message || err) });
+  }
+}
+
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, alive: true });
 });
@@ -85,6 +106,7 @@ app.get('/api', async (req, res) => {
 app.get('/api/roster', handleRoster);
 app.delete('/api/roster', handleDelete);
 app.post('/api/roster/delete', handleDelete);
+app.post('/api/roster/update', handleUpdate);
 
 app.get(['/admin', '/admin/'], (_req, res) => {
   res.setHeader('Cache-Control', 'no-cache');

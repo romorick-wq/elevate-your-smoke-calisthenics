@@ -33,6 +33,9 @@ async function init() {
       PRIMARY KEY (id, challenge)
     );
   `);
+  await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS phone TEXT NOT NULL DEFAULT ''`);
+  await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS starting_weight REAL`);
+  await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS date_started DATE`);
   await db.query(`
     CREATE TABLE IF NOT EXISTS sessions (
       id BIGSERIAL PRIMARY KEY,
@@ -95,7 +98,8 @@ async function upsertParticipant(body) {
 async function getRoster(challenge) {
   const db = getPool();
   const { rows } = await db.query(
-    `SELECT id, name, challenge, joined, last_active, sessions, total, streak, day, per_week
+    `SELECT id, name, challenge, joined, last_active, sessions, total, streak, day, per_week,
+            phone, starting_weight, date_started
      FROM participants
      WHERE ($1 = '' OR challenge = $1)
      ORDER BY last_active DESC`,
@@ -105,6 +109,9 @@ async function getRoster(challenge) {
   // One line per person even if they reinstalled (merge by name within challenge)
   const byKey = new Map();
   for (const r of rows) {
+    const started = r.date_started
+      ? String(r.date_started).slice(0, 10)
+      : new Date(r.joined).toISOString().slice(0, 10);
     const person = {
       name: r.name,
       joined: new Date(r.joined).getTime(),
@@ -114,37 +121,91 @@ async function getRoster(challenge) {
       streak: n(r.streak),
       day: n(r.day),
       perWeek: n(r.per_week),
+      phone: r.phone || '',
+      startingWeight: r.starting_weight == null ? '' : Number(r.starting_weight),
+      dateStarted: started,
     };
     const key = `${r.challenge}::${String(person.name).toLowerCase().trim()}`;
     const prev = byKey.get(key);
     if (!prev) {
       byKey.set(key, person);
-    } else if (person.sessions > prev.sessions) {
-      person.name = prev.joined <= person.joined ? prev.name : person.name;
-      byKey.set(key, person);
+    } else {
+      const keepProgress = person.sessions >= prev.sessions;
+      const base = keepProgress ? person : prev;
+      const other = keepProgress ? prev : person;
+      byKey.set(key, {
+        ...base,
+        name: prev.joined <= person.joined ? prev.name : person.name,
+        joined: Math.min(prev.joined, person.joined),
+        phone: base.phone || other.phone || '',
+        startingWeight: base.startingWeight !== '' ? base.startingWeight : other.startingWeight,
+        dateStarted: base.dateStarted || other.dateStarted,
+      });
     }
   }
 
   return { ok: true, people: Array.from(byKey.values()) };
 }
 
+async function updateParticipantDetails(challenge, name, details) {
+  const db = getPool();
+  const c = String(challenge || '').slice(0, 64);
+  const personName = String(name || '').trim().slice(0, 64);
+  if (!c || !personName) return { ok: false, error: 'bad request' };
+
+  const phone = String(details.phone || '').trim().slice(0, 32);
+  let startingWeight = null;
+  if (details.startingWeight !== '' && details.startingWeight != null) {
+    const w = Number(details.startingWeight);
+    if (!Number.isFinite(w) || w <= 0 || w > 1000) {
+      return { ok: false, error: 'bad weight' };
+    }
+    startingWeight = w;
+  }
+  let dateStarted = null;
+  if (details.dateStarted) {
+    const raw = String(details.dateStarted).slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      return { ok: false, error: 'bad date' };
+    }
+    dateStarted = raw;
+  }
+
+  const { rowCount } = await db.query(
+    `UPDATE participants
+     SET phone = $3,
+         starting_weight = $4,
+         date_started = COALESCE($5::date, date_started, joined::date)
+     WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
+    [c, personName, phone, startingWeight, dateStarted]
+  );
+  if (!rowCount) return { ok: false, error: 'not found' };
+  return { ok: true, updated: rowCount };
+}
+
 async function deleteParticipant(challenge, name) {
   const db = getPool();
   const c = String(challenge || '').slice(0, 64);
-  const n = String(name || '').trim().slice(0, 64);
-  if (!c || !n) return { ok: false, error: 'bad request' };
+  const personName = String(name || '').trim().slice(0, 64);
+  if (!c || !personName) return { ok: false, error: 'bad request' };
 
   const { rowCount } = await db.query(
     `DELETE FROM participants
      WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
-    [c, n]
+    [c, personName]
   );
   await db.query(
     `DELETE FROM sessions
      WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
-    [c, n]
+    [c, personName]
   );
   return { ok: true, deleted: rowCount };
 }
 
-module.exports = { init, upsertParticipant, getRoster, deleteParticipant };
+module.exports = {
+  init,
+  upsertParticipant,
+  getRoster,
+  updateParticipantDetails,
+  deleteParticipant,
+};

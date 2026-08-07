@@ -62,8 +62,8 @@ body{
 .field input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
   font-family:var(--disp);font-weight:700;font-size:26px;letter-spacing:-.02em;color:var(--ink);
   padding:4px 2px;-webkit-appearance:none}
-.person{border-bottom:1px solid var(--line);padding:12px 0}
-.person.cold{opacity:.45}
+.person{border-bottom:1px solid var(--line);padding:14px 0}
+.person.cold{opacity:.7}
 .prow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .pn{font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:-.02em}
 .pd,.pm{font-size:11px;letter-spacing:.04em;color:var(--muted);font-weight:500}
@@ -71,10 +71,22 @@ body{
 .pbar i{display:block;height:100%;background:var(--olive-soft);border-radius:99px}
 .note{border-left:3px solid var(--accent);padding:8px 0 8px 12px;margin:16px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
 .err{color:var(--danger);margin-top:12px}
+.okmsg{color:var(--olive-soft);margin-top:8px;font-size:12px;font-weight:600}
 .trash{flex:0 0 auto;width:34px;height:34px;border:0;background:transparent;color:var(--danger);cursor:pointer;border-radius:8px;display:grid;place-items:center;padding:0}
 .trash:hover{background:rgba(196,60,44,.1)}
 .trash svg{width:18px;height:18px;display:block}
 .pnwrap{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.meta .field{margin:0}
+.meta .field.full{grid-column:1 / -1}
+.meta .field label{margin-bottom:4px}
+.meta .field input{
+  font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:0;
+  border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface2);
+}
+.meta .field input:focus{outline:none;border-color:var(--accent)}
+.save-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.save-row .btn{width:auto;flex:1;margin:0}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -98,6 +110,7 @@ const ago=ts=>{
   const d=Math.floor((Date.now()-ts)/864e5);
   return d<=0?'today':d===1?'yesterday':d+' days ago';
 };
+const pinCode=()=>{try{return sessionStorage.getItem(PIN_KEY)||''}catch(e){return ''}};
 
 function render(){
   const app=document.getElementById('app');
@@ -106,7 +119,7 @@ function render(){
     <div class="masthead"><div class="brand"><h1>Elevate Your Smoke</h1><span class="sub">Admin</span></div></div>
     <p class="eyebrow">Roster \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
     <h2 class="display h-lg">Admin<br>login</h2>
-    <p class="fine" style="margin:12px 0 0">Enter your organizer code to see who has joined and who is showing up.</p>
+    <p class="fine" style="margin:12px 0 0">Enter your organizer code to manage the roster — phone, starting weight, and start date for each person.</p>
     <div class="rule"></div>
     <div id="gate"></div>
     <div id="body"></div>
@@ -178,11 +191,15 @@ function renderRoster(body,people){
   </div>`));
   body.appendChild(el('<p class="eyebrow" style="margin-top:20px">Most recent first</p>'));
   const trashIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
-  let pin='';
-  try{pin=sessionStorage.getItem(PIN_KEY)||''}catch(e){}
-  people.sort((a,b)=>(b.lastActive||0)-(a.lastActive||0)).forEach(p=>{
+  const pin=pinCode();
+
+  people.sort((a,b)=>(b.lastActive||0)-(a.lastActive||0)).forEach((p,idx)=>{
     const pct=p.total?Math.round(100*p.sessions/p.total):0;
     const cold=p.lastActive<wk;
+    const weightVal=p.startingWeight===''||p.startingWeight==null?'':p.startingWeight;
+    const startedVal=p.dateStarted||'';
+    const phoneVal=p.phone||'';
+    const uid='p'+idx;
     const row=el(`<div class="person${cold?' cold':''}">
       <div class="prow"><span class="pnwrap"><span class="pn">${esc(p.name||'\u2014')}</span>
         <button type="button" class="trash" title="Remove from roster" aria-label="Remove ${esc(p.name||'participant')}">${trashIcon}</button></span>
@@ -190,7 +207,21 @@ function renderRoster(body,people){
       <div class="pbar"><i style="width:${pct}%"></i></div>
       <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 day ${p.day||1}</span>
         <span class="pm">${p.streak||0} streak</span></div>
+      <div class="meta">
+        <div class="field full"><label for="${uid}-phone">Phone number</label>
+          <input id="${uid}-phone" type="tel" inputmode="tel" autocomplete="off" placeholder="555-0100" value="${esc(phoneVal)}"></div>
+        <div class="field"><label for="${uid}-weight">Starting weight</label>
+          <input id="${uid}-weight" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="lbs" value="${esc(weightVal)}"></div>
+        <div class="field"><label for="${uid}-started">Date started</label>
+          <input id="${uid}-started" type="date" value="${esc(startedVal)}"></div>
+      </div>
+      <div class="save-row">
+        <button type="button" class="btn accent sm" data-save>Save</button>
+      </div>
+      <p class="okmsg" hidden></p>
+      <p class="fine err" hidden></p>
     </div>`);
+
     row.querySelector('.trash').onclick=async()=>{
       if(!p.name)return;
       if(!confirm('Remove '+p.name+' from the roster?'))return;
@@ -202,9 +233,40 @@ function renderRoster(body,people){
         renderRoster(body,people.filter(x=>x!==p));
       }catch(e){alert('Could not reach the roster.')}
     };
+
+    row.querySelector('[data-save]').onclick=async()=>{
+      const ok=row.querySelector('.okmsg');
+      const bad=row.querySelector('.err');
+      ok.hidden=true;bad.hidden=true;
+      const phone=row.querySelector('#'+uid+'-phone').value.trim();
+      const startingWeight=row.querySelector('#'+uid+'-weight').value.trim();
+      const dateStarted=row.querySelector('#'+uid+'-started').value;
+      try{
+        const r=await fetch('/api/roster/update',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name,phone,startingWeight,dateStarted})});
+        const d=await r.json();
+        if(!d.ok){
+          bad.textContent=d.error==='bad pin'?'Organizer code rejected.':
+            d.error==='bad weight'?'Enter a valid starting weight.':
+            d.error==='bad date'?'Enter a valid start date.':
+            d.error==='not found'?'That person was not found.':'Could not save.';
+          bad.hidden=false;
+          return;
+        }
+        p.phone=phone;
+        p.startingWeight=startingWeight===''?'':Number(startingWeight);
+        p.dateStarted=dateStarted;
+        ok.textContent='Saved.';
+        ok.hidden=false;
+      }catch(e){
+        bad.textContent='Could not reach the roster.';
+        bad.hidden=false;
+      }
+    };
+
     body.appendChild(row);
   });
-  body.appendChild(el('<p class="fine" style="margin-top:14px">Faded rows have not trained in the last seven days. Trash removes them from your roster.</p>'));
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Edit phone, starting weight, and date started for each person, then tap Save. Trash removes them from the roster.</p>'));
 }
 
 render();
