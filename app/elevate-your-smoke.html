@@ -932,7 +932,8 @@ function plan(a){
     <div class="rule thin" style="margin-top:22px"></div>
     <p class="fine"><b>A</b> ${FOCUS.A} \u00b7 <b>B</b> ${FOCUS.B} \u00b7 <b>C</b> ${FOCUS.C}. Blank days are rest \u2014 they are part of the plan, not a gap in it. The last ten days step every movement up a level.</p>
     <button class="btn ghost sm" id="man" style="margin-top:14px">Movement manual</button>
-    <div style="text-align:center"><button class="linkbtn" id="reset">Start a new card</button></div>
+    <div style="text-align:center;margin-top:4px"><button class="linkbtn" id="org">Organizer</button>
+    <button class="linkbtn" id="reset" style="margin-left:14px">Start a new card</button></div>
   </div>`));
   const t=document.getElementById('today');
   if(sess){
@@ -969,6 +970,7 @@ function plan(a){
     W.appendChild(row);
   }
   document.getElementById('man').onclick=()=>{S.back='plan';S.screen='manual';render()};
+  document.getElementById('org').onclick=()=>{S.screen='coach';render()};
   document.getElementById('reset').onclick=()=>{
     if(confirm('This clears your logged sessions and runs the questions again.')){
       S.profile=null;S.log={};save();S.screen='cover';render();}
