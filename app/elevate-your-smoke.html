@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Elevate Your Smoke — Calisthenics</title>
-<meta name="description" content="Military calisthenics. Elevate your smoke — grit, fit, and standard. Nine minutes a day for thirty days.">
+<meta name="description" content="Military calisthenics for men who show up. Elevate your smoke — 9-minute daily PT, 30 days, exact form photos. Free. No gym.">
 <meta name="theme-color" content="#101412">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -236,53 +236,53 @@ let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,si:0,time
 /* ---------- movement library ---------- */
 const M={
  warm:[
-  {n:'March in place',c:'Drive the knees to hip height. Keep the arms swinging.',t:[]},
-  {n:'Arm circles',c:'Big slow circles forward, then back. Open the chest.',t:[]},
-  {n:'Hip openers',c:'Knee up, sweep it out to the side, step down. Alternate.',t:[]},
-  {n:'Shoulder rolls',c:'Roll them up, back and down. Slow and full.',t:[]},
-  {n:'Standing side bend',c:'Reach one arm overhead, lean away, feel the ribs open.',t:[]}
+  {n:'March in place',c:'Knees to hip height. Arms swing. Quiet feet.',t:[]},
+  {n:'Arm circles',c:'Big slow circles forward, then reverse. Shoulders down.',t:[]},
+  {n:'Hip openers',c:'Knee up, open to the side, plant. Alternate. Slow.',t:[]},
+  {n:'Shoulder rolls',c:'Elbows draw big circles. Full range.',t:[]},
+  {n:'Standing side bend',c:'Arm overhead. Lean sideways. Open the ribs.',t:[]}
  ],
  push:[
-  {n:'Wall push-up',c:'Hands on the wall at chest height. Lower slow, press away.',t:[]},
-  {n:'Incline push-up',c:'Hands on a counter or sturdy table. Elbows at 45\u00b0, chest to the edge.',t:[]},
-  {n:'Push-up',c:'Hands under the shoulders. Ribs down, full lockout at the top.',t:['shoulder']},
-  {n:'Diamond push-up',c:'Thumbs and index fingers touching. Elbows brush the ribs.',t:['shoulder']}
+  {n:'Wall push-up',c:'Hands chest-high on the wall. Plank line. Lower and press.',t:[]},
+  {n:'Incline push-up',c:'Hands on a sturdy edge. Body one line. Elbows ~45\u00b0.',t:[]},
+  {n:'Push-up',c:'Hands under shoulders. Rigid plank. Chest to fist-height.',t:['shoulder']},
+  {n:'Diamond push-up',c:'Hands under sternum. Elbows brush ribs.',t:['shoulder']}
  ],
  pull:[
-  {n:'Doorway row',c:'Grip both sides of a door frame, lean back, pull your chest to your hands.',t:[]},
-  {n:'Table row',c:'Lie under a sturdy table, grip the edge, pull your chest up. Body in one line.',t:[]},
-  {n:'Table row, legs out',c:'Same pull, heels further away. Slower on the way down.',t:['shoulder']},
-  {n:'Pull-up',c:'Full hang to chin over the bar. Control the descent.',t:['shoulder']}
+  {n:'Doorway row',c:'Lean back on the frame. Pull chest to hands. Slow lower.',t:[]},
+  {n:'Table row',c:'Under a sturdy table. Pull chest to edge. Plank body.',t:[]},
+  {n:'Table row, legs out',c:'Same row, heels farther out. Full hang every rep.',t:['shoulder']},
+  {n:'Pull-up',c:'Dead hang to chin over bar. Controlled descent.',t:['shoulder']}
  ],
  squat:[
-  {n:'Sit-to-stand',c:'From a chair. Stand without hands if you can, sit down slow.',t:[]},
-  {n:'Box squat',c:'Squat to a chair, touch, drive up. Knees track over the toes.',t:[]},
-  {n:'Bodyweight squat',c:'Feet shoulder-width. Down until the hips break parallel.',t:['knee']},
-  {n:'Split squat',c:'One foot back. Drop the back knee straight down. Swap halfway.',t:['knee']}
+  {n:'Sit-to-stand',c:'Stand from the chair. Three-count sit. Hands optional.',t:[]},
+  {n:'Box squat',c:'Touch the seat. Do not relax. Drive up.',t:[]},
+  {n:'Bodyweight squat',c:'Sit between the heels. Control the depth. Stand tall.',t:['knee']},
+  {n:'Split squat',c:'Staggered stance. Back knee drops straight down.',t:['knee']}
  ],
  hinge:[
-  {n:'Glute bridge',c:'Heels close, drive the hips up, squeeze at the top.',t:[]},
-  {n:'Glute bridge march',c:'Hips up and held. Lift one foot, then the other.',t:[]},
-  {n:'Hip hinge reach',c:'Soft knees, push the hips back, flat back, stand tall.',t:['back']},
-  {n:'Single-leg bridge',c:'One foot planted, other leg straight. Hips level. Swap halfway.',t:['back']}
+  {n:'Glute bridge',c:'Heels close. Hips to a ramp. Squeeze. Lower slow.',t:[]},
+  {n:'Glute bridge march',c:'Hips held level. Lift one foot, then the other.',t:[]},
+  {n:'Hip hinge reach',c:'Hips back. Flat back. Stand by driving hips forward.',t:['back']},
+  {n:'Single-leg bridge',c:'One leg extended. Hips level. Switch halfway.',t:['back']}
  ],
  core:[
-  {n:'Dead bug',c:'Low back pressed to the floor. Opposite arm and leg reach out slow.',t:[]},
-  {n:'Bird dog',c:'On all fours. Opposite arm and leg out, pause, return. No wobble.',t:[]},
-  {n:'Forearm plank',c:'Elbows under the shoulders. Squeeze the glutes, breathe.',t:['shoulder']},
-  {n:'Hollow hold',c:'Low back glued down, arms and legs off the floor.',t:['back']}
+  {n:'Dead bug',c:'Low back glued down. Opposite arm and leg reach.',t:[]},
+  {n:'Bird dog',c:'Opposite arm and leg out. Pause. No hip twist.',t:[]},
+  {n:'Forearm plank',c:'Elbows under shoulders. Glutes tight. No sag.',t:['shoulder']},
+  {n:'Hollow hold',c:'Low back pinned. Shoulders and heels off the deck.',t:['back']}
  ],
  cardio:[
-  {n:'Fast march',c:'Pick up the pace. Pump the arms, keep it light on the feet.',t:[]},
-  {n:'Step-back lunge',c:'Step back, tap the knee down, come up. Alternate legs.',t:['knee']},
-  {n:'Mountain climber',c:'Plank position. Drive the knees in, one after the other.',t:['shoulder','knee']},
-  {n:'Burpee',c:'Down, step or hop back, up. Stand tall each rep.',t:['knee','back','shoulder']}
+  {n:'Fast march',c:'High knees. Quiet feet. Push the pace.',t:[]},
+  {n:'Step-back lunge',c:'Step back. Knee taps down. Alternate.',t:['knee']},
+  {n:'Mountain climber',c:'Plank. Drive knees in. Hips stay low.',t:['shoulder','knee']},
+  {n:'Burpee',c:'Down to plank. Optional push-up. Stand tall.',t:['knee','back','shoulder']}
  ],
  cool:[
-  {n:'Chest doorway stretch',c:'Forearm on the frame, step through, breathe into it.',t:[]},
-  {n:'Standing hamstring stretch',c:'Heel forward, hips back, soft knee. Long spine.',t:['back']},
-  {n:'Figure-four stretch',c:'Ankle over the opposite knee, sit back into it.',t:[]},
-  {n:'Child\u2019s pose',c:'Knees wide, hips to the heels, reach long. Slow breathing.',t:['knee']}
+  {n:'Chest doorway stretch',c:'Forearm on frame. Step through. Breathe.',t:[]},
+  {n:'Standing hamstring stretch',c:'Heel forward. Hips back. Long spine.',t:['back']},
+  {n:'Figure-four stretch',c:'Ankle over opposite knee. Draw the thigh in.',t:[]},
+  {n:'Child\u2019s pose',c:'Hips to heels. Arms long. Slow breathing.',t:['knee']}
  ]
 };
 const CATNAME={warm:'Warm-up',push:'Push',pull:'Pull',squat:'Legs',hinge:'Hips',core:'Core',cardio:'Pace',cool:'Cool-down'};
@@ -342,174 +342,174 @@ const EX={
 'March in place':{props:['floor'],
  a:P({h:[115,4],k:[15,4],s:[45,320],e:[45,320],f:[105,95]}),
  b:P({h:[4,115],k:[4,15],s:[320,45],e:[320,45],f:[95,105]}),
- how:['Stand tall, weight even across both feet.','Drive one knee up to hip height, then the other.','Swing the opposite arm with every step.'],
- watch:'Leaning back as the knee comes up. Keep the ribs stacked over the hips.'},
+ how:['Stand tall. Feet under hips. Soft knees.','Drive one knee to hip height — then the other. Cadence steady.','Opposite arm swings with every step. Quiet landings.'],
+ watch:'Leaning back as the knee rises. Ribs stay stacked over the hips.'},
 'Arm circles':{props:['floor'],
  a:P({s:[85,275],e:[85,275],h:[8,352],k:[8,352]}),
  b:P({s:[150,210],e:[150,210],h:[8,352],k:[8,352]}),
- how:['Feet hip-width, arms straight out to the sides.','Draw slow circles forward for half the time.','Reverse the direction, circles just as big.'],
- watch:'Shrugging. Keep the shoulders down and away from the ears.'},
+ how:['Feet hip-width. Arms straight out to the sides like a T.','Draw slow, full circles forward for half the interval.','Reverse. Same size. Shoulders stay down.'],
+ watch:'Shrugging into the neck. Drive the shoulders down and away from the ears.'},
 'Hip openers':{props:['floor'],
  a:P({h:[118,2],k:[25,2],s:[70,290],e:[70,290]}),
  b:P({h:[152,2],k:[70,2],s:[85,275],e:[85,275]}),
- how:['Hold a wall or chair if you need the balance.','Lift one knee to hip height.','Sweep it out to the side and step it down. Alternate.'],
- watch:'Rushing it. This is a slow circle, not a swing.'},
+ how:['Hold a wall or chair for balance if you need it.','Lift one knee to hip height.','Open it out to the side, then plant. Alternate. Slow.'],
+ watch:'Rushing into a swing. This is a controlled circle, not a kick.'},
 'Shoulder rolls':{props:['floor'],
  a:P({s:[20,340],e:[155,205],h:[6,354],k:[6,354]}),
  b:P({s:[42,318],e:[178,182],h:[6,354],k:[6,354]}),
- how:['Rest the fingertips on the shoulders.','Draw big circles with the elbows, up and back.','Ten one direction, ten the other.'],
- watch:'Small tight circles. Make them as large as the joint allows.'},
+ how:['Fingertips on the shoulders. Elbows out.','Draw big circles with the elbows — up, back, down.','Ten each direction. Full range.'],
+ watch:'Tiny tight circles. Make them as large as the joint allows.'},
 'Standing side bend':{props:['floor'],
  a:P({t:196,s:[140,10],e:[120,10],h:[6,354],k:[6,354]}),
  b:P({t:164,s:[220,350],e:[240,350],h:[6,354],k:[6,354]}),
- how:['Feet under the hips, one arm reaching overhead.','Lean away from the raised arm and let the ribs open.','Come back tall, then switch sides.'],
- watch:'Folding forward. The bend travels straight out to the side.'},
+ how:['Feet under hips. One arm reaches straight overhead.','Lean away from the raised arm. Open the ribs.','Return tall. Switch sides.'],
+ watch:'Folding forward. The bend travels straight sideways — not into a crunch.'},
 
 'Wall push-up':{props:['floor','wall'],
  a:P({x:52,y:54,t:134,s:[95,95],e:[95,95],h:[314,314],k:[314,314],f:[100,100]}),
  b:P({x:56,y:53,t:134,s:[110,110],e:[65,65],h:[314,314],k:[314,314],f:[100,100]}),
- how:['Hands on the wall at chest height, a step back from it.','Body in one line from head to heels.','Lower the chest to the wall, then press away.'],
- watch:'Hips sagging or piking. Squeeze the glutes to hold the line.'},
+ how:['Hands on the wall at chest height. Step feet back. Body one line.','Lower the chest to the wall under control.','Press away until the arms are straight. Repeat.'],
+ watch:'Hips sagging or piking. Squeeze the glutes and lock the plank line.'},
 'Incline push-up':{props:['floor','box'],
  a:P({x:44,y:60,t:118,s:[8,8],e:[8,8],h:[298,298],k:[298,298],f:[25,25]}),
  b:P({x:48,y:63,t:118,s:[22,22],e:[335,335],h:[298,298],k:[298,298],f:[25,25]}),
- how:['Hands on a counter, bench or sturdy table, shoulder-width.','Walk the feet back until the body is one straight line.','Lower the chest to the edge, press back up.'],
- watch:'Elbows flaring wide. Keep them tucked toward 45 degrees.'},
+ how:['Hands on a sturdy counter, bench, or table — shoulder-width.','Walk feet back until head-to-heels is one line.','Lower chest to the edge. Press up. Elbows ~45°.'],
+ watch:'Elbows flaring to 90°. Keep them tucked toward forty-five degrees.'},
 'Push-up':{props:['floor'],
  a:P({x:50,y:62,t:110,s:[0,0],e:[0,0],h:[290,290],k:[290,290],f:[20,20]}),
  b:P({x:52,y:66,t:110,s:[20,20],e:[332,332],h:[290,290],k:[290,290],f:[20,20]}),
- how:['Hands under the shoulders, fingers spread.','Ribs down, glutes tight, body in one line.','Lower until the chest is a fist off the floor, then press.'],
- watch:'The head dropping first. Chest and hips arrive together.'},
+ how:['Hands under shoulders. Fingers spread. Body rigid head to heels.','Lower until the chest is about a fist off the deck.','Press up as one unit. No snake hips.'],
+ watch:'Head dropping first. Chest and hips arrive together.'},
 'Diamond push-up':{props:['floor'],
  a:P({x:50,y:62,t:110,s:[352,8],e:[352,8],h:[290,290],k:[290,290],f:[20,20]}),
  b:P({x:52,y:66,t:110,s:[8,352],e:[350,10],h:[290,290],k:[290,290],f:[20,20]}),
- how:['Hands under the chest, thumbs and index fingers touching.','Elbows stay close and brush the ribs on the way down.','Press up without letting the hips lead.'],
+ how:['Hands under the chest. Thumbs and index fingers touch (diamond).','Elbows brush the ribs on the way down.','Press up without letting the hips lead.'],
  watch:'Hands too far forward. They belong under the sternum.'},
 
 'Doorway row':{props:['floor','frame'],
  a:P({x:84,y:50,t:215,s:[105,105],e:[105,105],h:[10,10],k:[10,10],f:[95,95]}),
  b:P({x:86,y:46,t:210,s:[135,135],e:[45,45],h:[10,10],k:[10,10],f:[95,95]}),
- how:['Grip both sides of a door frame at chest height.','Walk the feet in and lean back with straight arms.','Pull your chest to your hands, then lower slow.'],
- watch:'Yanking with the arms alone. Start the pull from the shoulder blades.'},
+ how:['Grip both sides of a door frame at chest height.','Walk feet in. Lean back with straight arms.','Pull chest to hands. Lower slow to full hang.'],
+ watch:'Yanking with the arms only. Start every pull from the shoulder blades.'},
 'Table row':{props:['floor','table'],
  a:P({x:38,y:66,t:88,s:[176,176],e:[176,176],h:[95,95],k:[65,65],f:[95,95]}),
  b:P({x:38,y:62,t:82,s:[195,195],e:[150,150],h:[95,95],k:[65,65],f:[95,95]}),
- how:['Lie under a sturdy table with your chest below the edge.','Grip the edge just wider than the shoulders.','Pull the chest to the table, body one line, lower slow.'],
- watch:'Hips dropping first. Move as one plank from heels to head.'},
+ how:['Lie under a sturdy table. Chest under the edge.','Grip just outside shoulder-width. Body one plank.','Pull chest to the edge. Three-count lower.'],
+ watch:'Hips dropping first. Move as one line from heels to head.'},
 'Table row, legs out':{props:['floor','table'],
  a:P({x:34,y:68,t:88,s:[176,176],e:[176,176],h:[93,93],k:[93,93],f:[20,20]}),
  b:P({x:34,y:64,t:82,s:[195,195],e:[150,150],h:[93,93],k:[93,93],f:[20,20]}),
- how:['Same grip, heels walked further out.','The straighter the body, the harder the pull.','Chest to the edge, pause, three seconds down.'],
- watch:'Half reps. Start every rep from straight arms.'},
+ how:['Same grip. Heels walked farther out — harder lever.','Pull chest to the edge from straight arms.','Pause at the top. Three seconds down.'],
+ watch:'Half reps. Every rep starts from locked-out arms.'},
 'Pull-up':{props:['bar'],
  a:P({x:64,y:55,t:180,s:[178,178],e:[178,178],h:[352,352],k:[320,320],f:[100,100]}),
  b:P({x:64,y:42,t:180,s:[113,247],e:[247,113],h:[352,352],k:[320,320],f:[100,100]}),
- how:['Hang from the bar, hands just outside the shoulders.','Pull the elbows down to the ribs until the chin clears.','Lower under control until the arms are straight.'],
- watch:'Kicking for momentum. If the reps stall, do slow lowers only.'},
+ how:['Hang from the bar. Hands just outside the shoulders. Dead hang.','Pull elbows to the ribs until the chin clears the bar.','Lower under control to full straight arms.'],
+ watch:'Kipping for momentum. If reps stall, do slow negatives only.'},
 
 'Sit-to-stand':{props:['floor','chair'],
  a:P({x:78,y:57,t:176,s:[265,265],e:[265,265],h:[262,262],k:[352,352],f:[275,275]}),
  b:P({x:70,y:44,t:184,s:[268,268],e:[268,268],h:[356,356],k:[356,356],f:[275,275]}),
- how:['Sit tall on a chair, feet flat under the knees.','Stand up without using your hands if you can.','Lower back down slow \u2014 three seconds to touch.'],
- watch:'Dropping onto the seat. The slow way down is the training.'},
+ how:['Sit tall on a chair. Feet flat under the knees.','Stand without using your hands if you can.','Lower in three seconds until you lightly touch the seat.'],
+ watch:'Dropping onto the seat. The slow descent is the work.'},
 'Box squat':{props:['floor','chair'],
  a:P({x:66,y:44,t:182,s:[265,265],e:[265,265],h:[356,356],k:[356,356],f:[275,275]}),
  b:P({x:74,y:57,t:210,s:[275,275],e:[275,275],h:[265,265],k:[350,350],f:[275,275]}),
- how:['Chair or box behind you, feet shoulder-width.','Push the hips back and touch the seat \u2014 don\u2019t sit down.','Drive through the heels to stand.'],
- watch:'Knees caving in. Push them out over the middle toes.'},
+ how:['Chair or box behind you. Feet shoulder-width.','Push hips back. Touch the seat — do not sit and relax.','Drive through the heels to stand. Knees track over mid-toes.'],
+ watch:'Knees caving inward. Push them out over the middle toes.'},
 'Bodyweight squat':{props:['floor'],
  a:P({x:62,y:44,t:182,s:[268,268],e:[268,268],h:[356,356],k:[356,356],f:[275,275]}),
  b:P({x:68,y:60,t:212,s:[272,272],e:[272,272],h:[262,262],k:[352,352],f:[275,275]}),
- how:['Feet shoulder-width, toes turned slightly out.','Sit down between the heels with the chest proud.','Go as deep as you can hold the shape, then stand tall.'],
- watch:'Heels lifting. Sit back further or take less depth.'},
+ how:['Feet shoulder-width. Toes slightly out. Chest proud.','Sit between the heels. Depth you can control.','Stand tall. Full hip extension at the top.'],
+ watch:'Heels lifting. Sit farther back or take less depth.'},
 'Split squat':{props:['floor'],
  a:P({x:60,y:44,t:182,s:[0,0],e:[0,0],h:[345,15],k:[5,352],f:[280,275]}),
  b:P({x:58,y:55,t:184,s:[0,0],e:[0,0],h:[340,58],k:[292,350],f:[280,275]}),
- how:['One foot forward, one back, feet hip-width apart.','Drop the back knee straight down toward the floor.','Push through the front heel to stand. Swap halfway.'],
- watch:'Lunging forward. The movement goes down, not out.'},
+ how:['Feet staggered, hip-width apart — not on a tightrope.','Drop the back knee straight down toward the floor.','Drive through the front heel to stand. Switch halfway.'],
+ watch:'Lunging forward. The path is down, not out.'},
 
 'Glute bridge':{props:['floor'],
  a:P({x:54,y:72,t:90,s:[275,275],e:[275,275],h:[132,132],k:[15,15],f:[95,95]}),
  b:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[86,86],k:[15,15],f:[95,95]}),
- how:['Lie on your back with the heels close to your seat.','Press through the heels and lift the hips into a ramp.','Squeeze for a second at the top, lower slow.'],
- watch:'Arching the low back to get higher. Ribs down, squeeze the glutes instead.'},
+ how:['On your back. Heels close to the seat. Arms by sides.','Drive through the heels. Lift hips into a ramp.','Squeeze one second at the top. Lower slow.'],
+ watch:'Arching the low back to get higher. Ribs down — squeeze glutes instead.'},
 'Glute bridge march':{props:['floor'],
  a:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[86,86],k:[15,15],f:[95,95]}),
  b:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[130,86],k:[95,15],f:[95,95]}),
- how:['Bridge up and hold the hips level.','Lift one foot an inch off the floor without dropping a hip.','Set it down and lift the other. Slow alternation.'],
- watch:'The hips dipping as the foot lifts. Smaller lift, level hips.'},
+ how:['Bridge up. Hips level. Hold.','Lift one foot an inch without dropping a hip.','Plant. Lift the other. Slow march.'],
+ watch:'Hips dipping when the foot lifts. Smaller lift. Level hips.'},
 'Hip hinge reach':{props:['floor'],
  a:P({x:60,y:44,t:182,s:[0,0],e:[0,0],h:[356,356],k:[356,356],f:[275,275]}),
  b:P({x:66,y:48,t:230,s:[350,350],e:[350,350],h:[350,350],k:[352,352],f:[275,275]}),
- how:['Feet hip-width, knees soft rather than locked.','Push the hips straight back and let the chest come down.','Stand tall by driving the hips forward.'],
- watch:'Rounding the back, or squatting instead. Hips move back, not down.'},
+ how:['Feet hip-width. Soft knees — not locked.','Push hips straight back. Chest drops as a unit.','Drive hips forward to stand tall.'],
+ watch:'Rounding the back, or turning it into a squat. Hips go back, not down.'},
 'Single-leg bridge':{props:['floor'],
  a:P({x:54,y:72,t:90,s:[275,275],e:[275,275],h:[132,112],k:[15,112],f:[95,20]}),
  b:P({x:52,y:58,t:57,s:[275,275],e:[275,275],h:[86,115],k:[15,115],f:[95,20]}),
- how:['Bridge position with one leg straight, in line with the thigh.','Drive through the planted heel and lift the hips.','Keep both hips at the same height. Swap halfway.'],
- watch:'Twisting toward the working side. Level beats high.'},
+ how:['Bridge setup. One leg extended in line with the thigh.','Drive the planted heel. Lift hips.','Keep both hips level. Switch halfway.'],
+ watch:'Twisting to the working side. Level beats high.'},
 
 'Dead bug':{props:['floor'],
  a:P({x:52,y:72,t:90,s:[180,180],e:[180,180],h:[170,170],k:[100,100],f:[20,20]}),
  b:P({x:52,y:72,t:90,s:[180,120],e:[180,120],h:[255,170],k:[255,100],f:[20,20]}),
- how:['On your back, knees over hips, arms straight up.','Press the low back into the floor and keep it there.','Reach one arm back and the opposite leg long, then switch.'],
- watch:'The low back popping up. Shorten the reach until it stays down.'},
+ how:['On your back. Knees over hips. Arms straight up.','Press the low back into the floor and keep it glued.','Reach opposite arm and leg long. Switch. Controlled.'],
+ watch:'Low back peeling up. Shorten the reach until it stays pinned.'},
 'Bird dog':{props:['floor'],
  a:P({x:46,y:60,t:104,s:[0,0],e:[0,0],h:[350,350],k:[268,268],f:[300,300]}),
  b:P({x:46,y:60,t:104,s:[0,115],e:[0,110],h:[290,350],k:[290,268],f:[290,300]}),
- how:['All fours, hands under shoulders, knees under hips.','Reach one arm forward and the opposite leg back.','Hold two seconds, return, then switch sides.'],
- watch:'Rotating the hips open. Imagine balancing a glass on your low back.'},
+ how:['All fours. Hands under shoulders. Knees under hips.','Reach one arm forward and the opposite leg back.','Hold two seconds. Return. Switch.'],
+ watch:'Hips rotating open. Imagine a glass of water balanced on your low back.'},
 'Forearm plank':{props:['floor'],
  a:P({x:48,y:68,t:106,s:[10,10],e:[95,95],h:[290,290],k:[290,290],f:[20,20]}),
  b:P({x:48,y:69,t:104,s:[12,12],e:[95,95],h:[292,292],k:[292,292],f:[20,20]}),
- how:['Elbows under the shoulders, forearms flat on the floor.','Tuck the ribs, squeeze the glutes, one line head to heels.','Breathe normally. Stop when the hips start to sag.'],
- watch:'Holding a sagging plank to beat the clock. Shorter and sharp is better.'},
+ how:['Elbows under shoulders. Forearms flat. Feet together.','Ribs tucked. Glutes tight. One line head to heels.','Breathe. End the set the moment the hips sag.'],
+ watch:'Holding a broken plank to beat the clock. Shorter and sharp wins.'},
 'Hollow hold':{props:['floor'],
  a:P({x:50,y:74,t:108,s:[122,122],e:[122,122],h:[260,260],k:[260,260],f:[255,255]}),
  b:P({x:50,y:73,t:115,s:[125,125],e:[125,125],h:[250,250],k:[250,250],f:[245,245]}),
- how:['On your back, arms overhead, legs straight.','Press the low back flat and lift the shoulders and heels a few inches.','Hold the shape and breathe.'],
+ how:['On your back. Arms overhead. Legs straight.','Press low back flat. Lift shoulders and heels a few inches.','Hold the shape. Breathe behind the brace.'],
  watch:'Legs too low to control. Raise them until the back stays glued down.'},
 
 'Fast march':{props:['floor'],
  a:P({h:[125,4],k:[10,4],s:[60,310],e:[60,310],f:[110,95]}),
  b:P({h:[4,125],k:[4,10],s:[310,60],e:[310,60],f:[95,110]}),
- how:['March on the spot with the knees high.','Stay on the balls of the feet and land quiet.','Pick up the pace until talking gets hard.'],
- watch:'Slowing down when it burns. Shorten the stride, keep the rhythm.'},
+ how:['High-knee march on the spot. Balls of the feet.','Land quiet. Arms pump.','Push the pace until talking gets hard.'],
+ watch:'Slowing down when it burns. Shorten the stride — keep the rhythm.'},
 'Step-back lunge':{props:['floor'],
  a:P({x:60,y:44,t:182,s:[350,10],e:[350,10],h:[356,356],k:[356,356],f:[275,275]}),
  b:P({x:58,y:55,t:186,s:[330,30],e:[330,30],h:[340,58],k:[292,350],f:[280,275]}),
- how:['Stand tall, then step one foot straight back.','Drop the back knee toward the floor, front shin upright.','Push off the back foot to return. Alternate legs.'],
+ how:['Stand tall. Step one foot straight back.','Drop the back knee toward the floor. Front shin upright.','Push off the back foot to return. Alternate.'],
  watch:'Short steps that jam the front knee. Step back far enough to make room.'},
 'Mountain climber':{props:['floor'],
  a:P({x:50,y:62,t:110,s:[0,0],e:[0,0],h:[75,290],k:[330,290],f:[20,20]}),
  b:P({x:50,y:62,t:110,s:[0,0],e:[0,0],h:[290,75],k:[290,330],f:[20,20]}),
- how:['Strong plank with the hands under the shoulders.','Drive one knee toward the chest, then swap.','Hips stay low and level \u2014 no bouncing.'],
- watch:'Hips riding up. Keep the shoulders stacked over the hands.'},
+ how:['Strong plank. Hands under shoulders.','Drive one knee to the chest. Switch. Continuous.','Hips low and level — no bounce.'],
+ watch:'Hips riding up. Keep shoulders stacked over the hands.'},
 'Burpee':{props:['floor'],
  a:P({x:52,y:66,t:110,s:[20,20],e:[332,332],h:[290,290],k:[290,290],f:[20,20]}),
  b:P({x:60,y:44,t:180,s:[150,210],e:[130,230],h:[356,356],k:[356,356],f:[95,95]}),
- how:['Hands to the floor, then step or hop back to a plank.','Add a push-up if you have one in you.','Step the feet back in and stand tall \u2014 no jump needed.'],
- watch:'Collapsing on the way down. If the form goes, step instead of hop.'},
+ how:['Hands to the floor. Step or hop back to a plank.','Optional push-up if the form is clean.','Feet back in. Stand tall. No jump required.'],
+ watch:'Collapsing on the way down. If form breaks, step — do not flop.'},
 
 'Chest doorway stretch':{props:['floor','frame'],
  a:P({x:66,y:46,t:186,s:[105,300],e:[105,300],h:[6,354],k:[6,354],f:[95,95]}),
  b:P({x:60,y:46,t:190,s:[112,300],e:[112,300],h:[6,354],k:[6,354],f:[95,95]}),
- how:['Forearm flat on the door frame, elbow at shoulder height.','Step the near foot through the doorway.','Turn the chest away until you feel a stretch. Breathe.'],
- watch:'Pushing into pain. Stretch to a firm pull, never a pinch.'},
+ how:['Forearm flat on the door frame. Elbow at shoulder height.','Step the near foot through the doorway.','Turn the chest away until you feel a firm stretch. Breathe.'],
+ watch:'Pushing into pain. Stretch to a firm pull — never a pinch.'},
 'Standing hamstring stretch':{props:['floor'],
  a:P({x:64,y:46,t:200,s:[350,350],e:[350,350],h:[345,20],k:[15,345],f:[240,250]}),
  b:P({x:70,y:48,t:225,s:[345,345],e:[345,345],h:[340,30],k:[10,335],f:[240,250]}),
- how:['One heel forward with the toes up, that knee soft.','Push the hips back and hinge over the front leg.','Long spine. Hold 30 seconds each side.'],
- watch:'Rounding the back to reach further. Less range, flat back.'},
+ how:['One heel forward. Toes up. Soft knee.','Hips back. Hinge over the front leg. Long spine.','Hold ~30 seconds each side.'],
+ watch:'Rounding the back to reach farther. Less range. Flat back.'},
 'Figure-four stretch':{props:['floor'],
  a:P({x:52,y:73,t:90,s:[195,195],e:[245,245],h:[178,128],k:[285,235],f:[95,95]}),
  b:P({x:52,y:72,t:90,s:[190,190],e:[240,240],h:[170,120],k:[280,230],f:[95,95]}),
- how:['On your back, cross one ankle over the opposite knee.','Reach through and draw the bottom thigh toward you.','Head and shoulders stay relaxed on the floor. 30 seconds a side.'],
+ how:['On your back. Cross one ankle over the opposite knee.','Reach through. Draw the bottom thigh toward you.','Head and shoulders stay on the floor. ~30 seconds a side.'],
  watch:'Yanking the leg in. Draw it slow and let it settle.'},
 'Child\u2019s pose':{props:['floor'],
  a:P({x:44,y:58,t:70,s:[82,82],e:[87,87],h:[310,310],k:[280,280],f:[280,280]}),
  b:P({x:44,y:60,t:66,s:[80,80],e:[85,85],h:[310,310],k:[280,280],f:[280,280]}),
- how:['Kneel with the knees wide and the big toes together.','Sit the hips back toward the heels and reach the arms long.','Let the head go heavy. Five slow breaths.'],
+ how:['Kneel. Knees wide. Big toes together.','Hips back toward the heels. Arms reach long.','Head heavy. Five slow breaths.'],
  watch:'Holding tension in the shoulders. Let the chest sink toward the floor.'}
 };
 
@@ -558,26 +558,30 @@ function exerciseImg(name,cls){
    QUIZ + PLAN
    ========================================================= */
 const Q=[
- {k:'goal',q:'What are you after?',s:'Pick the one that matters most right now.',o:[
-   {v:'lean',t:'Lose the softness',s:'Circuits that keep the heart rate up'},
-   {v:'strong',t:'Get stronger',s:'Harder movements, longer rests'},
-   {v:'both',t:'A bit of both',s:'Balanced strength and conditioning'},
-   {v:'move',t:'Move better again',s:'Mobility first, strength built slowly'}]},
- {k:'level',q:'Where are you starting?',s:'Be honest. The plan scales up fast either way.',o:[
-   {v:1,t:'From scratch',s:'No real training in a year or more'},
-   {v:2,t:'Rusty',s:'Active here and there, nothing structured'},
-   {v:3,t:'Some base',s:'I train, just not consistently'}]},
- {k:'age',q:'How old are you?',s:'This sets recovery and how fast the plan ramps.',o:[
+ {k:'goal',q:'What is the mission?',s:'Pick the outcome you will train for over the next thirty days.',o:[
+   {v:'lean',t:'Cut the softness',s:'Higher heart-rate circuits. Stay light on your feet.'},
+   {v:'strong',t:'Build fighting strength',s:'Harder progressions. Longer rests. Real force.'},
+   {v:'both',t:'Strong and conditioned',s:'Balanced push, pull, legs, and pace.'},
+   {v:'move',t:'Move clean again',s:'Mobility first. Strength built on top.'}]},
+ {k:'level',q:'Where do you stand today?',s:'Be honest. The card scales either way — ego does not.',o:[
+   {v:1,t:'Recruit',s:'No real training in a year or more'},
+   {v:2,t:'Returning',s:'Active now and then. Nothing structured'},
+   {v:3,t:'Operational',s:'You train. Consistency is the gap'}]},
+ {k:'age',q:'How old are you?',s:'Sets recovery and how fast the card ramps. This is built for grown men, not twenty-year-olds.',o:[
    {v:'u30',t:'Under 30'},{v:'30s',t:'30 to 44'},{v:'45',t:'45 to 59'},{v:'60',t:'60 or over'}]},
- {k:'days',q:'How many days a week can you actually train?',s:'Choose the number you will still hit on a bad week.',o:[
-   {v:3,t:'3 days',s:'Recommended for most people'},{v:4,t:'4 days'},{v:5,t:'5 days'},
-   {v:6,t:'6 days',s:'One rest day a week'}]},
- {k:'gear',q:'What do you have at home?',s:'Everything here works without a gym.',o:[
-   {v:'none',t:'Nothing',s:'Floor, wall, a chair'},
-   {v:'bar',t:'A pull-up bar',s:'Doorway or wall-mounted'}]},
- {k:'limit',q:'Anything that needs working around?',s:'Movements that load that area get swapped out.',o:[
-   {v:'none',t:'Nothing right now'},{v:'knee',t:'Knees'},{v:'back',t:'Lower back'},{v:'shoulder',t:'Shoulders'}]}
+ {k:'days',q:'How many training days can you hit?',s:'Choose the number you will still make on a bad week. Consistency beats hero days.',o:[
+   {v:3,t:'3 days',s:'Solid baseline for most'},{v:4,t:'4 days'},{v:5,t:'5 days'},
+   {v:6,t:'6 days',s:'One full rest day'}]},
+ {k:'gear',q:'What do you have?',s:'Every session works with floor, wall, and a chair. A bar unlocks pull-ups.',o:[
+   {v:'none',t:'Floor, wall, chair',s:'No gym. No excuses.'},
+   {v:'bar',t:'Pull-up bar',s:'Doorway or wall-mounted'}]},
+ {k:'limit',q:'Any issues we work around?',s:'Like a real body assessment — we swap movements that load the problem area. Pick one primary.',o:[
+   {v:'none',t:'None — full go',s:'No joint or back limits right now'},
+   {v:'knee',t:'Sensitive knees',s:'Squats and lunges get softened'},
+   {v:'back',t:'Back discomfort',s:'Hinges and loaded flexion get swapped'},
+   {v:'shoulder',t:'Shoulders / joints',s:'Pressing and hanging get modified'}]}
 ];
+
 const WEEK={3:[0,2,4],4:[0,1,3,4],5:[0,1,2,4,5],6:[0,1,2,3,4,5]};
 const DAYS=30,SESSION_SEC=540;
 const FOCUS={A:'Push \u00b7 Legs \u00b7 Core',B:'Pull \u00b7 Hips \u00b7 Core',C:'Full-body conditioning'};
@@ -618,10 +622,10 @@ function buildSession(slot,p){
     main.forEach((m,i)=>{
       steps.push({kind:'work',phase:'Round '+r+' of '+rounds,n:m.n,c:m.c,sec:work});
       const last=(r===rounds&&i===main.length-1);
-      steps.push({kind:'rest',phase:'Rest',n:'Rest',c:last?'Last effort coming up.':'Shake it out. Breathe through the nose.',sec:rest});
+      steps.push({kind:'rest',phase:'Rest',n:'Rest',c:last?'Last bout coming. Breathe. Brace.':'Shake it out. Nose breathe. Reset the plank line.',sec:rest});
     });
   }
-  steps.push({kind:'work',phase:'Finisher',n:main[3].n,c:'Everything left. Steady pace, no sloppy reps.',sec:60});
+  steps.push({kind:'work',phase:'Finisher',n:main[3].n,c:'Everything left. Steady cadence. No sloppy reps.',sec:60});
   const cd=M.cool.filter(m=>!m.t.includes(av));
   [cd[d%cd.length],cd[(d+1)%cd.length]]
     .forEach(m=>steps.push({kind:'work',phase:'Cool-down',n:m.n,c:m.c,sec:30}));
@@ -684,7 +688,7 @@ function showMove(name){
     <div id="imgslot" style="margin:14px 0 0"></div>
     <p class="eyebrow" style="margin:16px 0 4px">How it goes</p>
     <ol class="steps">${ex.how.map(h=>`<li><span>${esc(h)}</span></li>`).join('')}</ol>
-    <div class="watch"><b>Watch for</b>${esc(ex.watch)}</div>
+    <div class="watch"><b>Kill this fault</b>${esc(ex.watch)}</div>
     <button class="btn ghost sm" id="close" style="margin-top:16px">Close</button>
   </div></div>`);
   document.body.appendChild(ov);
@@ -712,13 +716,13 @@ function render(){
 function cover(a){
   a.appendChild(el(`<div class="sheet" style="padding-top:0">
     <div class="photoframe" id="hero"></div>
-    <p class="eyebrow">Military calisthenics \u00b7 nine minutes a day</p>
+    <p class="eyebrow">Military calisthenics \u00b7 9-minute daily PT</p>
     <h2 class="display h-xl">Elevate<br>your smoke.</h2>
     <p class="quote">\u201CSmoke is the heat you leave on the floor. Elevate it \u2014 your grit, your fit, your standard \u2014 until the man who shows up is impossible to ignore.\u201D</p>
-    <p class="lede">Thirty days. Bodyweight only. Real form photos of the work so you copy the movement, not a guess.</p>
-    <div class="note">If something hurts beyond honest effort, stop. Check with a doctor first if you have a condition that affects exercise.</div>
+    <p class="lede">A 30-day bodyweight card built around your age, level, and joints. Timed sessions. Exact form photos. No gym. No fluff. No subscription.</p>
+    <div class="note">Pain is a stop signal. Effort is not. If you have a condition that affects exercise, clear it with a doctor before you start.</div>
     <div style="flex:1;min-height:22px"></div>
-    <button class="btn accent" id="go">Start the card</button>
+    <button class="btn accent" id="go">Begin mission brief</button>
     <div style="text-align:center;margin-top:4px"><button class="linkbtn" id="man">Movement manual</button>
     <button class="linkbtn" id="org" style="margin-left:14px">Organizer</button></div>
   </div>`));
@@ -733,9 +737,9 @@ function cover(a){
 function quiz(a){
   const q=Q[S.qi];
   a.appendChild(el(`<div class="sheet">
-    ${head('SECTION '+(S.qi+1)+' / '+Q.length)}
+    ${head('BRIEF '+(S.qi+1)+' / '+Q.length)}
     <div class="progress">${Q.map((_,i)=>`<i class="${i<=S.qi?'on':''}"></i>`).join('')}</div>
-    <p class="eyebrow">Question ${S.qi+1}</p>
+    <p class="eyebrow">Mission check ${S.qi+1}</p>
     <h2 class="display h-lg">${esc(q.q)}</h2>
     <p class="fine" style="margin:10px 0 18px">${esc(q.s)}</p>
     <div id="opts"></div><div style="flex:1"></div>
@@ -754,17 +758,17 @@ function quiz(a){
 function finishQuiz(){S.profile={...S.answers,created:Date.now()};S.log={};save();S.screen='build';render()}
 function building(a){
   const p=S.profile;
-  const lines=[['Challenge length','30 days'],['Sessions per week',p.days],['Every session','9 min'],
-    ['Starting level',['','From scratch','Rusty','Some base'][p.level]],
-    ['Emphasis',{lean:'Conditioning',strong:'Strength',both:'Balanced',move:'Mobility first'}[p.goal]],
+  const lines=[['Mission length','30 days'],['Sessions per week',p.days],['Every session','9 min PT'],
+    ['Starting level',['','Recruit','Returning','Operational'][p.level]],
+    ['Emphasis',{lean:'Conditioning',strong:'Strength',both:'Strong + conditioned',move:'Mobility first'}[p.goal]],
     ['Equipment',p.gear==='bar'?'Pull-up bar':'None needed'],
-    ['Working around',p.limit==='none'?'Nothing':{knee:'Knees',back:'Lower back',shoulder:'Shoulders'}[p.limit]],
+    ['Working around',p.limit==='none'?'Nothing':{knee:'Sensitive knees',back:'Back discomfort',shoulder:'Shoulders / joints'}[p.limit]],
     ['Total sessions',schedule(p).filter(s=>s.train).length]];
-  a.appendChild(el(`<div class="sheet">${head('COMPILING')}
-    <p class="eyebrow">Building your 30-day card</p>
-    <h2 class="display h-lg">Setting<br>the plan</h2><div class="rule"></div>
+  a.appendChild(el(`<div class="sheet">${head('ISSUING CARD')}
+    <p class="eyebrow">Locking your 30-day card</p>
+    <h2 class="display h-lg">Your card<br>is ready</h2><div class="rule"></div>
     <div id="lines"></div><div style="flex:1"></div>
-    <button class="btn hidden" id="open">Open my card</button></div>`));
+    <button class="btn hidden" id="open">Open the card</button></div>`));
   const L=document.getElementById('lines');
   lines.forEach((l,i)=>L.appendChild(el(`<div class="buildline" style="animation-delay:${i*180}ms"><span>${esc(l[0])}</span><b>${esc(l[1])}</b></div>`)));
   setTimeout(()=>{const b=document.getElementById('open');
@@ -820,25 +824,25 @@ function report(action){
 
 /* ---- join screen ---- */
 function join(a){
-  a.appendChild(el(`<div class="sheet">${head('ROSTER')}
-    <p class="eyebrow">Step one</p>
-    <h2 class="display h-lg">Put your name<br>on the roster.</h2>
+  a.appendChild(el(`<div class="sheet">${head('CALLSIGN')}
+    <p class="eyebrow">Step one \u00b7 roster</p>
+    <h2 class="display h-lg">Put a callsign<br>on the roster.</h2>
     <div class="rule"></div>
-    <div class="field"><label for="nm">Name or nickname</label>
+    <div class="field"><label for="nm">Callsign</label>
       <input id="nm" maxlength="32" autocomplete="off" autocapitalize="words" placeholder="e.g. Marcus R."></div>
     <p class="fine" id="err" style="color:var(--danger);min-height:16px"></p>
     <div class="note">${tracking()
-      ? 'This is the only thing you type about yourself. No email, no phone, no age or weight leaves your phone \u2014 the organizer sees your name, which days you finished, and when you were last active. Everything else stays on this device.'
+      ? 'Callsign only. No email. No phone. Age and injuries stay on this device \u2014 the organizer sees your name, which days you finished, and when you were last active. Everything else stays on this device.'
       : 'Roster tracking is not switched on for this copy, so nothing is sent anywhere. Your card is saved on this device only.'}</div>
     <div style="flex:1;min-height:20px"></div>
-    <button class="btn" id="go">Join the challenge</button>
+    <button class="btn" id="go">Lock callsign</button>
     <div style="text-align:center"><button class="linkbtn" id="back">Back</button></div>
   </div>`));
   const inp=document.getElementById('nm');
   if(S.me)inp.value=S.me.name;
   document.getElementById('go').onclick=()=>{
     const v=inp.value.trim();
-    if(v.length<2){document.getElementById('err').textContent='Type a name so the organizer can find you on the roster.';inp.focus();return}
+    if(v.length<2){document.getElementById('err').textContent='Type a callsign so the organizer can find you on the roster.';inp.focus();return}
     setMe(v);report('join');
     S.screen=S.profile?'plan':'quiz';S.qi=0;S.answers={};render();
   };
@@ -943,13 +947,13 @@ function plan(a){
   const total=sl.filter(s=>s.train).length,doneN=Object.keys(S.log).length;
   const sess=next?buildSession(next,p):null;
   const num=next?sl.filter(s=>s.train).indexOf(next)+1:total;
-  a.appendChild(el(`<div class="sheet">${head('CARD \u00b7 30 DAY')}
+  a.appendChild(el(`<div class="sheet">${head('CARD \u00b7 30-DAY PT')}
     <div class="statrow">
       <div><div class="n">${doneN}</div><div class="l">Logged</div></div>
       <div><div class="n">${streak()}</div><div class="l">Streak</div></div>
       <div><div class="n">${total-doneN}</div><div class="l">To go</div></div>
     </div>
-    <p class="quote cardquote">Elevate your smoke \u2014 personality, fitness, discipline. Nine minutes. No excuses.</p>
+    <p class="quote cardquote">Elevate your smoke \u2014 grit, fit, standard. Nine minutes. Show up.</p>
     <div id="today"></div>
     <p class="eyebrow" style="margin-top:22px">The card \u00b7 thirty days</p>
     <div class="weeks" id="weeks"></div>
@@ -966,11 +970,11 @@ function plan(a){
       <h3 class="display h-md" style="margin:2px 0 0">${FOCUS[sess.type]}</h3>
       <p style="font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;margin:9px 0 0;opacity:.85">
         9 MIN \u00b7 ${sess.rounds} ROUNDS \u00b7 ${sess.work}S ON / ${sess.rest}S OFF</p></div>`));
-    const list=el('<div class="block"><p class="eyebrow">Movements today \u2014 tap to see one</p><ul class="movelist"></ul></div>');
+    const list=el('<div class="block"><p class="eyebrow">Today\u2019s movements \u2014 tap for the standard</p><ul class="movelist"></ul></div>');
     const ul=list.querySelector('ul');
     sess.main.forEach((m,i)=>ul.appendChild(moveRow(['Push','Legs','Core','Pace'][i],m.n,sess.work+'s')));
     t.appendChild(list);
-    const b=el('<button class="btn accent" id="start">Begin session</button>');
+    const b=el('<button class="btn accent" id="start">Start session</button>');
     t.appendChild(b);
     b.onclick=()=>{S.session=sess;S.slot=next;S.screen='brief';render()};
   }else{
@@ -1002,10 +1006,10 @@ function plan(a){
 }
 /* ---------- movement manual ---------- */
 function manual(a){
-  a.appendChild(el(`<div class="sheet">${head('MANUAL')}
-    <p class="eyebrow">Every movement in the program</p>
-    <h2 class="display h-lg">The<br>manual</h2>
-    <p class="fine" style="margin:12px 0 18px">Tap any movement for the form photo, the three cues that matter, and the mistake to watch for.</p>
+  a.appendChild(el(`<div class="sheet">${head('MOVEMENT STANDARDS')}
+    <p class="eyebrow">Every movement on the card</p>
+    <h2 class="display h-lg">The<br>standards</h2>
+    <p class="fine" style="margin:12px 0 18px">Tap any movement for the form photo, the three execution cues, and the fault to kill.</p>
     <div id="cats"></div>
     <button class="btn" id="back" style="margin-top:8px">Back</button></div>`));
   const C=document.getElementById('cats');
@@ -1024,14 +1028,14 @@ function manual(a){
 /* ---------- brief ---------- */
 function brief(a){
   const s=S.session;
-  a.appendChild(el(`<div class="sheet">${head('BRIEF')}
+  a.appendChild(el(`<div class="sheet">${head('SESSION BRIEF')}
     <p class="eyebrow">Day ${s.day+1} of 30 \u00b7 ${FOCUS[s.type]}</p>
     <h2 class="display h-lg">Nine minutes.<br>${s.rounds} rounds.</h2>
     <div class="rule"></div>
-    <p class="eyebrow">Today\u2019s moves \u2014 tap for cues</p>
+    <p class="eyebrow">Today\u2019s moves \u2014 tap for the standard</p>
     <div id="figs" class="grid4"></div>
     <div class="block" style="margin-top:14px"><p class="eyebrow">The circuit</p><ul class="movelist" id="ml"></ul></div>
-    <p class="fine">Each work interval shows the form photo plus rotating cues. Work at a pace you could hold for one more round. Skip anything that hurts and the session still counts.</p>
+    <p class="fine">Nine minutes. Form photo on every work bout. Rotating standards. Clean reps beat sloppy speed. Hurt = skip that move. Finish what you can — it still logs.</p>
     <div style="flex:1;min-height:16px"></div>
     <button class="btn accent" id="go">Start the clock</button>
     <div style="text-align:center"><button class="linkbtn" id="back">Back to the card</button></div></div>`));
@@ -1115,7 +1119,7 @@ function paintStep(){
       const dots=document.getElementById('howdots');
       if(!txt)return;
       const isWatch=tips.watch&&tipI===tipLines.length-1;
-      if(lab)lab.textContent=isWatch?'Watch for':'How it goes';
+      if(lab)lab.textContent=isWatch?'Watch for':'Standard';
       txt.textContent=isWatch?tips.watch:tipLines[tipI];
       if(dots)[...dots.children].forEach((d,i)=>d.className=i===tipI?'on':'');
     },3200);
@@ -1136,7 +1140,7 @@ function endSession(){
 }
 function doneScreen(a){
   const total=schedule(S.profile).filter(s=>s.train).length,n=Object.keys(S.log).length;
-  a.appendChild(el(`<div class="sheet">${head('LOGGED')}
+  a.appendChild(el(`<div class="sheet">${head('SESSION LOGGED')}
     <div class="stampwrap"><div class="stamp"><span>Done<small>Session ${n} of ${total}</small></span></div></div>
     <h2 class="display h-lg" style="text-align:center">${n===1?'First one<br>is on the card.':'That is '+n+'<br>on the card.'}</h2>
     <p class="lede" style="text-align:center">${n<total?'The next session unlocks now. Rest days between are doing work too \u2014 that is when the strength actually shows up.':'Thirty days, all of it logged. Build the next card when you are ready.'}</p>
