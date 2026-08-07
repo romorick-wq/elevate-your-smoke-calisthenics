@@ -67,6 +67,11 @@ app.get('/api', async (req, res) => {
 
 app.get('/api/roster', handleRoster);
 
+app.get(['/admin', '/admin/'], (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(APP_DIR, 'admin.html'));
+});
+
 app.use(express.static(APP_DIR, {
   extensions: ['html'],
   setHeaders(res, filePath) {

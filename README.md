@@ -13,6 +13,7 @@ The workout UI is plain HTML. The roster runs on **Railway** (Express + Postgres
 ```
 app/
   index.html                 the workout app (also served by the API)
+  admin.html                 organizer / admin login + roster
   elevate-your-smoke.html    identical copy for filing
   icon.png                   home-screen icon (also embedded in the app)
 backend/
@@ -44,6 +45,8 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+Admin / organizer roster: `http://localhost:3000/admin` (uses `ORGANIZER_CODE`).
 
 ## Putting it online (Railway)
 

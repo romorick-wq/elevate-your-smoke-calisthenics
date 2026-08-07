@@ -62,7 +62,7 @@ the full API URL, e.g. `https://your-app.up.railway.app/api`.
 
 1. Open `https://your-app.up.railway.app`.
 2. Join with a test name, finish or skip through a session.
-3. Cover screen → **Organizer** → your `ORGANIZER_CODE`.
+3. Open `/admin` on your Railway URL (or cover/plan → **Organizer**), enter your `ORGANIZER_CODE`.
 4. You should see the test name.
 
 Health check: `https://your-app.up.railway.app/api/health` should return
