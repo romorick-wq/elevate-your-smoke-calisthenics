@@ -861,9 +861,11 @@ function coach(a){
     gate.appendChild(el('<div class="note">No roster endpoint is reachable from this copy (open the Railway URL, or set CONFIG.SYNC_URL). On-device progress still works.</div>'));
     return;
   }
-  gate.appendChild(el(`<div class="field"><label for="pin">Organizer code</label>
-    <input id="pin" type="password" inputmode="numeric" autocomplete="off"></div>
-    <button class="btn sm" id="load" style="margin-top:4px">Load the roster</button>`));
+  gate.appendChild(el(`<div>
+    <div class="field"><label for="pin">Organizer code</label>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="off"></div>
+    <button class="btn accent" id="load" style="margin-top:14px">Log in</button>
+  </div>`));
   const pin=document.getElementById('pin');
   if(S.pin)pin.value=S.pin;
   const load=async()=>{

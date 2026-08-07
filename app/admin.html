@@ -117,10 +117,12 @@ function render(){
     return;
   }
 
-  gate.appendChild(el(`<div class="field"><label for="pin">Organizer code</label>
-    <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" autofocus></div>
-    <button class="btn accent sm" id="load" style="margin-top:10px">Log in</button>
-    <p class="fine err" id="err" hidden></p>`));
+  gate.appendChild(el(`<div>
+    <div class="field"><label for="pin">Organizer code</label>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" autofocus></div>
+    <button class="btn accent" id="load" style="margin-top:14px">Log in</button>
+    <p class="fine err" id="err" hidden></p>
+  </div>`));
 
   const pin=document.getElementById('pin');
   const err=document.getElementById('err');
