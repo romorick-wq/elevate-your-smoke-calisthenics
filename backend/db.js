@@ -95,6 +95,16 @@ async function upsertParticipant(body) {
   return { ok: true };
 }
 
+function dateOnly(v) {
+  if (!v) return '';
+  if (v instanceof Date && !Number.isNaN(v.getTime())) {
+    return v.toISOString().slice(0, 10);
+  }
+  const s = String(v);
+  const m = s.match(/(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1] : '';
+}
+
 async function getRoster(challenge) {
   const db = getPool();
   const { rows } = await db.query(
@@ -109,9 +119,7 @@ async function getRoster(challenge) {
   // One line per person even if they reinstalled (merge by name within challenge)
   const byKey = new Map();
   for (const r of rows) {
-    const started = r.date_started
-      ? String(r.date_started).slice(0, 10)
-      : new Date(r.joined).toISOString().slice(0, 10);
+    const started = dateOnly(r.date_started) || dateOnly(r.joined) || new Date(r.joined).toISOString().slice(0, 10);
     const person = {
       name: r.name,
       joined: new Date(r.joined).getTime(),
