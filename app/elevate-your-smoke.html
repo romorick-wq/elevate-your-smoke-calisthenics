@@ -686,7 +686,7 @@ function showMove(name){
     <p class="eyebrow">${esc(CATNAME[catOf(name)]||'Movement')} \u00b7 form demo</p>
     <h2 class="display h-lg">${esc(name)}</h2>
     <div id="imgslot" style="margin:14px 0 0"></div>
-    <p class="eyebrow" style="margin:16px 0 4px">How it goes</p>
+    <p class="eyebrow" style="margin:16px 0 4px">Standard</p>
     <ol class="steps">${ex.how.map(h=>`<li><span>${esc(h)}</span></li>`).join('')}</ol>
     <div class="watch"><b>Kill this fault</b>${esc(ex.watch)}</div>
     <button class="btn ghost sm" id="close" style="margin-top:16px">Close</button>
