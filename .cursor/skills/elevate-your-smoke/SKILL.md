@@ -59,12 +59,16 @@ curl -sI https://app-production-74bd.up.railway.app/admin | head -5
 - **Theme**: orange accent `#E85D04` (not lime). Military / badass tone.
 - **Copy**: PT-standard language — “Standard” cues, “Kill this fault”, mission briefing quiz.
 - **Form media**: looping muted `<video>` photo presentations (start↔finish); JPG posters as fallback. Real form shots — no stick figures, no random gym lifestyle shots.
-- **Admin roster fields** (per person, editable + Save): phone, starting weight, date started. Trash deletes.
+- **Admin roster fields** (per person, editable + Save): phone, starting weight, current weight, date started. Trash deletes.
+- **Admin CRM** (`/admin`): tabs for CRM, Points, Hours, Weight boards; tracks hours (`sessions × 9 min`) and points.
+- **Points**: 10 per session + 50 every 5% of the card completed + 100 every 5% bodyweight lost from starting weight.
+- **Public leaderboard**: `GET /api/leaderboard?challenge=` (no pin) — Points / Hours / Weight tabs in the app.
 - **Admin APIs**:
   - `GET /api/roster?pin=&challenge=`
-  - `POST /api/roster/update` `{ pin, challenge, name, phone, startingWeight, dateStarted }`
+  - `GET /api/leaderboard?challenge=`
+  - `POST /api/roster/update` `{ pin, challenge, name, phone, startingWeight, currentWeight, dateStarted }`
   - `POST /api/roster/delete` `{ pin, challenge, name }`
-- Participant quiz answers stay on-device; roster only gets name + progress (+ admin-entered phone/weight/start date).
+- Participant quiz answers stay on-device; roster gets name + progress + weights (participant check-in or admin).
 
 ## When editing exercises
 
