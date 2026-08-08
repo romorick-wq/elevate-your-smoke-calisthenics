@@ -1,0 +1,4 @@
+app/exercises/frames/
+scripts/.video-frames/
+node_modules/
+.git/

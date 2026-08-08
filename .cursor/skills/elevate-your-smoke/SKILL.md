@@ -15,7 +15,7 @@ Military calisthenics 30-day card. Free HTML workout + Railway Express/Postgres 
 ```
 app/index.html              live workout UI (keep app/elevate-your-smoke.html in sync)
 app/admin.html              organizer admin (/admin)
-app/exercises/*.jpg         form photos (male / military-PT matched to the movement)
+app/exercises/*.mp4         looping photo demos (start↔finish stills); frames/ + *.jpg posters
 backend/server.js           Express static + /api
 backend/db.js               Postgres participants/sessions
 docs/SETUP-roster.md        Railway setup
@@ -58,7 +58,7 @@ curl -sI https://app-production-74bd.up.railway.app/admin | head -5
 
 - **Theme**: orange accent `#E85D04` (not lime). Military / badass tone.
 - **Copy**: PT-standard language — “Standard” cues, “Kill this fault”, mission briefing quiz.
-- **Images**: male (or military male) doing the **exact** movement. No women. No random gym lifestyle shots.
+- **Form media**: looping muted `<video>` photo presentations (start↔finish); JPG posters as fallback. Real form shots — no stick figures, no random gym lifestyle shots.
 - **Admin roster fields** (per person, editable + Save): phone, starting weight, date started. Trash deletes.
 - **Admin APIs**:
   - `GET /api/roster?pin=&challenge=`
@@ -69,8 +69,8 @@ curl -sI https://app-production-74bd.up.railway.app/admin | head -5
 ## When editing exercises
 
 1. Update `EX[name].how` (3 cues) and `EX[name].watch` in `app/index.html`.
-2. Update matching `M.*.c` one-liner.
-3. Replace `app/exercises/<slug>.jpg` with a matched form photo; compress (~1200px, JPEG ~70).
+2. Update matching `M.*.c` one-liner and poses `a`/`b` if form changed.
+3. Update `app/exercises/frames/<slug>-a.jpg` / `-b.jpg` (start/finish photos), then `node scripts/generate-exercise-videos.js`.
 4. Sync twin HTML file; deploy.
 
 ## Admin date gotcha

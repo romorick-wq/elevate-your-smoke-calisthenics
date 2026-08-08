@@ -1,8 +1,14 @@
-# Photo credits
+# Exercise media credits
 
-Exercise form photos for Elevate Your Smoke — Military Calisthenics.
+Elevate Your Smoke — Military Calisthenics form demos.
 
-- `push-up.jpg` — Wikimedia Commons / U.S. military public domain (hand-release push-ups training photo)
-- Remaining `*.jpg` — custom male military-PT form references generated for this app (olive PT gear, exact movement match)
+- `*.mp4` — short looping photo presentations (start ↔ finish stills with crossfade) from `scripts/generate-exercise-videos.js`
+- `frames/<slug>-a.jpg` / `frames/<slug>-b.jpg` — local start/finish form photos used to rebuild demos (not deployed)
+- `push-up.jpg` — Wikimedia Commons / U.S. military public domain (poster + frame source)
+- Remaining `*.jpg` — custom male military-PT form stills used as posters and finish frames
 
-Unsplash License photos previously used were replaced where they did not match the prescribed movement or showed the wrong subject.
+Regenerate videos after updating frame pairs:
+
+```bash
+node scripts/generate-exercise-videos.js
+```
