@@ -3,12 +3,15 @@ name: elevate-your-smoke
 description: >-
   Maintain and deploy Elevate Your Smoke military calisthenics (HTML app +
   Express/Postgres roster on Railway). Use when editing the workout UI, exercise
-  photos/instructions, admin roster, ORGANIZER_CODE, or deploying to Railway.
+  photos/instructions, admin roster, ORGANIZER_CODE, scoring, resume/timers,
+  privacy, or deploying to Railway.
 ---
 
 # Elevate Your Smoke
 
 Military calisthenics 30-day card. Free HTML workout + Railway Express/Postgres roster.
+
+Also follow the personal skill **app-production-hardening** for cross-app production rules.
 
 ## Canonical layout
 
@@ -16,19 +19,22 @@ Military calisthenics 30-day card. Free HTML workout + Railway Express/Postgres 
 app/index.html              live workout UI (keep app/elevate-your-smoke.html in sync)
 app/admin.html              organizer admin (/admin)
 app/exercises/*.mp4         looping photo demos (start↔finish stills); frames/ + *.jpg posters
-backend/server.js           Express static + /api
-backend/db.js               Postgres participants/sessions
-docs/SETUP-roster.md        Railway setup
+app/sw.js                   cache key must bump on HTML/asset ships (eys-static-vX.Y.Z)
+backend/server.js           Express static + /api (listen before DB init; media 404 ≠ SPA)
+backend/db.js               Postgres participants/sessions + idempotent log
+backend/score.js            weight-LOSS milestones only
+backend/workout.js          540s totals, MIN_COMPLETE_MS, resume advance helpers
+docs/SETUP-roster.md        Railway setup + QA cleanup
+scripts/cleanup-qa-test-0808.js   exact callsign cleanup (needs ORGANIZER_CODE)
 ```
 
 ## URLs & secrets
 
 - App: `https://elevate-your-smoke.up.railway.app`
-- Admin: `https://elevate-your-smoke.up.railway.app/admin`
-- Organizer pin: Railway env `ORGANIZER_CODE` (currently set in Railway Variables)
+- Admin: `/admin`
+- Organizer pin: Railway env `ORGANIZER_CODE` (never print/commit)
+- Challenge id: `CONFIG.CHALLENGE` = `smoke-30`
 - Project: Railway `elevate-your-smoke`, service `app`, env `production`
-
-Link locally if needed:
 
 ```bash
 railway link -p elevate-your-smoke
@@ -37,51 +43,61 @@ railway service link app
 
 ## Deploy workflow
 
-After code changes the user wants live:
-
-1. Keep `app/index.html` and `app/elevate-your-smoke.html` identical when editing the workout.
-2. Commit + push `main` if the user asked to commit (or when they said deploy/update Railway as part of shipping).
-3. Deploy:
-
-```bash
-railway up --detach
-```
-
-4. Wait for SUCCESS, then hard-refresh verify:
+1. Keep `app/index.html` ≡ `app/elevate-your-smoke.html`.
+2. Commit/push only if the user asked (or shipping requires it).
+3. `railway up --detach`
+4. Wait SUCCESS; verify:
 
 ```bash
 railway deployment list --limit 1
-curl -sI https://elevate-your-smoke.up.railway.app/admin | head -5
+curl -s https://elevate-your-smoke.up.railway.app/api/health
 ```
+
+Optional Railway setting: health check path `/api/health`.
 
 ## Product rules (do not drift)
 
-- **Theme**: orange accent `#E85D04` (not lime). Military / badass tone. Brand as **The Cigar Society**.
-- **Leagues**: Dual boards — **Brothers of the League** (`league: brothers`) and **Ladies of the League** (`league: ladies`). Join picks a league; public `#board` filters by league tabs; admin can edit league.
-- **Copy**: PT-standard language — “Standard” cues, “Kill this fault”, mission briefing quiz.
-- **Form media**: looping muted `<video>` photo presentations (start↔finish); JPG posters as fallback. Real form shots — no stick figures, no random gym lifestyle shots.
-- **Admin roster fields** (per person, editable + Save): league, phone, starting weight, current weight, date started. Trash deletes.
-- **Admin CRM** (`/admin`): Find/search by name or phone; league filter (All / Brothers / Ladies); tabs for CRM, Text (SMS), Points, Hours, Weight; tracks hours (`sessions × 9 min`) and points.
-- **Points**: 10 per session + 50 every 5% of the card completed + 100 every 5% bodyweight lost (capped at 4 milestones / 20%). Source: `backend/score.js`.
-- **Kickoff**: `CONFIG.KICKOFF_ISO` / `CONFIG.KICKOFF_LABEL` in `app/index.html`.
-- **Participant self-service**: `POST /api/me/update`, `POST /api/me/delete` (id + callsign).
-- **SMS**: Admin Text tab + per-person Text. Device Messages fallback; optional Twilio env vars.
-- **Public leaderboard**: `GET /api/leaderboard?challenge=` (no pin) — Brothers / Ladies + Points / Hours / Weight in the app.
-- **Admin APIs**:
-  - `GET /api/roster?pin=&challenge=`
-  - `GET /api/leaderboard?challenge=`
-  - `POST /api/roster/update` `{ pin, challenge, name, phone, startingWeight, currentWeight, dateStarted, league }`
-  - `POST /api/roster/delete` `{ pin, challenge, name }`
-  - `POST /api/roster/sms` `{ pin, challenge, message, people?: [{name,phone}], name?, league? }`
-- Participant quiz answers stay on-device; roster gets name + league + progress + weights (participant check-in or admin).
+- **Theme**: orange `#E85D04`. Brand **The Cigar Society**.
+- **Leagues**: Brothers / Ladies — separate boards, same workout standard.
+- **Session**: exactly **540s** — warm 60 → circuit 360 → finisher 60 → cool 60. L1 work/rest 20/10; L2+ 25/5.
+- **Progression**: `block >= 2` ⇒ human days **21–30** (final **ten** days). Copy must match.
+- **Schedule**: 30 calendar days; weekly freq → totals 13/18/22/26 for 3/4/5/6. Never show “0 of 0”.
+- **Resume**: `RESUME_VERSION`, deadline/remainingMs/elapsedActiveMs/paused; no auto-pause on hide; Resume restores ±1s.
+- **Completion**: server requires `elapsedMs >= MIN_COMPLETE_MS` (~85% of 540s); idempotency key + unique (participant, challenge, day).
+- **Points**: 10/session + 50 every 5% card + 100 every 5% **bodyweight lost** (cap 4). Gain = 0 weight pts. Display “X% lost”.
+- **Privacy public**: callsign, league, sessions, streak, points, hours, weightLostPct. Private: phone, raw weights, id, quiz answers.
+- **Inclusive onboarding**: no male-only age copy; preserve named league labels only.
+- **Kickoff**: `CONFIG.KICKOFF_ISO` / `CONFIG.KICKOFF_LABEL`.
+- **Self-service**: `POST /api/me/update`, `POST /api/me/delete`.
+
+## Tests
+
+```bash
+npm test    # score + workout + copy/privacy/delete
+npm run check
+```
+
+Live smoke: health, leaderboard privacy, incomplete reject, full credit once, concurrent dupes, self-delete, real `Content-Type` on exercise JPGs.
+
+## QA cleanup
+
+Exact callsign only — never substring deletes:
+
+```bash
+ORGANIZER_CODE='***' node scripts/cleanup-qa-test-0808.js
+```
+
+Or `/admin` → Trash. Note: device localStorage `ping` can recreate a deleted callsign.
 
 ## When editing exercises
 
-1. Update `EX[name].how` (3 cues) and `EX[name].watch` in `app/index.html`.
-2. Update matching `M.*.c` one-liner and poses `a`/`b` if form changed.
-3. Update `app/exercises/frames/<slug>-a.jpg` / `-b.jpg` (start/finish photos), then `node scripts/generate-exercise-videos.js`.
-4. Sync twin HTML file; deploy.
+1. Update `EX[name].how` / `watch` and matching `M.*.c`.
+2. Frames → `node scripts/generate-exercise-videos.js`.
+3. Slug via `exerciseSlug()` must match `app/exercises/<slug>.jpg|.mp4` (`Child’s pose` → `child-s-pose`).
+4. Sync twin HTML; bump SW cache if needed; deploy.
 
-## Admin date gotcha
+## Gotchas
 
-`node-pg` returns DATE as a JS `Date`. Always format with ISO `YYYY-MM-DD` for `<input type="date">` (see `dateOnly()` in `backend/db.js`).
+- `node-pg` DATE → always ISO `YYYY-MM-DD` for date inputs (`dateOnly()`).
+- Missing `/exercises/*` must 404, not return `index.html`.
+- Do not auto-pause workout on `visibilitychange` while running.

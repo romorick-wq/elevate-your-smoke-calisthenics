@@ -176,6 +176,23 @@ const fmtPct=p=>{
   const n=Number(p);
   return (n>0?'+':'')+n.toFixed(1)+'%';
 };
+const fmtLossPct=p=>{
+  if(p==null)return '—';
+  const n=Number(p);
+  if(!Number.isFinite(n))return '—';
+  if(n>0) return n.toFixed(1)+'% lost';
+  if(n<0) return Math.abs(n).toFixed(1)+'% gained';
+  return 'No change';
+};
+function sessionsProgressLabel(done,total,perWeek){
+  const t=Number(total)||0;
+  const d=Number(done)||0;
+  if(t>0) return d+' of '+t+' sessions';
+  const WEEK={3:13,4:18,5:22,6:26}; // 30-day card targets by freq
+  const derived=WEEK[Number(perWeek)]||0;
+  if(derived>0) return d+' of '+derived+' sessions';
+  return 'Schedule unavailable';
+}
 
 function logout(){
   clearPin();
@@ -669,14 +686,14 @@ function sortBoard(people, mode){
 
 function renderBoard(list, people, mode){
   list.innerHTML='';
-  const title=mode==='hours'?'Ranked by hours':mode==='weight'?'Ranked by bodyweight change':'Ranked by points';
+  const title=mode==='hours'?'Ranked by hours':mode==='weight'?'Ranked by weight lost':'Ranked by points';
   const leagueBit=LEAGUE==='brothers'?'Brothers of the League · ':LEAGUE==='ladies'?'Ladies of the League · ':'';
   list.appendChild(el(`<p class="eyebrow" style="margin-top:12px">${esc(leagueBit+title)}</p>`));
   sortBoard(people, mode).forEach((p,i)=>{
     const pct=p.total?Math.round(100*p.sessions/p.total):0;
-    const wLabel=p.weightLostPct==null?'No weight logged':fmtPct(p.weightLostPct)+' BW';
-    const pri=mode==='hours'?fmtHrs(p.hours):mode==='weight'?(p.weightLostPct==null?'—':fmtPct(p.weightLostPct)):String(p.points||0);
-    const priLab=mode==='hours'?'Hours':mode==='weight'?'BW change':'Points';
+    const wLabel=p.weightLostPct==null?'No weight logged':fmtLossPct(p.weightLostPct);
+    const pri=mode==='hours'?fmtHrs(p.hours):mode==='weight'?(p.weightLostPct==null?'—':fmtLossPct(p.weightLostPct)):String(p.points||0);
+    const priLab=mode==='hours'?'Hours':mode==='weight'?'Weight lost':'Points';
     const row=el(`<div class="person">
       <div class="prow">
         <span class="pnwrap"><span class="rank">#${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
@@ -712,7 +729,7 @@ function renderCrm(list, people){
     const phoneVal=p.phone||'';
     const leagueVal=p.league==='ladies'?'ladies':p.league==='brothers'?'brothers':'';
     const uid='p'+idx;
-    const wLabel=p.weightLostPct==null?'—':fmtPct(p.weightLostPct);
+    const wLabel=p.weightLostPct==null?'—':fmtLossPct(p.weightLostPct);
     const row=el(`<div class="person${cold?' cold':''}">
       <div class="prow"><span class="pnwrap"><span class="pn">${esc(p.name||'\u2014')}</span>
         <button type="button" class="trash" title="Remove from roster" aria-label="Remove ${esc(p.name||'participant')}">${trashIcon}</button></span>
@@ -723,7 +740,7 @@ function renderCrm(list, people){
         <div><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
         <div><div class="v">${esc(wLabel)}</div><div class="k">BW change</div></div>
       </div>
-      <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 day ${p.day||1}</span>
+      <div class="prow"><span class="pm">${esc(sessionsProgressLabel(p.sessions,p.total,p.perWeek))} \u00b7 day ${p.day||1}</span>
         <span class="pm">${p.streak||0} streak</span></div>
       <div class="meta">
         <div class="field full"><label for="${uid}-league">League</label>
@@ -817,7 +834,7 @@ function renderCrm(list, people){
         // Update metrics display without full re-render so the save message stays
         const mets=row.querySelectorAll('.metrics .v');
         if(mets[0])mets[0].textContent=String(p.points||0);
-        if(mets[2])mets[2].textContent=p.weightLostPct==null?'—':fmtPct(p.weightLostPct);
+        if(mets[2])mets[2].textContent=p.weightLostPct==null?'—':fmtLossPct(p.weightLostPct);
       }catch(e){
         bad.textContent='Could not reach the roster.';
         bad.hidden=false;

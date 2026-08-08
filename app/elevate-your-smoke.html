@@ -16,7 +16,8 @@
 <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0AgMAAABAo+6hAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJUExURUdXOunk1v///4X+bM8AAAABYktHRAJmC3xkAAAAB3RJTUUH6ggFFTssaCLL9wAAAShJREFUaN7tmF0OgzAMg8lDj9D7cAQmkftfZTQwrUibYo9lv/HzN+S6TgsbhlQqlUqlni5RnXG6quoI0wusE2GEsFKWB1fFbbdfoMZrcwEbNxCnm4lK0QUNxeJAaTFavpSOyWTbHY6eUHoaiJ40EwI3tnUb73fReRk2ECbn0k4IfOgL/HCzYXJR7eWFIjvaM14O0N4yj9BeKPtVeqFIZwKIsBsBZu+tK9zdQ9AFacpuxRzthdKJDoWjuVBCIwwLJbJXnxNKdK9y2I7RQaEYhtJixzIaynpLnCgavcCvNBLKozQSCkfXUHquFH15W0Hpbf9Rev1QQuiNgnpCDc3f0CMOS9K3aBxuI//zNHowmNi/Tz6FFup7sZ1PTKneLb2n8dV0KpVKpVKmMwboxNQMQ/tCAAAAAElFTkSuQmCC">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{
   --bg:#ECEAE4; --surface:#F7F6F2; --surface2:#FFFFFF; --ink:#101412;
@@ -34,7 +35,7 @@ body{
     linear-gradient(165deg,#1a2218 0%, #2a3526 42%, #6d7464 100%);
 }
 #app{
-  width:100%;max-width:430px;min-height:100vh;background:var(--bg);position:relative;overflow:hidden;
+  width:100%;max-width:430px;min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden;
   display:flex;flex-direction:column;box-shadow:var(--shadow);
 }
 .sheet{padding:0 20px 36px;flex:1;display:flex;flex-direction:column;animation:rise .35s ease both}
@@ -287,11 +288,18 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .timeline{margin:12px 0 0;padding:0;list-style:none}
 .timeline li{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 .timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent)}
-.phases{display:grid;gap:8px;margin:12px 0 0}
-.phases .ph{background:var(--surface2);border-radius:12px;padding:12px 14px}
-.phases .ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
-.phases .ph .n{font-family:var(--disp);font-weight:800;font-size:16px;margin-top:2px}
-.phases .ph .s{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.4}
+.phases{display:grid;gap:10px;margin:12px 0 0}
+.phases .ph{background:var(--surface2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.phases .ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;display:block;line-height:1.3;word-break:break-word}
+.phases .ph .n{font-family:var(--disp);font-weight:800;font-size:16px;display:block;line-height:1.2;word-break:break-word}
+.phases .ph .s{font-size:13px;color:var(--muted);display:block;line-height:1.45;word-break:break-word}
+@media (min-width:900px){
+  #app{max-width:720px}
+  .sheet{padding-left:28px;padding-right:28px}
+  .cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  .cover-grid .span2{grid-column:1 / -1}
+  .player{max-width:480px;margin:0 auto}
+}
 .dashhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .dashhead .who{font-size:12px;color:var(--muted);font-weight:600}
 .dashhead .who b{color:var(--ink)}
@@ -342,7 +350,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.1.0',
+  VERSION:'1.1.1',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -353,7 +361,7 @@ const CONFIG={
 };
 
 const KEY='smoke30:v1';
-let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,slot:null,si:0,timeLeft:0,stepStartedAt:0,paused:false,muted:true,wakeLock:null,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points',boardLeague:'brothers',countdown:null,resume:null,joining:false,boardPeople:null};
+let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,slot:null,si:0,timeLeft:0,timeLeftMs:0,elapsedActiveMs:0,deadlineAt:null,lastTickAt:null,stepStartedAt:0,paused:false,muted:true,wakeLock:null,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points',boardLeague:'brothers',countdown:null,resume:null,joining:false,boardPeople:null,completing:false,lastWarnSec:null};
 
 /* ---------- movement library ---------- */
 const M={
@@ -679,7 +687,7 @@ function exerciseImg(name,cls){
   v.muted=true;v.defaultMuted=true;v.autoplay=true;v.loop=true;v.playsInline=true;
   v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
   v.setAttribute('aria-label',name+' — form demo');
-  v.preload=cls==='mini'?'metadata':'auto';
+  v.preload='metadata';v.setAttribute('loading','lazy');
   v.addEventListener('error',()=>{
     if(v.dataset.fell)return;v.dataset.fell='1';
     const img=document.createElement('img');
@@ -702,7 +710,7 @@ const Q=[
    {v:1,t:'Recruit',s:'No real training in a year or more'},
    {v:2,t:'Returning',s:'Active now and then. Nothing structured'},
    {v:3,t:'Operational',s:'You train. Consistency is the gap'}]},
- {k:'age',q:'How old are you?',s:'Sets recovery and how fast the card ramps. This is built for grown men, not twenty-year-olds.',o:[
+ {k:'age',q:'How old are you?',s:'Your age helps set recovery and progression. The card scales to the person carrying it.',o:[
    {v:'u30',t:'Under 30'},{v:'30s',t:'30 to 44'},{v:'45',t:'45 to 59'},{v:'60',t:'60 or over'}]},
  {k:'days',q:'How many training days can you hit?',s:'Choose the number you will still make on a bad week. Consistency beats hero days.',o:[
    {v:3,t:'3 days',s:'Solid baseline for most'},{v:4,t:'4 days'},{v:5,t:'5 days'},
@@ -718,7 +726,17 @@ const Q=[
 ];
 
 const WEEK={3:[0,2,4],4:[0,1,3,4],5:[0,1,2,4,5],6:[0,1,2,3,4,5]};
-const DAYS=30,SESSION_SEC=540;
+const DAYS=30,SESSION_SEC=540,RESUME_VERSION=2,MIN_COMPLETE_MS=Math.floor(540*1000*0.85);
+function expectedSessions(perWeek){
+  const days=WEEK[perWeek]; if(!days)return 0;
+  let n=0; for(let i=0;i<DAYS;i++) if(days.includes(i%7)) n++;
+  return n;
+}
+function scheduleLabel(p){
+  const total=p?schedule(p).filter(s=>s.train).length:0;
+  const pw=p&&p.days?p.days:0;
+  return {total, perWeek:pw, recovery:DAYS-total};
+}
 const FOCUS={A:'Push \u00b7 Legs \u00b7 Core',B:'Pull \u00b7 Hips \u00b7 Core',C:'Full-body conditioning'};
 
 function pick(cat,lvl,avoid,offset){
@@ -785,7 +803,8 @@ const DB={
 async function save(){try{await DB.set(KEY,JSON.stringify({profile:S.profile,log:S.log,me:S.me,weights:S.weights||{starting:'',current:''},resume:S.resume||null}))}catch(e){}}
 function clientScore(){
   const sessions=Object.keys(S.log||{}).length;
-  const total=S.profile?schedule(S.profile).filter(s=>s.train).length:0;
+  let total=S.profile?schedule(S.profile).filter(s=>s.train).length:0;
+  if(!total && S.profile&&S.profile.days) total=expectedSessions(S.profile.days);
   const hours=Math.round(sessions*9/60*100)/100;
   const startW=S.weights&&S.weights.starting!==''?Number(S.weights.starting):null;
   const curW=S.weights&&S.weights.current!==''?Number(S.weights.current):null;
@@ -796,6 +815,14 @@ function clientScore(){
   const hoursMilestones=Math.floor(hoursPct/5);
   const points=sessions*CONFIG.PTS_PER_SESSION+weightMilestones*CONFIG.PTS_PER_5PCT_WEIGHT+hoursMilestones*CONFIG.PTS_PER_5PCT_CARD;
   return {sessions,total,hours,points,weightLostPct,weightMilestones,hoursMilestones};
+}
+function sessionsProgressLabel(done,total,perWeek){
+  const t=Number(total)||0;
+  const d=Number(done)||0;
+  if(t>0) return d+' of '+t+' sessions';
+  const derived=expectedSessions(perWeek);
+  if(derived>0) return d+' of '+derived+' sessions';
+  return 'Schedule unavailable';
 }
 function bestStreak(){
   if(!S.profile)return 0;
@@ -828,13 +855,53 @@ function beep(kind){
   }catch(e){}
 }
 function vibe(ms){try{if(navigator.vibrate)navigator.vibrate(ms||40)}catch(e){}}
+function workoutConfigKey(sess){
+  return [CONFIG.CHALLENGE, sess&&sess.lvl, sess&&sess.work, sess&&sess.rest, sess&&sess.rounds, (sess.steps||[]).length].join(':');
+}
 function persistResume(){
   if(!S.session||!S.slot){S.resume=null;save();return}
-  S.resume={slotI:S.slot.i,si:S.si,timeLeft:S.timeLeft,paused:!!S.paused,savedAt:Date.now(),type:S.session.type,day:S.session.day};
+  const st=S.session.steps[S.si];
+  const stepSec=st?st.sec:0;
+  const remainingMs=Math.max(0, (typeof remainingMsNow==='function' && !S.paused && S.deadlineAt)
+    ? remainingMsNow()
+    : (S.timeLeftMs!=null?S.timeLeftMs:Math.round((S.timeLeft||0)*1000)));
+  S.resume={
+    v:RESUME_VERSION,
+    challenge:CONFIG.CHALLENGE,
+    slotI:S.slot.i,
+    day:S.session.day,
+    type:S.session.type,
+    si:S.si,
+    stepSec,
+    remainingMs,
+    elapsedActiveMs:Math.round(S.elapsedActiveMs||0),
+    paused:!!S.paused,
+    deadlineAt:S.paused?null:(S.deadlineAt||null),
+    savedAt:Date.now(),
+    configKey:workoutConfigKey(S.session)
+  };
   save();
 }
-function clearResume(){S.resume=null;save()}
+function clearResume(){S.resume=null;S.elapsedActiveMs=0;S.timeLeftMs=0;S.deadlineAt=null;save()}
 function sessionTotalSec(sess){return (sess.steps||[]).reduce((a,b)=>a+(b.sec||0),0)}
+function advanceResumeAcrossGap(resume, steps, now){
+  if(!resume||!steps||!steps.length) return null;
+  if(resume.v!==RESUME_VERSION) return null;
+  let si=Math.max(0, Number(resume.si)||0);
+  let remainingMs=Math.max(0, Number(resume.remainingMs)||0);
+  let elapsed=Math.max(0, Number(resume.elapsedActiveMs)||0);
+  const paused=!!resume.paused;
+  if(si>=steps.length) return {si, remainingMs:0, elapsedActiveMs:elapsed, paused:false, done:true};
+  if(!remainingMs) remainingMs=Math.round((steps[si].sec||0)*1000);
+  if(!paused){
+    let gap=Math.max(0, now-(Number(resume.savedAt)||now));
+    while(gap>0 && si<steps.length){
+      if(gap<remainingMs){ remainingMs-=gap; elapsed+=gap; gap=0; }
+      else { gap-=remainingMs; elapsed+=remainingMs; si++; remainingMs=si<steps.length?Math.round((steps[si].sec||0)*1000):0; }
+    }
+  }
+  return {si, remainingMs:Math.round(remainingMs), elapsedActiveMs:Math.round(elapsed), paused, done:si>=steps.length};
+}
 function ensureWeights(){
   if(!S.weights||typeof S.weights!=='object')S.weights={starting:'',current:''};
   if(S.weights.starting==null)S.weights.starting='';
@@ -918,7 +985,7 @@ function render(){
   const a=app();if(!a)return;
   a.innerHTML='';
   try{
-    ({cover,join,quiz,build:building,plan,brief,done:doneScreen,manual,board,card:cardScreen,privacy:privacyScreen,settings:settingsScreen}[S.screen]||cover)(a);
+    ({cover,join,quiz,build:building,plan,brief,done:doneScreen,partial:partialScreen,manual,board,card:cardScreen,privacy:privacyScreen,settings:settingsScreen}[S.screen]||cover)(a);
     const sheet=a.querySelector('.sheet');
     if(sheet&&!sheet.querySelector('.appfoot')) sheet.appendChild(el(foot()));
   }catch(err){
@@ -1038,7 +1105,7 @@ function cover(a){
       <div class="leaguecard">
         <span class="k">Men\u2019s board</span>
         <span class="n">Brothers of the League</span>
-        <span class="s">Points. Hours. Bodyweight change. Separate board — same standard.</span>
+        <span class="s">Points. Hours. Weight lost %. Separate board — same standard.</span>
       </div>
       <div class="leaguecard">
         <span class="k">Ladies\u2019 board</span>
@@ -1067,7 +1134,8 @@ function cover(a){
     </button>
     <p class="lede">Elevate Your Smoke is The Cigar Society\u2019s bodyweight calisthenics card: timed PT, exact form demos, dual league boards, and bragging rights that stick. No gym. No fluff. No subscription.</p>
 
-    <section class="cardsec" id="nine" aria-labelledby="nine-title">
+    <div class="cover-grid">
+    <section class="cardsec span2" id="nine" aria-labelledby="nine-title">
       <h3 id="nine-title">Your 9-minute card</h3>
       <p class="fine">Total time <b>9:00</b> exactly — warm-up, three circuit rounds, finisher, cool-down. Equipment: floor space; optional sturdy door/table for rows; optional pull-up bar. Beginners use easier progressions (wall push-up, chair squat). Higher levels shorten rest and raise the movement ladder.</p>
       <div class="phases">
@@ -1085,15 +1153,16 @@ function cover(a){
         <li><span class="w">Days 1–7</span><span class="fine">Find your cadence. Rest days are programmed — take them. Miss a day? Resume the next open session. Do not double up to chase a streak.</span></li>
         <li><span class="w">Days 8–14</span><span class="fine">Same 9:00 structure. Form first. Lower or raise level in settings after a finished card, not mid-session.</span></li>
         <li><span class="w">Days 15–21</span><span class="fine">Consistency beats hero days. Catch-up means completing your next scheduled session — not stacking two hard cards back-to-back.</span></li>
-        <li><span class="w">Days 22–30</span><span class="fine">Last ten days step movements up one level automatically. Still nine minutes. Still scalable.</span></li>
+        <li><span class="w">Days 21–30</span><span class="fine">Final ten days step movements up one level automatically. Still nine minutes. Still scalable.</span></li>
       </ul>
     </section>
 
     <section class="cardsec" aria-labelledby="pts-title">
       <h3 id="pts-title">How points work</h3>
-      <p class="fine"><b>${CONFIG.PTS_PER_SESSION} pts</b> per completed session · <b>${CONFIG.PTS_PER_5PCT_CARD} pts</b> every 5% of the card finished · <b>${CONFIG.PTS_PER_5PCT_WEIGHT} pts</b> every 5% bodyweight change from your starting weight (capped). Hours = sessions \u00d7 9 minutes. Boards refresh when you open them. Public: callsign, league, progress. Private: phone and raw weights (organizer CRM only). Healthy weight change only — never cut aggressively for points.</p>
+      <p class="fine"><b>${CONFIG.PTS_PER_SESSION} pts</b> per completed session · <b>${CONFIG.PTS_PER_5PCT_CARD} pts</b> every 5% of the card finished · <b>${CONFIG.PTS_PER_5PCT_WEIGHT} pts</b> every 5% <b>bodyweight lost</b> (gain = 0; capped at ${CONFIG.MAX_WEIGHT_MILESTONES} milestones). Hours = sessions \u00d7 9 minutes. Public boards show callsign, league, sessions, streak, points, hours, and weight-loss % only — never raw lbs or phone. Healthy loss only — never cut aggressively for points.</p>
     </section>
 
+    </div><!--cover-grid-end-->
     <div class="note">Pain is a stop signal. Effort is not. Verify doors, tables, chairs, and boxes before rows or step-ups.</div>
     <div style="flex:1;min-height:22px"></div>
     <button class="btn accent" id="go" type="button">Join the Society card</button>
@@ -1106,7 +1175,13 @@ function cover(a){
     </div>
   </div>`));
   const hero=document.getElementById('hero');
-  try{ hero.appendChild(exerciseImg('push-up','cover')); }catch(e){}
+  try{
+    const himg=document.createElement('img');
+    himg.src=exerciseImgSrc('push-up'); himg.alt='Elevate Your Smoke form demo';
+    himg.className='cover'; himg.loading='eager'; himg.decoding='async';
+    himg.width=860; himg.height=640; himg.style.width='100%'; himg.style.height='auto'; himg.style.display='block';
+    hero.appendChild(himg);
+  }catch(e){}
   hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>The Cigar Society</span></div>`));
   paintCountdown();
   if(S.countdown) clearInterval(S.countdown);
@@ -1180,9 +1255,13 @@ function setMe(name,league){
 /* ---- transport: never blocks the workout; failures go in a queue ---- */
 async function apiPost(body){
   if(!tracking())return null;
-  const r=await fetch(API(),{method:'POST',redirect:'follow',
-    headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  return await r.json();
+  const ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+  const t=ctrl?setTimeout(()=>ctrl.abort(),12000):null;
+  try{
+    const r=await fetch(API(),{method:'POST',redirect:'follow',signal:ctrl?ctrl.signal:undefined,
+      headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    return await r.json();
+  }finally{ if(t)clearTimeout(t); }
 }
 function queueAdd(b){try{const q=JSON.parse(localStorage.getItem(QKEY)||'[]');q.push(b);
   localStorage.setItem(QKEY,JSON.stringify(q.slice(-40)))}catch(e){}}
@@ -1194,18 +1273,31 @@ async function flushQueue(){
   for(const b of q){try{await apiPost(b)}catch(e){left.push(b)}}
   try{localStorage.setItem(QKEY,JSON.stringify(left))}catch(e){}
 }
-function report(action){
-  if(!tracking()||!S.me)return;
+function buildReportBody(action, extras){
   const sl=S.profile?schedule(S.profile):[];
   const total=sl.filter(s=>s.train).length;
   const nextS=S.profile?nextSlot():null;
+  const totalSessions=total||expectedSessions(S.profile&&S.profile.days)||0;
+  const day=action==='log'&&S.slot?S.slot.i+1:(nextS?nextS.i+1:(S.profile?30:0));
+  const sessionsCount=action==='log'
+    ? Object.keys(S.log).length+(S.slot&&!S.log[S.slot.i]?1:0)
+    : Object.keys(S.log).length;
   const body={action,challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,
-    sessions:Object.keys(S.log).length,total,streak:S.profile?streak():0,
-    day:nextS?nextS.i+1:(S.profile?30:0),perWeek:S.profile?S.profile.days:0,
+    sessions:sessionsCount,total:totalSessions,streak:S.profile?streak():0,
+    day,perWeek:S.profile?S.profile.days:0,
     league:S.me.league||''};
+  if(action==='log'){
+    body.elapsedMs=Math.round((extras&&extras.elapsedMs!=null)?extras.elapsedMs:(S.elapsedActiveMs||0));
+    body.idempotencyKey=S.me.id+'::'+CONFIG.CHALLENGE+'::'+day;
+  }
   if(S.weights&&S.weights.starting!==''&&S.weights.starting!=null)body.startingWeight=Number(S.weights.starting);
   if(S.weights&&S.weights.current!==''&&S.weights.current!=null)body.currentWeight=Number(S.weights.current);
-  apiPost(body).catch(()=>queueAdd(body));
+  return body;
+}
+function report(action, extras){
+  if(!tracking()||!S.me)return Promise.resolve(null);
+  const body=buildReportBody(action, extras);
+  return apiPost(body).catch(err=>{ queueAdd(body); throw err; });
 }
 
 /* ---- join screen ---- */
@@ -1227,11 +1319,11 @@ function join(a){
       <p class="errline" id="nmerr" role="alert"></p>
     </div>
     <div class="privacybox">
-      <label><input type="checkbox" id="ack"> <span>I understand my callsign, league, and progress appear on the public league boards. Organizers may see callsign, league, progress, phone, and weights if entered. Quiz answers stay on this device. This is not medical advice.</span></label>
+      <label><input type="checkbox" id="ack"> <span>I understand my callsign, league, progress, and weight-loss percent (if logged) appear on public league boards. Raw weights and phone stay private (organizer CRM only if entered). Quiz answers stay on this device. This is not medical advice.</span></label>
     </div>
     <p class="errline" id="ackerr" role="alert"></p>
     <div class="note">${tracking()
-      ? 'Age and injury answers stay on this device. Bodyweight is optional and used only for the weight board and milestone points.'
+      ? 'Age and injury answers stay on this device. Bodyweight is optional: public boards show loss percent only; raw lbs stay private.'
       : 'Roster tracking is off on this copy — your card saves on this device only.'}</div>
     <div style="flex:1;min-height:20px"></div>
     <button class="btn" id="go" disabled>Lock callsign</button>
@@ -1298,7 +1390,7 @@ function renderRoster(body,people){
         <button type="button" class="trash" title="Remove from roster" aria-label="Remove ${esc(p.name||'participant')}">${trashIcon}</button></span>
         <span class="pd">${esc(ago(p.lastActive))}</span></div>
       <div class="pbar"><i style="width:${pct}%"></i></div>
-      <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 day ${p.day||1}</span>
+      <div class="prow"><span class="pm">${esc(sessionsProgressLabel(p.sessions,p.total,p.perWeek))} \u00b7 day ${p.day||1}</span>
         <span class="pm">${p.streak||0} streak</span></div>
     </div>`);
     row.querySelector('.trash').onclick=async()=>{
@@ -1322,6 +1414,14 @@ const fmtPct=p=>{
   if(p==null)return '—';
   const n=Number(p);
   return (n>0?'+':'')+n.toFixed(1)+'%';
+};
+const fmtLossPct=p=>{
+  if(p==null)return '—';
+  const n=Number(p);
+  if(!Number.isFinite(n))return '—';
+  if(n>0) return n.toFixed(1)+'% lost';
+  if(n<0) return Math.abs(n).toFixed(1)+'% gained';
+  return 'No change';
 };
 function sortBoard(people, mode){
   const arr=(people||[]).slice();
@@ -1348,7 +1448,7 @@ function sortBoard(people, mode){
 }
 function primarySortValue(p, mode){
   if(mode==='hours') return {v:fmtHrs(p.hours),k:'Hours'};
-  if(mode==='weight') return {v:p.weightLostPct==null?'—':fmtPct(p.weightLostPct),k:'BW change'};
+  if(mode==='weight') return {v:p.weightLostPct==null?'—':fmtLossPct(p.weightLostPct),k:'Weight lost'};
   return {v:String(p.points||0),k:'Points'};
 }
 function board(a){
@@ -1408,7 +1508,7 @@ function board(a){
       :'Ranked by points';
     body.appendChild(el(`<p class="eyebrow" style="margin-top:8px">${esc(leagueLabel())} \u00b7 ${esc(title)} \u00b7 ${people.length}</p>`));
     sortBoard(people,S.boardTab).forEach((p,i)=>{
-      const wLabel=p.weightLostPct==null?'No weight':fmtPct(p.weightLostPct)+' BW';
+      const wLabel=p.weightLostPct==null?'No weight':fmtLossPct(p.weightLostPct);
       const pri=primarySortValue(p,S.boardTab);
       const hiP=S.boardTab==='points'?' hi':'';
       const hiH=S.boardTab==='hours'?' hi':'';
@@ -1423,7 +1523,7 @@ function board(a){
           <div class="${hiH.trim()}"><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
           <div class="${hiW.trim()}"><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
         </div>
-        <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 streak ${p.streak||0}</span>
+        <div class="prow"><span class="pm">${esc(sessionsProgressLabel(p.sessions,p.total,p.perWeek))} \u00b7 streak ${p.streak||0}</span>
           <span class="pm">${p.weightMilestones||0} wt · ${p.hoursMilestones||0} hr milestones</span></div>
       </div>`));
     });
@@ -1451,10 +1551,14 @@ function board(a){
   (async()=>{
     try{
       const u=API()+(API().includes('?')?'&':'?')+'action=leaderboard&challenge='+encodeURIComponent(CONFIG.CHALLENGE);
-      const r=await fetch(u,{cache:'no-store',redirect:'follow'});const d=await r.json();
-      if(!d.ok){body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not load the board.</p>';return}
-      S.boardPeople=d.people||[];
-      paint();
+      const ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+      const to=ctrl?setTimeout(()=>ctrl.abort(),10000):null;
+      try{
+        const r=await fetch(u,{cache:'no-store',redirect:'follow',signal:ctrl?ctrl.signal:undefined});const d=await r.json();
+        if(!d.ok){body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not load the board.</p>';return}
+        S.boardPeople=d.people||[];
+        paint();
+      }finally{ if(to)clearTimeout(to); }
     }catch(e){
       body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not reach the board.</p>';
     }
@@ -1471,13 +1575,15 @@ function plan(a){
   ensureWeights();
   const w=S.weights;
   const p=S.profile,sl=schedule(p),next=nextSlot();
-  const total=sl.filter(s=>s.train).length,doneN=Object.keys(S.log).length;
+  let total=sl.filter(s=>s.train).length; if(!total) total=expectedSessions(p.days)||0;
+  const doneN=Object.keys(S.log).length;
   const sc=clientScore();
   const sess=next?buildSession(next,p):null;
   const num=next?sl.filter(s=>s.train).indexOf(next)+1:total;
   const leagueLab=S.me&&S.me.league==='ladies'?'Ladies of the League':S.me&&S.me.league==='brothers'?'Brothers of the League':'League TBD';
   const dayLabel=next?('Day '+(next.i+1)+' of 30'):'Card complete';
-  const canResume=S.resume&&next&&S.resume.slotI===next.i&&(Date.now()-S.resume.savedAt)<6*3600e3;
+  const resumeOk=S.resume&&S.resume.v===RESUME_VERSION&&next&&S.resume.slotI===next.i&&(Date.now()-S.resume.savedAt)<6*3600e3;
+  const canResume=!!(resumeOk&&sess&&(!S.resume.configKey||S.resume.configKey===workoutConfigKey(sess)));
   a.appendChild(el(`<div class="sheet">${head('DASHBOARD')}
     <div class="dashhead"><div>
       <span class="daychip">${esc(dayLabel)}</span>
@@ -1485,16 +1591,16 @@ function plan(a){
       <p class="who" style="margin-top:8px">${S.me?`<b>${esc(S.me.name)}</b> · ${esc(leagueLab)}`:'Guest'}${sc.points?` · <b>${sc.points}</b> pts`:''}</p>
     </div></div>
     <div class="statrow" style="margin-top:14px">
-      <div><div class="n">${doneN}</div><div class="l">Done / ${total}</div></div>
+      <div><div class="n">${doneN}</div><div class="l">Done / ${total||'—'}</div></div>
       <div><div class="n">${streak()}</div><div class="l">Streak</div></div>
       <div><div class="n">${bestStreak()}</div><div class="l">Best</div></div>
       <div><div class="n">${sc.hours}</div><div class="l">Hours</div></div>
     </div>
-    <p class="fine" style="margin:10px 0 0">Missed a day? Resume the next open session — do not double volume just to protect a streak.</p>
+    <p class="fine" style="margin:10px 0 0"><b>30-day challenge</b> · ${p.days} sessions/week · ${total||expectedSessions(p.days)||'—'} scheduled · ${Math.max(0,DAYS-(total||expectedSessions(p.days)||0))} recovery days. Missed a day? Resume the next open session — do not double volume just to protect a streak.</p>
     <div id="today"></div>
     <div class="block" style="margin-top:14px" id="wtblock">
       <p class="eyebrow">Weight check-in (optional)</p>
-      <p class="fine" style="margin:0 0 8px">Unlocks the weight board. Points cap at ${CONFIG.MAX_WEIGHT_MILESTONES} milestones. Change steadily. Not medical advice.</p>
+      <p class="fine" style="margin:0 0 8px">Optional. Public boards show <b>weight-loss percent only</b> (not raw lbs). Points: 100 per 5% lost, capped at ${CONFIG.MAX_WEIGHT_MILESTONES} milestones (20%). Gain earns 0 weight points. Not medical advice.</p>
       <div class="wtrow">
         <div class="field"><label for="wstart">Starting weight (lbs)</label>
           <input id="wstart" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="180" value="${esc(w.starting||'')}"></div>
@@ -1506,7 +1612,7 @@ function plan(a){
     </div>
     <p class="eyebrow" style="margin-top:22px">30-day grid</p>
     <div class="weeks" id="weeks" role="list" aria-label="Thirty day card"></div>
-    <p class="fine" style="margin-top:8px"><b>A</b> ${FOCUS.A} · <b>B</b> ${FOCUS.B} · <b>C</b> ${FOCUS.C}. Dots are recovery. Last ten days step movements up one level.</p>
+    <p class="fine" style="margin-top:8px"><b>A</b> ${FOCUS.A} · <b>B</b> ${FOCUS.B} · <b>C</b> ${FOCUS.C}. Dots are recovery. Days 21–30 (final ten days) step movements up one level.</p>
     <a class="btn ghost sm" href="#manual" style="margin-top:14px;text-align:center;text-decoration:none">Movement manual</a>
     <div style="text-align:center;margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
       <a class="linkbtn" href="#board">League boards</a>
@@ -1533,7 +1639,16 @@ function plan(a){
       <button type="button" class="btn ghost sm" id="discard" style="margin-top:8px">Discard</button>
     </div>`));
     document.getElementById('resume').onclick=()=>{
-      S.session=sess;S.slot=next;S.si=S.resume.si||0;S.timeLeft=S.resume.timeLeft||sess.steps[S.si].sec;S.paused=!!S.resume.paused;
+      S.session=sess;S.slot=next;
+      const adv=advanceResumeAcrossGap(S.resume, sess.steps, Date.now());
+      if(!adv){ clearResume(); render(); return; }
+      if(adv.done){
+        S.elapsedActiveMs=adv.elapsedActiveMs; S.si=sess.steps.length; S.paused=false;
+        startSession(true); endSession(); return;
+      }
+      S.si=adv.si; S.timeLeftMs=adv.remainingMs; S.elapsedActiveMs=adv.elapsedActiveMs;
+      S.paused=!!adv.paused; S.timeLeft=Math.max(0,Math.ceil(adv.remainingMs/1000));
+      S.deadlineAt=null; S.lastTickAt=Date.now();
       startSession(true);
     };
     document.getElementById('discard').onclick=()=>{clearResume();render()};
@@ -1630,7 +1745,7 @@ function brief(a){
     <p class="eyebrow">Today\u2019s moves \u2014 tap for the standard</p>
     <div id="figs" class="grid4"></div>
     <div class="block" style="margin-top:14px"><p class="eyebrow">The circuit</p><ul class="movelist" id="ml"></ul></div>
-    <p class="fine">Nine minutes. Form photo on every work bout. Rotating standards. Clean reps beat sloppy speed. Hurt = skip that move. Finish what you can — it still logs.</p>
+    <p class="fine">Nine minutes. Form photo on every work bout. Rotating standards. Clean reps beat sloppy speed. Hurt = skip that move. Full credit needs nearly the full nine minutes of active time — rapid skips do not count as a completed session.</p>
     <div style="flex:1;min-height:16px"></div>
     <button class="btn accent" id="go">Start the clock</button>
     <div style="text-align:center"><button class="linkbtn" id="back">Back to the card</button></div></div>`));
@@ -1654,8 +1769,74 @@ function brief(a){
   document.getElementById('back').onclick=()=>{S.screen='plan';render()};
 }
 /* ---------- player ---------- */
+function clearPlayerTimers(){
+  if(S.tick){clearInterval(S.tick);S.tick=null}
+  if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
+}
+function syncDeadlineFromRemaining(){
+  if(S.paused){ S.deadlineAt=null; }
+  else { S.deadlineAt=Date.now()+Math.max(0,S.timeLeftMs||0); }
+  S.lastTickAt=Date.now();
+}
+function remainingMsNow(){
+  if(S.paused||!S.deadlineAt) return Math.max(0, Math.round(S.timeLeftMs||0));
+  return Math.max(0, Math.round(S.deadlineAt-Date.now()));
+}
+function paintTimerUI(st){
+  const rem=remainingMsNow();
+  S.timeLeftMs=rem;
+  S.timeLeft=Math.max(0, Math.ceil(rem/1000));
+  const t=document.getElementById('t'); if(t) t.textContent=mmss(S.timeLeft);
+  const b=document.getElementById('barfill');
+  if(b&&st&&st.sec) b.style.width=(100*(1-rem/(st.sec*1000)))+'%';
+  const secLeft=S.timeLeft;
+  if(!S.paused && (secLeft===3||secLeft===2||secLeft===1) && S.lastWarnSec!==secLeft){
+    S.lastWarnSec=secLeft; beep('warn'); vibe(30); announce(secLeft+' seconds');
+  }
+  if(secLeft===0 && S.lastWarnSec!==0){ S.lastWarnSec=0; beep('end'); vibe([40,40,40]); }
+}
+function applyAdvancedState(adv){
+  if(!adv)return;
+  S.si=adv.si;
+  S.timeLeftMs=adv.remainingMs;
+  S.elapsedActiveMs=adv.elapsedActiveMs;
+  S.paused=!!adv.paused;
+  S.timeLeft=Math.max(0, Math.ceil((adv.remainingMs||0)/1000));
+  if(adv.done){ S.si=S.session.steps.length; }
+  syncDeadlineFromRemaining();
+}
+function catchUpRunning(){
+  if(S.paused||!S.session) return {changed:false,done:false};
+  const now=Date.now();
+  const rem=S.deadlineAt!=null
+    ? Math.max(0, Math.round(S.deadlineAt-(S.lastTickAt||now)))
+    : Math.max(0, Math.round(S.timeLeftMs||0));
+  const adv=advanceResumeAcrossGap({
+    v:RESUME_VERSION, si:S.si, remainingMs:rem,
+    elapsedActiveMs:S.elapsedActiveMs||0, paused:false, savedAt:S.lastTickAt||now
+  }, S.session.steps, now);
+  if(!adv) return {changed:false,done:false};
+  const prevSi=S.si;
+  const changed=adv.si!==prevSi || !!adv.done;
+  applyAdvancedState(adv);
+  S.lastTickAt=now;
+  if(adv.done) return {changed:true,done:true};
+  if(changed){
+    const st=S.session.steps[prevSi];
+    announce((st&&st.phase?st.phase:'Interval')+' complete');
+  }
+  return {changed, done:false};
+}
+function advanceRunningClock(){
+  if(S.paused||!S.session) return false;
+  const r=catchUpRunning();
+  if(r.done) return 'done';
+  return !!r.changed;
+}
 function startSession(fromResume){
-  if(!fromResume){ S.si=0;S.paused=false; }
+  if(!fromResume){
+    S.si=0; S.paused=false; S.elapsedActiveMs=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastWarnSec=null;
+  }
   document.querySelectorAll('.player').forEach(n=>n.remove());
   document.body.appendChild(el('<div class="player" id="player" role="dialog" aria-label="Nine minute workout"></div>'));
   requestWakeLock();
@@ -1663,33 +1844,59 @@ function startSession(fromResume){
     window._eysVis=true;
     document.addEventListener('visibilitychange',()=>{
       if(!document.getElementById('player'))return;
-      if(document.hidden){ S.paused=true; persistResume(); const b=document.getElementById('pause'); if(b)b.textContent='Resume'; }
-      else requestWakeLock();
+      if(document.hidden){
+        if(!S.paused){ S.timeLeftMs=remainingMsNow(); }
+        persistResume();
+      } else {
+        requestWakeLock();
+        if(!S.paused){
+          const r=catchUpRunning();
+          if(r.done || !(S.session&&S.session.steps[S.si])){ endSession(); return; }
+          if(r.changed){ beginStep(true); }
+          else { syncDeadlineFromRemaining(); paintTimerUI(S.session.steps[S.si]); }
+          persistResume();
+        }
+      }
     });
   }
-  loadStep(!!fromResume);
+  beginStep(!!fromResume);
 }
-function loadStep(keepTime){
+function beginStep(keepTime){
   const st=S.session.steps[S.si];
-  if(!st){endSession();return}
-  if(!keepTime) S.timeLeft=st.sec;
+  if(!st){ endSession(); return; }
+  if(!keepTime){
+    S.timeLeftMs=Math.round((st.sec||0)*1000);
+    S.lastWarnSec=null;
+  } else {
+    if(S.timeLeftMs==null||S.timeLeftMs<=0){
+      if(S.timeLeft!=null&&S.timeLeft>0) S.timeLeftMs=Math.round(S.timeLeft*1000);
+      else S.timeLeftMs=Math.round((st.sec||0)*1000);
+    }
+  }
+  S.timeLeft=Math.max(0, Math.ceil(S.timeLeftMs/1000));
+  syncDeadlineFromRemaining();
   paintStep();
   persistResume();
-  clearInterval(S.tick);
+  clearPlayerTimers();
+  let lastPersist=Date.now();
   S.tick=setInterval(()=>{
-    if(S.paused)return;
-    S.timeLeft--;
-    if(S.timeLeft===3||S.timeLeft===2||S.timeLeft===1){ beep('warn'); vibe(30); }
-    if(S.timeLeft===0){ beep('end'); vibe([40,40,40]); }
-    const t=document.getElementById('t');if(t)t.textContent=mmss(Math.max(0,S.timeLeft));
-    const b=document.getElementById('barfill');if(b)b.style.width=(100*(1-Math.max(0,S.timeLeft)/st.sec))+'%';
-    if(S.timeLeft%5===0) persistResume();
-    if(S.timeLeft<=0){
-      clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
-      announce((st.phase||'')+' complete');
-      S.si++; loadStep(false);
+    if(!document.getElementById('player')){ clearPlayerTimers(); return; }
+    if(S.paused){
+      paintTimerUI(S.session.steps[S.si]||st);
+      return;
     }
-  },1000);
+    const changed=advanceRunningClock();
+    if(changed==='done' || !(S.session&&S.session.steps[S.si])){
+      clearPlayerTimers(); endSession(); return;
+    }
+    paintTimerUI(S.session.steps[S.si]||st);
+    const now=Date.now();
+    if(now-lastPersist>2000){ persistResume(); lastPersist=now; }
+    if(changed){
+      clearPlayerTimers();
+      beginStep(false);
+    }
+  },200);
 }
 function demoTips(name){
   const ex=EX[name];
@@ -1698,17 +1905,19 @@ function demoTips(name){
 }
 function paintStep(){
   const s=S.session,st=s.steps[S.si],nx=s.steps[S.si+1],p=document.getElementById('player');
+  if(!p||!st)return;
   clearRafs();
   if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
   const tips=st.kind==='work'?demoTips(st.n):{lines:[],watch:''};
   const tipLines=tips.lines.length?tips.lines.concat(tips.watch?['Kill this fault: '+tips.watch]:[]):[st.c];
   let tipI=0;
+  const showSec=Math.max(0, Math.ceil(remainingMsNow()/1000));
   p.className='player'+(st.kind==='rest'?' rest':'');
   p.innerHTML=`<div class="ptop"><span class="st">${esc(st.phase)}</span><span class="st">${S.si+1} / ${s.steps.length}</span></div>
-    <div class="bar"><i id="barfill" style="width:0%"></i></div>
+    <div class="bar"><i id="barfill" style="width:${100*(1-remainingMsNow()/((st.sec||1)*1000))}%"></i></div>
     <div class="pmid">
       <div class="figslot" id="figslot"></div>
-      <p class="timer ${st.kind==='rest'?'big':''}" id="t">${mmss(st.sec)}</p>
+      <p class="timer ${st.kind==='rest'?'big':''}" id="t" aria-live="off">${mmss(showSec)}</p>
       <h2 class="movename">${esc(st.n)}</h2>
       <p class="cue" id="cue">${esc(st.c)}</p>
       ${st.kind==='work'&&tips.lines.length?`<div class="demotip" id="demotip"><span class="lab" id="demolab">Standard</span><div class="txt" id="demotxt">${esc(tipLines[0])}</div>
@@ -1724,6 +1933,7 @@ function paintStep(){
       <button class="linkbtn" id="restart" type="button">Restart</button>
       <button class="linkbtn" id="quit" type="button">End session</button>
     </div>`;
+  announce(st.phase+': '+st.n+', '+showSec+' seconds');
   if(st.kind==='work'&&EX[st.n]){
     p.querySelector('#figslot').appendChild(exerciseImg(st.n,'hero'));
   }
@@ -1742,13 +1952,25 @@ function paintStep(){
     },3200);
   }
   p.querySelector('#pause').onclick=()=>{
-    S.paused=!S.paused; persistResume();
+    if(S.paused){
+      S.paused=false;
+      syncDeadlineFromRemaining();
+      announce('Resumed');
+    } else {
+      S.timeLeftMs=remainingMsNow();
+      S.paused=true;
+      S.deadlineAt=null;
+      announce('Paused');
+    }
+    persistResume();
     p.querySelector('#pause').textContent=S.paused?'Resume':'Pause';
-    announce(S.paused?'Paused':'Resumed');
   };
   p.querySelector('#skip').onclick=()=>{
-    if(st.kind!=='rest' && !confirm('Skip this movement?')) return;
-    clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}S.si++;loadStep(false);
+    if(st.kind!=='rest' && !confirm('Skip this movement? Remaining time will not count toward completion.')) return;
+    // Skipped interval does not add remaining time to elapsedActiveMs
+    S.timeLeftMs=0; S.deadlineAt=null;
+    clearPlayerTimers();
+    S.si++; beginStep(false);
   };
   const muteBtn=p.querySelector('#mute');
   if(muteBtn) muteBtn.onclick=()=>{
@@ -1759,28 +1981,95 @@ function paintStep(){
   const restartBtn=p.querySelector('#restart');
   if(restartBtn) restartBtn.onclick=()=>{
     if(!confirm('Restart this 9-minute workout from the warm-up?'))return;
-    clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
-    S.si=0;S.paused=false;loadStep(false);
+    clearPlayerTimers();
+    S.si=0;S.paused=false;S.elapsedActiveMs=0;S.timeLeftMs=0;S.deadlineAt=null;S.lastWarnSec=null;
+    beginStep(false);
   };
   p.querySelector('#quit').onclick=()=>{
-    if(confirm('End here? This session will not be marked on the card.')){
-      clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
-      clearRafs();releaseWakeLock();clearResume();p.remove();S.screen='plan';render();}
+    if(confirm('End here? This discards the active workout and will not credit a completed session.')){
+      clearPlayerTimers();
+      clearRafs();releaseWakeLock();
+      clearResume();
+      p.remove();
+      S.screen='plan';
+      render();
+    }
   };
 }
-function endSession(){
-  clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}clearRafs();releaseWakeLock();
-  const p=document.getElementById('player');if(p)p.remove();
+async function endSession(){
+  clearPlayerTimers(); clearRafs(); releaseWakeLock();
+  const p=document.getElementById('player'); if(p)p.remove();
+  const elapsed=Math.round(S.elapsedActiveMs||0);
+  if(!S.slot){ clearResume(); S.screen='plan'; render(); return; }
   if(S.log[S.slot.i]){ clearResume(); S.screen='done'; render(); return; }
-  S.log[S.slot.i]={at:Date.now()}; clearResume(); save(); report('log');
-  S.screen='done';render(); announce('Session logged');
+  if(elapsed < MIN_COMPLETE_MS){
+    // Partial — do not credit locally; keep no resume after confirmed end of player
+    clearResume();
+    S.partialInfo={elapsedMs:elapsed,minMs:MIN_COMPLETE_MS};
+    S.screen='partial';
+    render();
+    announce('Partial session — not credited');
+    return;
+  }
+  if(S.completing)return;
+  S.completing=true;
+  const pendingKey=S.slot.i;
+  try{
+    if(tracking()&&S.me){
+      const res=await report('log',{elapsedMs:elapsed});
+      if(res&&res.error==='incomplete'){
+        S.partialInfo={elapsedMs:elapsed,minMs:MIN_COMPLETE_MS};
+        S.screen='partial';
+        render();
+        return;
+      }
+      // duplicate or success — credit once locally
+      S.log[pendingKey]={at:Date.now(),elapsedMs:elapsed};
+      clearResume();
+      save();
+      S.screen='done';
+      render();
+      announce(res&&res.duplicate?'Already logged':'Session logged');
+    } else {
+      S.log[pendingKey]={at:Date.now(),elapsedMs:elapsed};
+      clearResume();
+      save();
+      S.screen='done';
+      render();
+      announce('Session logged');
+    }
+  }catch(e){
+    // Network failed — queue already filled by report(); keep resume until verified
+    persistResume();
+    S.log[pendingKey]={at:Date.now(),elapsedMs:elapsed,pending:true};
+    save();
+    S.screen='done';
+    render();
+    announce('Session saved locally — syncing when online');
+  }finally{
+    S.completing=false;
+  }
+}
+function partialScreen(a){
+  const info=S.partialInfo||{elapsedMs:0,minMs:MIN_COMPLETE_MS};
+  const sec=Math.round((info.elapsedMs||0)/1000);
+  a.appendChild(el(`<div class="sheet">${head('PARTIAL SESSION')}
+    <h2 class="display h-lg">Not enough<br>active time.</h2>
+    <p class="lede">You logged about ${sec}s of active work. Full credit needs roughly ${Math.round(info.minMs/1000)}s of the 9-minute card (paused time does not count). Rapid “Done →” skips do not earn a completed session.</p>
+    <div class="note">No session was added to your card or the league boards.</div>
+    <div style="flex:1;min-height:20px"></div>
+    <button class="btn accent" id="back">Back to the card</button></div>`));
+  document.getElementById('back').onclick=()=>{S.screen='plan';render()};
 }
 function doneScreen(a){
-  const total=schedule(S.profile).filter(s=>s.train).length,n=Object.keys(S.log).length;
+  let total=schedule(S.profile).filter(s=>s.train).length;
+  if(!total) total=expectedSessions(S.profile&&S.profile.days)||0;
+  const n=Object.keys(S.log).length;
+  const label=total>0?('Session '+n+' of '+total):'Session logged';
   a.appendChild(el(`<div class="sheet">${head('SESSION LOGGED')}
-    <div class="stampwrap"><div class="stamp"><span>Done<small>Session ${n} of ${total}</small></span></div></div>
+    <div class="stampwrap"><div class="stamp"><span>Done<small>${esc(label)}</small></span></div></div>
     <h2 class="display h-lg" style="text-align:center">${n===1?'First one<br>is on the card.':'That is '+n+'<br>on the card.'}</h2>
-    <p class="lede" style="text-align:center">${n<total?'The next session unlocks now. Rest days between are doing work too \u2014 that is when the strength actually shows up.':'Thirty days, all of it logged. Build the next card when you are ready.'}</p>
+    <p class="lede" style="text-align:center">${total&&n<total?'The next session unlocks now. Rest days between are doing work too \u2014 that is when the strength actually shows up.':'Thirty days, all of it logged. Build the next card when you are ready.'}</p>
     <div style="flex:1;min-height:20px"></div>
     <button class="btn" id="back">Back to the card</button></div>`));
   document.getElementById('back').onclick=()=>{S.screen='plan';render()};
@@ -1812,10 +2101,10 @@ function cardScreen(a){
 function privacyScreen(a){
   a.appendChild(el(`<div class="sheet">${head('PRIVACY')}
     <h2 class="display h-lg">What stays<br>visible.</h2>
-    <p class="fine" style="margin:12px 0 0"><b>League boards (public):</b> callsign, league, sessions, streak, points, hours, bodyweight change percent if logged.</p>
-    <p class="fine"><b>Organizers:</b> callsign, league, progress, phone and weights if entered in CRM, last active.</p>
+    <p class="fine" style="margin:12px 0 0"><b>League boards (public):</b> callsign, league, sessions, streak, points, hours, and weight-loss percent if logged (never raw lbs).</p>
+    <p class="fine"><b>Organizers:</b> callsign, league, progress, phone and raw weights if entered in CRM, last active.</p>
     <p class="fine"><b>This device only:</b> mission-brief answers (goal, level, age band, injuries).</p>
-    <p class="fine"><b>Bodyweight:</b> optional. Used for the weight board and capped milestone points.</p>
+    <p class="fine"><b>Bodyweight:</b> optional. Scoring awards loss only (gain = 0). Public metric is loss percent; raw starting/current lbs stay private.</p>
     <p class="fine"><b>Retention:</b> roster data stays for the challenge until organizer or self-delete from Profile.</p>
     <p class="fine"><b>Callsign / leave:</b> update or delete from Profile.</p>
     <div style="flex:1;min-height:20px"></div>
