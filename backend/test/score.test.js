@@ -1,8 +1,27 @@
 const assert = require('assert');
-const { scorePerson, scoringExplain, MAX_WEIGHT_MILESTONES } = require('../score');
+const {
+  scorePerson,
+  scoringExplain,
+  MAX_WEIGHT_MILESTONES,
+} = require('../score');
+const {
+  SESSION_SEC,
+  MIN_COMPLETE_MS,
+  sessionTotalsForLevel,
+  assertNineMinutes,
+  isFullCompletion,
+  advanceResumeState,
+  expectedSessionsFromPerWeek,
+  resolveScheduleTotal,
+  idempotencyKey,
+} = require('../workout');
 
 assert.strictEqual(scoringExplain().pointsPerSession, 10);
 assert.strictEqual(scoringExplain().sessionMinutes, 9);
+assert.strictEqual(scoringExplain().weightMetric, 'loss_only');
+assert.ok(scoringExplain().publicFields.includes('weightLostPct'));
+assert.ok(scoringExplain().privateFields.includes('startingWeight'));
+assert.ok(scoringExplain().privateFields.includes('phone'));
 
 const zero = scorePerson({ sessions: 0, total: 20 });
 assert.strictEqual(zero.points, 0);
@@ -16,10 +35,21 @@ const wt = scorePerson({
   sessions: 0,
   total: 20,
   startingWeight: 200,
-  currentWeight: 180, // 10% → 2 milestones
+  currentWeight: 180, // 10% loss → 2 milestones
 });
+assert.strictEqual(wt.weightLostPct, 10);
 assert.strictEqual(wt.weightMilestones, 2);
 assert.strictEqual(wt.points, 200);
+
+const gain = scorePerson({
+  sessions: 0,
+  total: 20,
+  startingWeight: 200,
+  currentWeight: 220, // gain → 0 weight points
+});
+assert.ok(gain.weightLostPct < 0);
+assert.strictEqual(gain.weightMilestones, 0);
+assert.strictEqual(gain.points, 0);
 
 const capped = scorePerson({
   sessions: 0,

@@ -202,10 +202,15 @@ async function handleMeUpdate(req, res) {
   }
 }
 
+let dbReady = false;
+let dbError = null;
+
 app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
     alive: true,
+    dbReady,
+    dbError: dbError ? String(dbError.message || dbError) : null,
     sms: sms.smsConfigured(),
     scoring: scoringExplain(),
   });
@@ -222,7 +227,7 @@ app.get('/api', async (req, res) => {
   if (req.query.action === 'roster') return handleRoster(req, res);
   if (req.query.action === 'leaderboard') return handleLeaderboard(req, res);
   if (req.query.action === 'scoring') return res.json({ ok: true, scoring: scoringExplain() });
-  res.json({ ok: true, alive: true });
+  res.json({ ok: true, alive: true, dbReady });
 });
 
 app.get('/api/roster', handleRoster);
@@ -275,10 +280,21 @@ app.get('*', (_req, res) => {
 });
 
 async function start() {
-  await db.init();
-  app.listen(PORT, () => {
-    console.log(`Elevate Your Smoke listening on :${PORT}`);
+  // Bind port before DB init so Railway health + static landing are not blocked on Postgres.
+  await new Promise((resolve) => {
+    app.listen(PORT, () => {
+      console.log(`Elevate Your Smoke listening on :${PORT}`);
+      resolve();
+    });
   });
+  try {
+    await db.init();
+    dbReady = true;
+    console.log('Postgres ready');
+  } catch (err) {
+    dbError = err;
+    console.error('Postgres init failed (static app still up):', err);
+  }
 }
 
 start().catch((err) => {

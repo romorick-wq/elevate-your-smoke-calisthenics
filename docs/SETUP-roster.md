@@ -128,3 +128,25 @@ Open `http://localhost:3000`. Relative `/api` sync works there.
 
 [`roster-backend.gs`](roster-backend.gs) is the previous Sheets script. You can
 ignore it once Railway is live. The app no longer needs Apps Script.
+
+---
+
+## Health check (Railway)
+
+`GET /api/health` returns `{ ok, alive, dbReady, sms, scoring }` without requiring organizer auth.
+The process binds the HTTP port **before** Postgres init finishes so cold starts can pass Railway health checks and serve the static landing shell while the DB connects.
+
+No browser keep-alive polling is required. Optional: set Railway health check path to `/api/health`.
+
+## Cleanup exact test callsign `QA-Test-0808`
+
+Do **not** add a migration that deletes on every deploy.
+
+1. Organizer UI: open `/admin`, unlock with `ORGANIZER_CODE`, find exact callsign `QA-Test-0808`, Trash.
+2. Or CLI (pin required, never commit the pin):
+
+```bash
+ORGANIZER_CODE='your-pin' node scripts/cleanup-qa-test-0808.js
+```
+
+Deletes only the exact callsign match and its session rows.

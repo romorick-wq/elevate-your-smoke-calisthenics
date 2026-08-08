@@ -5,6 +5,11 @@ const {
   scoringExplain,
   n,
 } = require('./score');
+const {
+  isFullCompletion,
+  MIN_COMPLETE_MS,
+  resolveScheduleTotal,
+} = require('./workout');
 
 let pool;
 
@@ -63,6 +68,14 @@ async function init() {
       ON sessions (participant_id, challenge, day)
       WHERE day > 0;
   `);
+  await db.query(`ALTER TABLE sessions ADD COLUMN IF NOT EXISTS idempotency_key TEXT`);
+  await db.query(`ALTER TABLE sessions ADD COLUMN IF NOT EXISTS elapsed_ms INTEGER`);
+  await db.query(`ALTER TABLE sessions ADD COLUMN IF NOT EXISTS credit TEXT NOT NULL DEFAULT 'full'`);
+  await db.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS sessions_idempotency_idx
+      ON sessions (idempotency_key)
+      WHERE idempotency_key IS NOT NULL AND idempotency_key <> '';
+  `);
   await db.query(`
     CREATE INDEX IF NOT EXISTS participants_challenge_idx ON participants (challenge, last_active DESC);
   `);
@@ -76,7 +89,14 @@ function parseWeight(v) {
 }
 
 function enrich(person) {
-  return { ...person, ...scorePerson(person) };
+  const total = resolveScheduleTotal(person.total, person.perWeek);
+  const scored = scorePerson({ ...person, total });
+  return {
+    ...person,
+    total: total || person.total || 0,
+    scheduleUnavailable: !(total > 0),
+    ...scored,
+  };
 }
 
 function parseLeague(v) {
@@ -103,71 +123,123 @@ async function upsertParticipant(body) {
     return { ok: false, error: 'bad weight' };
   }
   const leagueIn = parseLeague(body.league);
+  const isLog = body.action === 'log';
+  const day = n(body.day);
+  const elapsedMs = n(body.elapsedMs);
+  const idem = String(body.idempotencyKey || `${id}::${challenge}::${day}`).slice(0, 160);
+  const sessionsIn = n(body.sessions);
+  const totalIn = resolveScheduleTotal(n(body.total), n(body.perWeek)) || n(body.total);
 
-  await db.query(
-    `INSERT INTO participants
-       (id, challenge, name, joined, last_active, sessions, total, streak, day, per_week,
-        starting_weight, current_weight, league)
-     VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10, $11)
-     ON CONFLICT (id, challenge) DO UPDATE SET
-       name = EXCLUDED.name,
-       last_active = NOW(),
-       sessions = GREATEST(participants.sessions, EXCLUDED.sessions),
-       total = GREATEST(participants.total, EXCLUDED.total),
-       streak = GREATEST(participants.streak, EXCLUDED.streak),
-       day = EXCLUDED.day,
-       per_week = EXCLUDED.per_week,
-       starting_weight = COALESCE(EXCLUDED.starting_weight, participants.starting_weight),
-       current_weight = COALESCE(EXCLUDED.current_weight, participants.current_weight),
-       league = CASE
-         WHEN EXCLUDED.league <> '' THEN EXCLUDED.league
-         ELSE participants.league
-       END`,
-    [
-      id,
-      challenge,
-      name,
-      n(body.sessions),
-      n(body.total),
-      n(body.streak),
-      n(body.day),
-      n(body.perWeek),
-      startIn,
-      curIn,
-      leagueIn,
-    ]
-  );
-
-  let logged = false;
-  let duplicate = false;
-  if (body.action === 'log') {
-    const day = n(body.day);
-    if (day > 0) {
-      const { rows } = await db.query(
-        `SELECT id FROM sessions WHERE participant_id = $1 AND challenge = $2 AND day = $3 LIMIT 1`,
-        [id, challenge, day]
-      );
-      if (rows.length) {
-        duplicate = true;
-      } else {
-        await db.query(
-          `INSERT INTO sessions (participant_id, name, challenge, day, sessions_after)
-           VALUES ($1, $2, $3, $4, $5)`,
-          [id, name, challenge, day, n(body.sessions)]
-        );
-        logged = true;
-      }
-    } else {
-      await db.query(
-        `INSERT INTO sessions (participant_id, name, challenge, day, sessions_after)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [id, name, challenge, day, n(body.sessions)]
-      );
-      logged = true;
-    }
+  if (isLog && !isFullCompletion(elapsedMs)) {
+    return {
+      ok: false,
+      error: 'incomplete',
+      minCompleteMs: MIN_COMPLETE_MS,
+      elapsedMs,
+      message:
+        'Workout was too short for full session credit. Resume and finish the 9-minute card.',
+    };
   }
 
-  return { ok: true, logged, duplicate };
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+
+    if (isLog) {
+      if (idem) {
+        const { rows: byKey } = await client.query(
+          `SELECT id FROM sessions WHERE idempotency_key = $1 LIMIT 1 FOR SHARE`,
+          [idem]
+        );
+        if (byKey.length) {
+          await client.query('COMMIT');
+          return { ok: true, logged: false, duplicate: true, credit: 'full' };
+        }
+      }
+      if (day > 0) {
+        const { rows } = await client.query(
+          `SELECT id FROM sessions WHERE participant_id = $1 AND challenge = $2 AND day = $3 LIMIT 1 FOR SHARE`,
+          [id, challenge, day]
+        );
+        if (rows.length) {
+          await client.query('COMMIT');
+          return { ok: true, logged: false, duplicate: true, credit: 'full' };
+        }
+      }
+    }
+
+    await client.query(
+      `INSERT INTO participants
+         (id, challenge, name, joined, last_active, sessions, total, streak, day, per_week,
+          starting_weight, current_weight, league)
+       VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10, $11)
+       ON CONFLICT (id, challenge) DO UPDATE SET
+         name = EXCLUDED.name,
+         last_active = NOW(),
+         sessions = CASE
+           WHEN $12 THEN GREATEST(participants.sessions, EXCLUDED.sessions)
+           ELSE participants.sessions
+         END,
+         total = CASE
+           WHEN EXCLUDED.total > 0 THEN GREATEST(participants.total, EXCLUDED.total)
+           ELSE participants.total
+         END,
+         streak = CASE
+           WHEN $12 THEN GREATEST(participants.streak, EXCLUDED.streak)
+           ELSE participants.streak
+         END,
+         day = EXCLUDED.day,
+         per_week = CASE
+           WHEN EXCLUDED.per_week > 0 THEN EXCLUDED.per_week
+           ELSE participants.per_week
+         END,
+         starting_weight = COALESCE(EXCLUDED.starting_weight, participants.starting_weight),
+         current_weight = COALESCE(EXCLUDED.current_weight, participants.current_weight),
+         league = CASE
+           WHEN EXCLUDED.league <> '' THEN EXCLUDED.league
+           ELSE participants.league
+         END`,
+      [
+        id,
+        challenge,
+        name,
+        sessionsIn,
+        totalIn,
+        n(body.streak),
+        day,
+        n(body.perWeek),
+        startIn,
+        curIn,
+        leagueIn,
+        isLog,
+      ]
+    );
+
+    let logged = false;
+    if (isLog) {
+      try {
+        await client.query(
+          `INSERT INTO sessions (participant_id, name, challenge, day, sessions_after, idempotency_key, elapsed_ms, credit)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, 'full')`,
+          [id, name, challenge, day, sessionsIn, idem, elapsedMs]
+        );
+        logged = true;
+      } catch (err) {
+        await client.query('ROLLBACK');
+        return { ok: true, logged: false, duplicate: true, credit: 'full' };
+      }
+    }
+
+    await client.query('COMMIT');
+    return { ok: true, logged, duplicate: false, credit: isLog ? 'full' : undefined };
+  } catch (err) {
+    try {
+      await client.query('ROLLBACK');
+    } catch (_) {}
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 function dateOnly(v) {
@@ -249,6 +321,7 @@ async function getLeaderboard(challenge) {
     league: p.league || '',
     sessions: p.sessions,
     total: p.total,
+    perWeek: p.perWeek,
     streak: p.streak,
     hours: p.hours,
     weightLostPct: p.weightLostPct,
