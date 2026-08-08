@@ -275,7 +275,15 @@ app.use(
   })
 );
 
-app.get('*', (_req, res) => {
+app.get('*', (req, res) => {
+  // Do not SPA-fallback media/API misses — return a real 404
+  if (
+    req.path.startsWith('/api') ||
+    req.path.startsWith('/exercises/') ||
+    /\.(jpg|jpeg|png|mp4|webm|vtt|webp|svg|ico)$/i.test(req.path)
+  ) {
+    return res.status(404).type('text/plain').send('Not found');
+  }
   res.sendFile(path.join(APP_DIR, 'index.html'));
 });
 
