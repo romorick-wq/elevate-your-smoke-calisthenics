@@ -127,6 +127,12 @@ app.get(['/admin', '/admin/'], (_req, res) => {
   res.sendFile(path.join(APP_DIR, 'admin.html'));
 });
 
+app.get(['/leaderboard', '/board', '/manual'], (req, res) => {
+  const map = { '/leaderboard': 'board', '/board': 'board', '/manual': 'manual' };
+  const hash = map[req.path] || 'board';
+  res.redirect(302, '/#' + hash);
+});
+
 app.use(express.static(APP_DIR, {
   extensions: ['html'],
   setHeaders(res, filePath) {
