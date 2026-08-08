@@ -167,7 +167,7 @@ p.lede{font-size:15.5px;line-height:1.55;color:#2c322e;margin:14px 0 0}
 .hidden{display:none}
 .figbox{display:none}
 .fig,.figmini,.fighero{display:none}
-.eximg{display:block;width:100%;height:auto;object-fit:cover;background:#1a1f1c}
+.eximg{display:block;width:100%;height:auto;object-fit:cover;background:#121610;pointer-events:none}
 .eximg.mini{width:72px;height:72px;flex:0 0 72px;border-radius:14px;object-fit:cover}
 .eximg.hero{width:100%;height:min(42vh,320px);max-height:42vh;object-fit:cover;border-radius:0}
 .eximg.card{aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius-sm)}
@@ -545,14 +545,24 @@ function exerciseSlug(name){
     .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
 function exerciseImgSrc(name){return 'exercises/'+exerciseSlug(name)+'.jpg'}
+function exerciseVidSrc(name){return 'exercises/'+exerciseSlug(name)+'.mp4'}
 function exerciseImg(name,cls){
-  const img=document.createElement('img');
-  img.className='eximg'+(cls?' '+cls:'');
-  img.src=exerciseImgSrc(name);
-  img.alt=name+' — form demo';
-  img.loading='lazy';
-  img.decoding='async';
-  return img;
+  const v=document.createElement('video');
+  v.className='eximg'+(cls?' '+cls:'');
+  v.src=exerciseVidSrc(name);
+  v.poster=exerciseImgSrc(name);
+  v.muted=true;v.defaultMuted=true;v.autoplay=true;v.loop=true;v.playsInline=true;
+  v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
+  v.setAttribute('aria-label',name+' — form demo');
+  v.preload=cls==='mini'?'metadata':'auto';
+  v.addEventListener('error',()=>{
+    if(v.dataset.fell)return;v.dataset.fell='1';
+    const img=document.createElement('img');
+    img.className=v.className;img.src=exerciseImgSrc(name);img.alt=name+' — form demo';
+    img.loading='lazy';img.decoding='async';
+    v.replaceWith(img);
+  },{once:true});
+  return v;
 }
 /* =========================================================
    QUIZ + PLAN

@@ -6,3 +6,5 @@ node_modules/
 *.log
 .railway/
 *.zip
+scripts/.video-frames/
+app/exercises/frames/
