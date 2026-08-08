@@ -166,14 +166,17 @@ a.linkbtn{color:var(--olive-soft)}
 .tabs{display:flex;gap:6px;margin:14px 0 4px}
 .tabs button{
   flex:1;border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:10px 8px;
-  font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted);
+  font-family:var(--disp);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted);
 }
 .tabs button.on{background:var(--ink);color:#F7F6F2;border-color:var(--ink)}
 .metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0 4px}
 .metrics div{background:rgba(16,20,18,.05);border-radius:10px;padding:8px 6px;text-align:center}
+.metrics div.hi{background:rgba(232,93,4,.16);outline:1.5px solid var(--accent)}
 .metrics .v{font-family:var(--disp);font-weight:800;font-size:16px;line-height:1}
 .metrics .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:600}
 .rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent);flex:0 0 28px}
+.sortkey{font-family:var(--disp);font-weight:800;font-size:18px;color:var(--ink);letter-spacing:-.02em}
+.sortlab{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;display:block;text-align:right}
 .wtrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-top:10px}
 .wtrow .field{margin:0}
 .wtrow .field input{
@@ -987,69 +990,105 @@ const fmtPct=p=>{
   return (n>0?'+':'')+n.toFixed(1)+'%';
 };
 function sortBoard(people, mode){
-  const arr=people.slice();
-  if(mode==='hours') arr.sort((a,b)=>(b.hours||0)-(a.hours||0)||(b.points||0)-(a.points||0));
-  else if(mode==='weight') arr.sort((a,b)=>{
-    const aw=a.weightLostPct==null?-999:a.weightLostPct;
-    const bw=b.weightLostPct==null?-999:b.weightLostPct;
-    return bw-aw||(b.points||0)-(a.points||0);
-  });
-  else arr.sort((a,b)=>(b.points||0)-(a.points||0)||(b.hours||0)-(a.hours||0));
+  const arr=(people||[]).slice();
+  const m=mode||'points';
+  if(m==='hours'){
+    arr.sort((a,b)=>(Number(b.hours)||0)-(Number(a.hours)||0)
+      ||(Number(b.sessions)||0)-(Number(a.sessions)||0)
+      ||(Number(b.points)||0)-(Number(a.points)||0)
+      ||String(a.name||'').localeCompare(String(b.name||'')));
+  }else if(m==='weight'){
+    arr.sort((a,b)=>{
+      const aw=a.weightLostPct==null?-1e9:Number(a.weightLostPct);
+      const bw=b.weightLostPct==null?-1e9:Number(b.weightLostPct);
+      return bw-aw
+        ||(Number(b.points)||0)-(Number(a.points)||0)
+        ||String(a.name||'').localeCompare(String(b.name||''));
+    });
+  }else{
+    arr.sort((a,b)=>(Number(b.points)||0)-(Number(a.points)||0)
+      ||(Number(b.hours)||0)-(Number(a.hours)||0)
+      ||String(a.name||'').localeCompare(String(b.name||'')));
+  }
   return arr;
+}
+function primarySortValue(p, mode){
+  if(mode==='hours') return {v:fmtHrs(p.hours),k:'Hours'};
+  if(mode==='weight') return {v:p.weightLostPct==null?'—':fmtPct(p.weightLostPct),k:'BW change'};
+  return {v:String(p.points||0),k:'Points'};
 }
 function board(a){
   if(location.hash.replace(/^#/,'').toLowerCase()!=='board' && location.hash.replace(/^#/,'').toLowerCase()!=='leaderboard'){
     history.replaceState(null,'',location.pathname+location.search+'#board');
   }
-  a.appendChild(el(`<div class="sheet">${head('LEADERBOARD')}
+  if(!S.boardTab)S.boardTab='points';
+  a.appendChild(el(`<div class="sheet" id="boardsheet">${head('LEADERBOARD')}
     <p class="eyebrow">Challenge \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
     <h2 class="display h-lg">Who is<br>elevating.</h2>
-    <p class="fine" style="margin:12px 0 0">Points for showing up and bettering yourself: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost.</p>
-    <div class="tabs" id="tabs">
-      <button type="button" data-tab="points" class="${S.boardTab==='points'?'on':''}">Points</button>
-      <button type="button" data-tab="hours" class="${S.boardTab==='hours'?'on':''}">Hours</button>
-      <button type="button" data-tab="weight" class="${S.boardTab==='weight'?'on':''}">Weight</button>
+    <p class="fine" style="margin:12px 0 0">Tap a sort below to rank the roster. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost.</p>
+    <p class="eyebrow" style="margin-top:16px">Sort roster by</p>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Sort leaderboard">
+      <button type="button" role="tab" data-tab="points" aria-selected="${S.boardTab==='points'?'true':'false'}" class="${S.boardTab==='points'?'on':''}">Points</button>
+      <button type="button" role="tab" data-tab="hours" aria-selected="${S.boardTab==='hours'?'true':'false'}" class="${S.boardTab==='hours'?'on':''}">Hours</button>
+      <button type="button" role="tab" data-tab="weight" aria-selected="${S.boardTab==='weight'?'true':'false'}" class="${S.boardTab==='weight'?'on':''}">Weight</button>
     </div>
     <div id="body"><p class="fine" style="margin-top:16px">Loading\u2026</p></div>
     <div style="flex:1;min-height:16px"></div>
-    <a class="btn ghost sm" id="back" href="${S.profile?'#':'/'}" style="text-align:center;text-decoration:none">Back</a>
+    <button type="button" class="btn ghost sm" id="back">Back</button>
   </div>`));
-  const back=document.getElementById('back');
-  back.onclick=e=>{
-    e.preventDefault();
+  document.getElementById('back').onclick=()=>{
     clearHash();
     S.screen=S.back||(S.profile?'plan':'cover');
     render();
   };
   const body=document.getElementById('body');
-  const paint=(people)=>{
+  const syncTabs=()=>{
+    document.querySelectorAll('#tabs button').forEach(x=>{
+      const on=x.dataset.tab===S.boardTab;
+      x.classList.toggle('on',on);
+      x.setAttribute('aria-selected',on?'true':'false');
+    });
+  };
+  const paint=()=>{
+    const people=S.boardPeople||[];
     body.innerHTML='';
-    if(!people.length){body.appendChild(el('<p class="fine" style="margin-top:12px">Nobody on the board yet. Lock a callsign and log a session.</p>'));return}
-    const title=S.boardTab==='hours'?'Hours board':S.boardTab==='weight'?'Weight-change board':'Points board';
-    body.appendChild(el(`<p class="eyebrow" style="margin-top:8px">${esc(title)}</p>`));
+    if(!people.length){
+      body.appendChild(el('<p class="fine" style="margin-top:12px">Nobody on the board yet. Lock a callsign and log a session.</p>'));
+      return;
+    }
+    const title=S.boardTab==='hours'?'Ranked by hours trained'
+      :S.boardTab==='weight'?'Ranked by bodyweight change'
+      :'Ranked by points';
+    body.appendChild(el(`<p class="eyebrow" style="margin-top:8px">${esc(title)} \u00b7 ${people.length} athletes</p>`));
     sortBoard(people,S.boardTab).forEach((p,i)=>{
       const wLabel=p.weightLostPct==null?'No weight':fmtPct(p.weightLostPct)+' BW';
+      const pri=primarySortValue(p,S.boardTab);
+      const hiP=S.boardTab==='points'?' hi':'';
+      const hiH=S.boardTab==='hours'?' hi':'';
+      const hiW=S.boardTab==='weight'?' hi':'';
       body.appendChild(el(`<div class="person">
-        <div class="prow"><span class="pnwrap"><span class="rank">${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
-          <span class="pd">${p.streak||0} streak</span></div>
-        <div class="metrics">
-          <div><div class="v">${p.points||0}</div><div class="k">Points</div></div>
-          <div><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
-          <div><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
+        <div class="prow">
+          <span class="pnwrap"><span class="rank">#${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
+          <span><span class="sortkey">${esc(pri.v)}</span><span class="sortlab">${esc(pri.k)}</span></span>
         </div>
-        <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions</span>
-          <span class="pm">${p.weightMilestones||0} wt · ${p.hoursMilestones||0} hr</span></div>
+        <div class="metrics">
+          <div class="${hiP.trim()}"><div class="v">${p.points||0}</div><div class="k">Points</div></div>
+          <div class="${hiH.trim()}"><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
+          <div class="${hiW.trim()}"><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
+        </div>
+        <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 streak ${p.streak||0}</span>
+          <span class="pm">${p.weightMilestones||0} wt · ${p.hoursMilestones||0} hr milestones</span></div>
       </div>`));
     });
   };
-  let cached=[];
-  document.querySelectorAll('#tabs button').forEach(b=>{
-    b.onclick=()=>{
-      S.boardTab=b.dataset.tab;
-      document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.tab===S.boardTab));
-      paint(cached);
-    };
-  });
+  document.getElementById('tabs').onclick=e=>{
+    const b=e.target.closest('button[data-tab]');
+    if(!b)return;
+    e.preventDefault();
+    S.boardTab=b.dataset.tab;
+    syncTabs();
+    paint();
+  };
   if(!tracking()){
     body.innerHTML='<p class="fine" style="margin-top:12px">Leaderboard needs the live roster API (open the Railway URL).</p>';
     return;
@@ -1057,9 +1096,10 @@ function board(a){
   (async()=>{
     try{
       const u=API()+(API().includes('?')?'&':'?')+'action=leaderboard&challenge='+encodeURIComponent(CONFIG.CHALLENGE);
-      const r=await fetch(u,{redirect:'follow'});const d=await r.json();
+      const r=await fetch(u,{cache:'no-store',redirect:'follow'});const d=await r.json();
       if(!d.ok){body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not load the board.</p>';return}
-      cached=d.people||[];paint(cached);
+      S.boardPeople=d.people||[];
+      paint();
     }catch(e){
       body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not reach the board.</p>';
     }
