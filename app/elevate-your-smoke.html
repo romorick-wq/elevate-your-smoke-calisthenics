@@ -158,6 +158,24 @@ p.lede{font-size:15.5px;line-height:1.55;color:#2c322e;margin:14px 0 0}
 .field input::placeholder{color:#B6B8B2}
 .person{border-bottom:1px solid var(--line);padding:12px 0}
 .person.cold{opacity:.45}
+.tabs{display:flex;gap:6px;margin:14px 0 4px}
+.tabs button{
+  flex:1;border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:10px 8px;
+  font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted);
+}
+.tabs button.on{background:var(--ink);color:#F7F6F2;border-color:var(--ink)}
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0 4px}
+.metrics div{background:rgba(16,20,18,.05);border-radius:10px;padding:8px 6px;text-align:center}
+.metrics .v{font-family:var(--disp);font-weight:800;font-size:16px;line-height:1}
+.metrics .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:600}
+.rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent);flex:0 0 28px}
+.wtrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-top:10px}
+.wtrow .field{margin:0}
+.wtrow .field input{
+  font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:0;
+  border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface2);width:100%;
+}
+.wtrow .btn{width:auto;padding:12px 16px;margin:0}
 .prow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .pn{font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:-.02em}
 .pd,.pm{font-size:11px;letter-spacing:.04em;color:var(--muted);font-weight:500}
@@ -231,7 +249,7 @@ const CONFIG={
 };
 
 const KEY='smoke30:v1';
-let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,si:0,timeLeft:0,paused:false,tick:null,tipTick:null,rafs:[],back:'plan'};
+let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,si:0,timeLeft:0,paused:false,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points'};
 
 /* ---------- movement library ---------- */
 const M={
@@ -657,10 +675,11 @@ const DB={
     return {key:k,value:v};
   }
 };
-async function save(){try{await DB.set(KEY,JSON.stringify({profile:S.profile,log:S.log,me:S.me}))}catch(e){}}
+async function save(){try{await DB.set(KEY,JSON.stringify({profile:S.profile,log:S.log,me:S.me,weights:S.weights}))}catch(e){}}
 async function boot(){
   try{const r=await DB.get(KEY);
     if(r&&r.value){const d=JSON.parse(r.value);S.profile=d.profile;S.log=d.log||{};S.me=d.me||null;
+      S.weights=d.weights||{starting:'',current:''};
       S.screen=S.profile?'plan':'cover'}
   }catch(e){}
   installable();
@@ -720,7 +739,7 @@ function render(){
   clearRafs();
   document.querySelectorAll('.overlay').forEach(n=>n.remove());
   const a=app();a.innerHTML='';
-  ({cover,join,quiz,build:building,plan,brief,done:doneScreen,manual,coach}[S.screen]||cover)(a);
+  ({cover,join,quiz,build:building,plan,brief,done:doneScreen,manual,coach,board}[S.screen]||cover)(a);
   window.scrollTo(0,0);
 }
 function cover(a){
@@ -734,6 +753,7 @@ function cover(a){
     <div style="flex:1;min-height:22px"></div>
     <button class="btn accent" id="go">Begin mission brief</button>
     <div style="text-align:center;margin-top:4px"><button class="linkbtn" id="man">Movement manual</button>
+    <button class="linkbtn" id="board" style="margin-left:14px">Leaderboard</button>
     <button class="linkbtn" id="org" style="margin-left:14px">Organizer</button></div>
   </div>`));
   const hero=document.getElementById('hero');
@@ -742,6 +762,7 @@ function cover(a){
   hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>Military calisthenics</span></div>`));
   document.getElementById('go').onclick=()=>{S.screen=S.me?'quiz':'join';S.qi=0;S.answers={};render()};
   document.getElementById('man').onclick=()=>{S.back='cover';S.screen='manual';render()};
+  document.getElementById('board').onclick=()=>{S.back='cover';S.screen='board';render()};
   document.getElementById('org').onclick=()=>{S.screen='coach';render()};
 }
 function quiz(a){
@@ -829,6 +850,8 @@ function report(action){
   const body={action,challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,
     sessions:Object.keys(S.log).length,total,streak:S.profile?streak():0,
     day:nextS?nextS.i+1:(S.profile?30:0),perWeek:S.profile?S.profile.days:0};
+  if(S.weights&&S.weights.starting!==''&&S.weights.starting!=null)body.startingWeight=Number(S.weights.starting);
+  if(S.weights&&S.weights.current!==''&&S.weights.current!=null)body.currentWeight=Number(S.weights.current);
   apiPost(body).catch(()=>queueAdd(body));
 }
 
@@ -945,6 +968,83 @@ function renderRoster(body,people){
   });
   body.appendChild(el('<p class="fine" style="margin-top:14px">Faded rows have not trained in the last seven days. Trash removes them from your roster.</p>'));
 }
+/* ---- public leaderboard ---- */
+const fmtHrs=h=> (h==null||h==='')? '—' : (Number(h).toFixed(Number(h)>=10?1:2).replace(/\.?0+$/,'')+'h');
+const fmtPct=p=>{
+  if(p==null)return '—';
+  const n=Number(p);
+  return (n>0?'+':'')+n.toFixed(1)+'%';
+};
+function sortBoard(people, mode){
+  const arr=people.slice();
+  if(mode==='hours') arr.sort((a,b)=>(b.hours||0)-(a.hours||0)||(b.points||0)-(a.points||0));
+  else if(mode==='weight') arr.sort((a,b)=>{
+    const aw=a.weightLostPct==null?-999:a.weightLostPct;
+    const bw=b.weightLostPct==null?-999:b.weightLostPct;
+    return bw-aw||(b.points||0)-(a.points||0);
+  });
+  else arr.sort((a,b)=>(b.points||0)-(a.points||0)||(b.hours||0)-(a.hours||0));
+  return arr;
+}
+function board(a){
+  a.appendChild(el(`<div class="sheet">${head('LEADERBOARD')}
+    <p class="eyebrow">Challenge \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
+    <h2 class="display h-lg">Who is<br>elevating.</h2>
+    <p class="fine" style="margin:12px 0 0">Points for showing up and bettering yourself: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost.</p>
+    <div class="tabs" id="tabs">
+      <button type="button" data-tab="points" class="${S.boardTab==='points'?'on':''}">Points</button>
+      <button type="button" data-tab="hours" class="${S.boardTab==='hours'?'on':''}">Hours</button>
+      <button type="button" data-tab="weight" class="${S.boardTab==='weight'?'on':''}">Weight</button>
+    </div>
+    <div id="body"><p class="fine" style="margin-top:16px">Loading\u2026</p></div>
+    <div style="flex:1;min-height:16px"></div>
+    <button class="btn ghost sm" id="back">Back</button>
+  </div>`));
+  document.getElementById('back').onclick=()=>{S.screen=S.back||(S.profile?'plan':'cover');render()};
+  const body=document.getElementById('body');
+  const paint=(people)=>{
+    body.innerHTML='';
+    if(!people.length){body.appendChild(el('<p class="fine" style="margin-top:12px">Nobody on the board yet. Lock a callsign and log a session.</p>'));return}
+    const title=S.boardTab==='hours'?'Hours board':S.boardTab==='weight'?'Weight-change board':'Points board';
+    body.appendChild(el(`<p class="eyebrow" style="margin-top:8px">${esc(title)}</p>`));
+    sortBoard(people,S.boardTab).forEach((p,i)=>{
+      const wLabel=p.weightLostPct==null?'No weight':fmtPct(p.weightLostPct)+' BW';
+      body.appendChild(el(`<div class="person">
+        <div class="prow"><span class="pnwrap"><span class="rank">${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
+          <span class="pd">${p.streak||0} streak</span></div>
+        <div class="metrics">
+          <div><div class="v">${p.points||0}</div><div class="k">Points</div></div>
+          <div><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
+          <div><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
+        </div>
+        <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions</span>
+          <span class="pm">${p.weightMilestones||0} wt · ${p.hoursMilestones||0} hr</span></div>
+      </div>`));
+    });
+  };
+  let cached=[];
+  document.querySelectorAll('#tabs button').forEach(b=>{
+    b.onclick=()=>{
+      S.boardTab=b.dataset.tab;
+      document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.tab===S.boardTab));
+      paint(cached);
+    };
+  });
+  if(!tracking()){
+    body.innerHTML='<p class="fine" style="margin-top:12px">Leaderboard needs the live roster API (open the Railway URL).</p>';
+    return;
+  }
+  (async()=>{
+    try{
+      const u=API()+(API().includes('?')?'&':'?')+'action=leaderboard&challenge='+encodeURIComponent(CONFIG.CHALLENGE);
+      const r=await fetch(u,{redirect:'follow'});const d=await r.json();
+      if(!d.ok){body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not load the board.</p>';return}
+      cached=d.people||[];paint(cached);
+    }catch(e){
+      body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not reach the board.</p>';
+    }
+  })();
+}
 /* ---------- plan ---------- */
 function nextSlot(){return schedule(S.profile).find(s=>s.train&&!S.log[s.i])}
 function streak(){
@@ -965,14 +1065,36 @@ function plan(a){
     </div>
     <p class="quote cardquote">Elevate your smoke \u2014 grit, fit, standard. Nine minutes. Show up.</p>
     <div id="today"></div>
+    <div class="block" style="margin-top:14px" id="wtblock">
+      <p class="eyebrow">Weight check-in</p>
+      <p class="fine" style="margin:0 0 8px">Starting + current weight unlock the weight board and 5% milestone points.</p>
+      <div class="wtrow">
+        <div class="field"><label for="wstart">Start lbs</label>
+          <input id="wstart" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="180" value="${esc(S.weights.starting??'')}"></div>
+        <div class="field"><label for="wcur">Now lbs</label>
+          <input id="wcur" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="175" value="${esc(S.weights.current??'')}"></div>
+        <button type="button" class="btn accent sm" id="wsave">Save</button>
+      </div>
+      <p class="fine" id="wmsg" style="min-height:16px;margin-top:8px"></p>
+    </div>
     <p class="eyebrow" style="margin-top:22px">The card \u00b7 thirty days</p>
     <div class="weeks" id="weeks"></div>
     <div class="rule thin" style="margin-top:22px"></div>
     <p class="fine"><b>A</b> ${FOCUS.A} \u00b7 <b>B</b> ${FOCUS.B} \u00b7 <b>C</b> ${FOCUS.C}. Blank days are rest \u2014 they are part of the plan, not a gap in it. The last ten days step every movement up a level.</p>
     <button class="btn ghost sm" id="man" style="margin-top:14px">Movement manual</button>
-    <div style="text-align:center;margin-top:4px"><button class="linkbtn" id="org">Organizer</button>
+    <div style="text-align:center;margin-top:4px"><button class="linkbtn" id="board">Leaderboard</button>
+    <button class="linkbtn" id="org" style="margin-left:14px">Organizer</button>
     <button class="linkbtn" id="reset" style="margin-left:14px">Start a new card</button></div>
   </div>`));
+  document.getElementById('wsave').onclick=()=>{
+    const start=document.getElementById('wstart').value.trim();
+    const cur=document.getElementById('wcur').value.trim();
+    const msg=document.getElementById('wmsg');
+    const okNum=v=>{if(v==='')return true;const n=Number(v);return Number.isFinite(n)&&n>0&&n<=1000};
+    if(!okNum(start)||!okNum(cur)){msg.style.color='var(--danger)';msg.textContent='Enter a valid weight in lbs.';return}
+    S.weights={starting:start,current:cur};save();report('ping');
+    msg.style.color='var(--olive-soft)';msg.textContent='Saved to your roster.';
+  };
   const t=document.getElementById('today');
   if(sess){
     t.appendChild(el(`<div class="block invert" style="margin-top:12px">
@@ -1008,6 +1130,7 @@ function plan(a){
     W.appendChild(row);
   }
   document.getElementById('man').onclick=()=>{S.back='plan';S.screen='manual';render()};
+  document.getElementById('board').onclick=()=>{S.back='plan';S.screen='board';render()};
   document.getElementById('org').onclick=()=>{S.screen='coach';render()};
   document.getElementById('reset').onclick=()=>{
     if(confirm('This clears your logged sessions and runs the questions again.')){

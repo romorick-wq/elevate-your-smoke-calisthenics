@@ -73,7 +73,13 @@ Health check: `https://your-app.up.railway.app/api/health` should return
 ## What lands in Postgres
 
 **participants** — one row per person per challenge: name, joined, last
-active, sessions finished, streak, day, days-per-week.
+active, sessions finished, streak, day, days-per-week, phone, starting
+weight, current weight, date started.
+
+Hours on the boards = `sessions × 9 minutes`. Points = 10 per session,
++50 every 5% of the card completed, +100 every 5% bodyweight lost.
+
+Public leaderboard (no pin): `GET /api/leaderboard?challenge=smoke-30`.
 
 **sessions** — one row every time somebody finishes a nine-minute session
 (attendance log).

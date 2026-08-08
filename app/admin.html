@@ -53,10 +53,16 @@ body{
 .linkbtn{background:none;border:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
   cursor:pointer;padding:8px 0;font-weight:600;text-decoration:none}
 .linkbtn:hover{color:var(--ink)}
-.statrow{display:flex;gap:8px}
-.statrow div{flex:1;padding:14px 10px;text-align:center;background:var(--surface2);border-radius:var(--radius-sm)}
-.statrow .n{font-family:var(--disp);font-weight:800;font-size:28px;line-height:1}
+.statrow{display:flex;gap:8px;flex-wrap:wrap}
+.statrow div{flex:1;min-width:72px;padding:14px 10px;text-align:center;background:var(--surface2);border-radius:var(--radius-sm)}
+.statrow .n{font-family:var(--disp);font-weight:800;font-size:24px;line-height:1}
 .statrow .l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;font-weight:600}
+.tabs{display:flex;gap:6px;margin:14px 0 4px}
+.tabs button{
+  flex:1;border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:10px 8px;
+  font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted);
+}
+.tabs button.on{background:var(--ink);color:#F7F6F2;border-color:var(--ink)}
 .field{margin:14px 0 6px}
 .field label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600}
 .field input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
@@ -69,6 +75,11 @@ body{
 .pd,.pm{font-size:11px;letter-spacing:.04em;color:var(--muted);font-weight:500}
 .pbar{height:6px;margin:8px 0 5px;background:rgba(16,20,18,.08);border-radius:99px;overflow:hidden}
 .pbar i{display:block;height:100%;background:var(--olive-soft);border-radius:99px}
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0 4px}
+.metrics div{background:rgba(16,20,18,.05);border-radius:10px;padding:8px 6px;text-align:center}
+.metrics .v{font-family:var(--disp);font-weight:800;font-size:16px;line-height:1}
+.metrics .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:600}
+.rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent);flex:0 0 28px}
 .note{border-left:3px solid var(--accent);padding:8px 0 8px 12px;margin:16px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
 .err{color:var(--danger);margin-top:12px}
 .okmsg{color:var(--olive-soft);margin-top:8px;font-size:12px;font-weight:600}
@@ -95,6 +106,8 @@ body{
 <script>
 const CONFIG={SYNC_URL:'/api',CHALLENGE:'smoke-30'};
 const PIN_KEY='smoke30:admin-pin';
+let PEOPLE=[];
+let TAB='crm'; // crm | points | hours | weight
 
 const el=h=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -111,15 +124,21 @@ const ago=ts=>{
   return d<=0?'today':d===1?'yesterday':d+' days ago';
 };
 const pinCode=()=>{try{return sessionStorage.getItem(PIN_KEY)||''}catch(e){return ''}};
+const fmtHrs=h=> (h==null||h==='')? '—' : (Number(h).toFixed(Number(h)>=10?1:2).replace(/\.?0+$/,'')+'h');
+const fmtPct=p=>{
+  if(p==null)return '—';
+  const n=Number(p);
+  return (n>0?'+':'')+n.toFixed(1)+'%';
+};
 
 function render(){
   const app=document.getElementById('app');
   app.innerHTML='';
   app.appendChild(el(`<div class="sheet">
-    <div class="masthead"><div class="brand"><h1>Elevate Your Smoke</h1><span class="sub">Admin</span></div></div>
+    <div class="masthead"><div class="brand"><h1>Elevate Your Smoke</h1><span class="sub">Admin CRM</span></div></div>
     <p class="eyebrow">Roster \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
     <h2 class="display h-lg">Admin<br>login</h2>
-    <p class="fine" style="margin:12px 0 0">Enter your organizer code to manage the roster — phone, starting weight, and start date for each person.</p>
+    <p class="fine" style="margin:12px 0 0">Organizer CRM — track every participant\u2019s phone, weights, hours, and points. 100 pts per 5% bodyweight lost. 50 pts per 5% of the card completed. 10 pts per session.</p>
     <div class="rule"></div>
     <div id="gate"></div>
     <div id="body"></div>
@@ -162,7 +181,8 @@ function render(){
         return;
       }
       try{sessionStorage.setItem(PIN_KEY,code)}catch(e){}
-      renderRoster(body,d.people||[]);
+      PEOPLE=d.people||[];
+      renderDashboard(body);
     }catch(e){
       body.innerHTML='';
       err.textContent='Could not reach the roster. Try again in a moment.';
@@ -175,8 +195,9 @@ function render(){
   if(pin.value)load();
 }
 
-function renderRoster(body,people){
+function renderDashboard(body){
   body.innerHTML='';
+  const people=PEOPLE;
   if(!people.length){
     body.appendChild(el('<p class="fine" style="margin-top:16px">Nobody has joined yet.</p>'));
     return;
@@ -184,35 +205,108 @@ function renderRoster(body,people){
   const wk=Date.now()-7*864e5;
   const active=people.filter(p=>p.lastActive>wk).length;
   const done=people.filter(p=>p.total&&p.sessions>=p.total).length;
+  const totalHrs=people.reduce((s,p)=>s+(p.hours||0),0);
+  const totalPts=people.reduce((s,p)=>s+(p.points||0),0);
   body.appendChild(el(`<div class="statrow" style="margin-top:16px">
     <div><div class="n">${people.length}</div><div class="l">On roster</div></div>
     <div><div class="n">${active}</div><div class="l">Active 7d</div></div>
     <div><div class="n">${done}</div><div class="l">Finished</div></div>
+    <div><div class="n">${fmtHrs(totalHrs)}</div><div class="l">Hours</div></div>
+    <div><div class="n">${totalPts}</div><div class="l">Points</div></div>
   </div>`));
-  body.appendChild(el('<p class="eyebrow" style="margin-top:20px">Most recent first</p>'));
+
+  body.appendChild(el(`<div class="tabs" id="tabs">
+    <button type="button" data-tab="crm" class="${TAB==='crm'?'on':''}">CRM</button>
+    <button type="button" data-tab="points" class="${TAB==='points'?'on':''}">Points</button>
+    <button type="button" data-tab="hours" class="${TAB==='hours'?'on':''}">Hours</button>
+    <button type="button" data-tab="weight" class="${TAB==='weight'?'on':''}">Weight</button>
+  </div>`));
+  body.querySelectorAll('#tabs button').forEach(b=>{
+    b.onclick=()=>{TAB=b.dataset.tab;renderDashboard(body)};
+  });
+
+  const list=el('<div id="list"></div>');
+  body.appendChild(list);
+  if(TAB==='crm') renderCrm(list, people);
+  else renderBoard(list, people, TAB);
+
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost from starting weight. Edit CRM fields and Save.</p>'));
+}
+
+function sortBoard(people, mode){
+  const arr=people.slice();
+  if(mode==='hours') arr.sort((a,b)=>(b.hours||0)-(a.hours||0)||(b.points||0)-(a.points||0));
+  else if(mode==='weight') arr.sort((a,b)=>{
+    const aw=a.weightLostPct==null?-999:a.weightLostPct;
+    const bw=b.weightLostPct==null?-999:b.weightLostPct;
+    return bw-aw||(b.points||0)-(a.points||0);
+  });
+  else arr.sort((a,b)=>(b.points||0)-(a.points||0)||(b.hours||0)-(a.hours||0));
+  return arr;
+}
+
+function renderBoard(list, people, mode){
+  list.innerHTML='';
+  const title=mode==='hours'?'Hours board':mode==='weight'?'Weight-change board':'Points board';
+  list.appendChild(el(`<p class="eyebrow" style="margin-top:12px">${esc(title)}</p>`));
+  sortBoard(people, mode).forEach((p,i)=>{
+    const pct=p.total?Math.round(100*p.sessions/p.total):0;
+    const wLabel=p.weightLostPct==null?'No weight logged':fmtPct(p.weightLostPct)+' BW';
+    const row=el(`<div class="person">
+      <div class="prow">
+        <span class="pnwrap"><span class="rank">${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
+        <span class="pd">${esc(ago(p.lastActive))}</span>
+      </div>
+      <div class="pbar"><i style="width:${pct}%"></i></div>
+      <div class="metrics">
+        <div><div class="v">${p.points||0}</div><div class="k">Points</div></div>
+        <div><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
+        <div><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
+      </div>
+      <div class="prow"><span class="pm">${p.sessions||0}/${p.total||0} sessions \u00b7 streak ${p.streak||0}</span>
+        <span class="pm">${p.weightMilestones||0} wt · ${p.hoursMilestones||0} hr milestones</span></div>
+    </div>`);
+    list.appendChild(row);
+  });
+}
+
+function renderCrm(list, people){
+  list.innerHTML='';
+  list.appendChild(el('<p class="eyebrow" style="margin-top:12px">Participant CRM · most recent first</p>'));
   const trashIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
   const pin=pinCode();
+  const wk=Date.now()-7*864e5;
+  const body=document.getElementById('body');
 
-  people.sort((a,b)=>(b.lastActive||0)-(a.lastActive||0)).forEach((p,idx)=>{
+  people.slice().sort((a,b)=>(b.lastActive||0)-(a.lastActive||0)).forEach((p,idx)=>{
     const pct=p.total?Math.round(100*p.sessions/p.total):0;
     const cold=p.lastActive<wk;
-    const weightVal=p.startingWeight===''||p.startingWeight==null?'':p.startingWeight;
+    const startVal=p.startingWeight===''||p.startingWeight==null?'':p.startingWeight;
+    const curVal=p.currentWeight===''||p.currentWeight==null?'':p.currentWeight;
     const startedVal=p.dateStarted||'';
     const phoneVal=p.phone||'';
     const uid='p'+idx;
+    const wLabel=p.weightLostPct==null?'—':fmtPct(p.weightLostPct);
     const row=el(`<div class="person${cold?' cold':''}">
       <div class="prow"><span class="pnwrap"><span class="pn">${esc(p.name||'\u2014')}</span>
         <button type="button" class="trash" title="Remove from roster" aria-label="Remove ${esc(p.name||'participant')}">${trashIcon}</button></span>
         <span class="pd">${esc(ago(p.lastActive))}</span></div>
       <div class="pbar"><i style="width:${pct}%"></i></div>
+      <div class="metrics">
+        <div><div class="v">${p.points||0}</div><div class="k">Points</div></div>
+        <div><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
+        <div><div class="v">${esc(wLabel)}</div><div class="k">BW change</div></div>
+      </div>
       <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 day ${p.day||1}</span>
         <span class="pm">${p.streak||0} streak</span></div>
       <div class="meta">
         <div class="field full"><label for="${uid}-phone">Phone number</label>
           <input id="${uid}-phone" type="tel" inputmode="tel" autocomplete="off" placeholder="555-0100" value="${esc(phoneVal)}"></div>
-        <div class="field"><label for="${uid}-weight">Starting weight</label>
-          <input id="${uid}-weight" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="lbs" value="${esc(weightVal)}"></div>
-        <div class="field"><label for="${uid}-started">Date started</label>
+        <div class="field"><label for="${uid}-start">Starting weight</label>
+          <input id="${uid}-start" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="lbs" value="${esc(startVal)}"></div>
+        <div class="field"><label for="${uid}-cur">Current weight</label>
+          <input id="${uid}-cur" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="lbs" value="${esc(curVal)}"></div>
+        <div class="field full"><label for="${uid}-started">Date started</label>
           <input id="${uid}-started" type="date" value="${esc(startedVal)}"></div>
       </div>
       <div class="save-row">
@@ -230,7 +324,8 @@ function renderRoster(body,people){
           body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name})});
         const d=await r.json();
         if(!d.ok){alert(d.error==='bad pin'?'Organizer code rejected.':'Could not delete.');return}
-        renderRoster(body,people.filter(x=>x!==p));
+        PEOPLE=PEOPLE.filter(x=>x!==p);
+        renderDashboard(body);
       }catch(e){alert('Could not reach the roster.')}
     };
 
@@ -239,15 +334,16 @@ function renderRoster(body,people){
       const bad=row.querySelector('.err');
       ok.hidden=true;bad.hidden=true;
       const phone=row.querySelector('#'+uid+'-phone').value.trim();
-      const startingWeight=row.querySelector('#'+uid+'-weight').value.trim();
+      const startingWeight=row.querySelector('#'+uid+'-start').value.trim();
+      const currentWeight=row.querySelector('#'+uid+'-cur').value.trim();
       const dateStarted=row.querySelector('#'+uid+'-started').value;
       try{
         const r=await fetch('/api/roster/update',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name,phone,startingWeight,dateStarted})});
+          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name,phone,startingWeight,currentWeight,dateStarted})});
         const d=await r.json();
         if(!d.ok){
           bad.textContent=d.error==='bad pin'?'Organizer code rejected.':
-            d.error==='bad weight'?'Enter a valid starting weight.':
+            d.error==='bad weight'?'Enter a valid weight.':
             d.error==='bad date'?'Enter a valid start date.':
             d.error==='not found'?'That person was not found.':'Could not save.';
           bad.hidden=false;
@@ -255,18 +351,35 @@ function renderRoster(body,people){
         }
         p.phone=phone;
         p.startingWeight=startingWeight===''?'':Number(startingWeight);
+        p.currentWeight=currentWeight===''?'':Number(currentWeight);
         p.dateStarted=dateStarted;
+        // Refresh derived scores locally
+        const startW=p.startingWeight===''?null:Number(p.startingWeight);
+        const curW=p.currentWeight===''?null:Number(p.currentWeight);
+        if(startW!=null&&curW!=null&&startW>0){
+          p.weightDelta=Math.round((startW-curW)*10)/10;
+          p.weightLostPct=Math.round(((startW-curW)/startW)*1000)/10;
+          p.weightMilestones=p.weightLostPct>0?Math.floor(p.weightLostPct/5):0;
+        }else{
+          p.weightDelta=null;p.weightLostPct=null;p.weightMilestones=0;
+        }
+        const hoursPct=p.total>0?(p.sessions/p.total)*100:0;
+        p.hoursMilestones=Math.floor(hoursPct/5);
+        p.points=(p.sessions||0)*10+(p.weightMilestones||0)*100+(p.hoursMilestones||0)*50;
         ok.textContent='Saved.';
         ok.hidden=false;
+        // Update metrics display without full re-render so the save message stays
+        const mets=row.querySelectorAll('.metrics .v');
+        if(mets[0])mets[0].textContent=String(p.points||0);
+        if(mets[2])mets[2].textContent=p.weightLostPct==null?'—':fmtPct(p.weightLostPct);
       }catch(e){
         bad.textContent='Could not reach the roster.';
         bad.hidden=false;
       }
     };
 
-    body.appendChild(row);
+    list.appendChild(row);
   });
-  body.appendChild(el('<p class="fine" style="margin-top:14px">Edit phone, starting weight, and date started for each person, then tap Save. Trash removes them from the roster.</p>'));
 }
 
 render();

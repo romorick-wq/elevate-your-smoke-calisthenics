@@ -82,8 +82,20 @@ async function handleUpdate(req, res) {
     const result = await db.updateParticipantDetails(challenge, name, {
       phone: body.phone,
       startingWeight: body.startingWeight,
+      currentWeight: body.currentWeight,
       dateStarted: body.dateStarted,
     });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: String(err.message || err) });
+  }
+}
+
+async function handleLeaderboard(req, res) {
+  try {
+    const challenge = String(req.query.challenge || '');
+    const result = await db.getLeaderboard(challenge);
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -100,6 +112,7 @@ app.post('/api/sync', handleSync);
 
 app.get('/api', async (req, res) => {
   if (req.query.action === 'roster') return handleRoster(req, res);
+  if (req.query.action === 'leaderboard') return handleLeaderboard(req, res);
   res.json({ ok: true, alive: true });
 });
 
@@ -107,6 +120,7 @@ app.get('/api/roster', handleRoster);
 app.delete('/api/roster', handleDelete);
 app.post('/api/roster/delete', handleDelete);
 app.post('/api/roster/update', handleUpdate);
+app.get('/api/leaderboard', handleLeaderboard);
 
 app.get(['/admin', '/admin/'], (_req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
