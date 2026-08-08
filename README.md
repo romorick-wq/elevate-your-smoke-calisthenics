@@ -1,89 +1,100 @@
-# Elevate Your Smoke — Calisthenics
+# Elevate Your Smoke
 
-A 30-day bodyweight challenge. Nine minutes a day, guided and timed, with a
-looping stick-figure sample for every movement and a Postgres roster so the
-organizer can see who is showing up.
+The Cigar Society’s **9-minute**, **30-day** calisthenics challenge — HTML workout app + Express/Postgres roster on Railway.
 
-The workout UI is plain HTML. The roster runs on **Railway** (Express + Postgres).
-
----
-
-## What's in the box
-
-```
-app/
-  index.html                 the workout app (also served by the API)
-  admin.html                 organizer / admin login + roster
-  elevate-your-smoke.html    identical copy for filing
-  icon.png                   home-screen icon (also embedded in the app)
-backend/
-  server.js                  Express: static host + roster API
-  db.js                      Postgres schema + queries
-  package.json
-  roster-backend.gs          legacy Google Sheets script (optional / unused)
-  groundwork.html            earlier 28-day prototype (not the live app)
-docs/
-  SETUP-roster.md            Railway deploy + roster setup
-  SETUP-roster-sheets.md     optional Google Sheets roster setup
-railway.toml                 Railway build/start config
-README.md
-```
-
-## Running locally (workout only)
-
-Double-click `app/index.html`. The plan, timers, and diagrams work. Roster
-sync stays off until the app is served over http(s) with a database behind it.
-
-## Running locally (full stack)
+## Quick start
 
 ```bash
-cd backend
 npm install
-export DATABASE_URL='postgresql://USER:PASS@HOST:PORT/DB'
-export ORGANIZER_CODE='your-code'
-npm run dev
+npm run install:backend   # if needed
+export DATABASE_URL='postgresql://…'
+export ORGANIZER_CODE='your-pin'
+npm start                 # http://localhost:3000
 ```
 
-Open `http://localhost:3000`.
+Checks:
 
-Admin / organizer roster: `http://localhost:3000/admin` (uses `ORGANIZER_CODE`).
+```bash
+npm test
+npm run check
+```
 
-## Putting it online (Railway)
+## Environment variables
 
-Follow [`docs/SETUP-roster.md`](docs/SETUP-roster.md). Short version:
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `DATABASE_URL` | Yes | Postgres connection |
+| `ORGANIZER_CODE` | Yes (prod) | Admin CRM pin (server-only) |
+| `PGSSL` | No | Set `false` for local Postgres without SSL |
+| `TWILIO_ACCOUNT_SID` | No | Server SMS |
+| `TWILIO_AUTH_TOKEN` | No | Server SMS |
+| `TWILIO_FROM_NUMBER` | No | E.164 from-number |
+| `PORT` | No | Default `3000` |
 
-1. Create a Railway project + Postgres.
-2. Set `DATABASE_URL` and `ORGANIZER_CODE`.
-3. Deploy this repo (GitHub or `railway up`).
-4. Generate a public domain and send that link to participants.
+Never put `ORGANIZER_CODE` or Twilio secrets in client HTML.
 
-`CONFIG.SYNC_URL` is already `'/api'` so same-origin sync works on Railway
-with no extra edit.
+## Kickoff date
 
-## What gets collected
+Configured once in `app/index.html`:
 
-- Name (or nickname) they type
-- Sessions finished, streak, day, last active
-- One attendance row per finished session
+```js
+CONFIG.KICKOFF_ISO = '2026-08-15T09:00:00-05:00'
+CONFIG.KICKOFF_LABEL = 'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)'
+```
 
-Quiz answers never leave the device.
+Countdown never goes negative; after kickoff it shows **Challenge is live**.
 
-## Editing the workout later
+## Scoring (single source of truth)
 
-Open `app/index.html` in any text editor.
+Implemented in `backend/score.js` (API + `/api/health` + `/api/scoring`):
 
-- **Roster** — `CONFIG` near the top of the `<script>` block (`SYNC_URL`,
-  `CHALLENGE`). Organizer pin is the Railway `ORGANIZER_CODE` variable.
-- **Exercises** — `const EX=` for diagrams, cues, and “watch for” notes.
-  `const M=` for levels and injury swaps.
-- **Session shape** — `buildSession` builds the nine minutes.
+- **10** points per completed session
+- **+50** every 5% of the card completed (`sessions / total`)
+- **+100** every 5% bodyweight lost from starting weight, **capped at 4 milestones (20%)**
+- **Hours** = `sessions × 9 minutes`
+- Duplicate session rows for the same participant/challenge/day are rejected server-side
+- Progress fields only move **up** (`GREATEST`) on sync
 
-After editing, redeploy on Railway. Progress lives in each person’s browser
-(and in Postgres for the roster), so updates do not wipe cards.
+Public leaderboard fields: callsign, league, sessions, streak, points, hours, weight-lost %. **Not** phone, raw weights, or ids.
 
-## A note on what this is
+## 9-minute structure
 
-The plan scales movements down for age, injuries, and a from-scratch start,
-and it never asks anyone to train through pain. It is a structure for showing
-up, not medical advice. Anyone with a condition that affects exercise should
-clear it with a doctor first — the app says so on the first screen.
+Always **540 seconds**:
+
+1. Warm-up 60s (2×30)
+2. Circuit 360s (3 rounds × 4 moves × 30s work+rest)
+3. Finisher 60s
+4. Cool-down 60s
+
+Level 1: 20s work / 10s rest. Level 2+: 25s / 5s.
+
+## Deploy (Railway)
+
+```bash
+railway link -p elevate-your-smoke
+railway service link app
+railway up --detach
+railway deployment list --limit 1
+curl -s https://elevate-your-smoke.up.railway.app/api/health
+```
+
+App URL: **https://elevate-your-smoke.up.railway.app**  
+Admin: **https://elevate-your-smoke.up.railway.app/admin**
+
+Keep `app/index.html` and `app/elevate-your-smoke.html` in sync when editing the workout UI.
+
+## Routes
+
+| Path | Purpose |
+|------|---------|
+| `/` | Workout app |
+| `/admin` | Organizer CRM (pin) |
+| `/#board` | League boards |
+| `/#manual` | Movement manual |
+| `/#card` | 9-minute card explainer |
+| `/#privacy` | Privacy |
+| `/#settings` | Profile / leave |
+
+## Migrations
+
+`backend/db.js` `init()` applies additive schema on boot (`IF NOT EXISTS` columns/indexes), including unique session-per-day index.
