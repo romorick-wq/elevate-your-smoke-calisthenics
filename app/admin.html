@@ -99,6 +99,15 @@ body{
 .meta .field input:focus{outline:none;border-color:var(--accent)}
 .save-row{display:flex;align-items:center;gap:10px;margin-top:10px}
 .save-row .btn{width:auto;flex:1;margin:0}
+.find{display:flex;gap:8px;align-items:stretch;margin:14px 0 4px}
+.find input{
+  flex:1;font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:0;
+  border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface2);color:var(--ink);
+}
+.find input:focus{outline:none;border-color:var(--accent)}
+.find .btn{width:auto;margin:0;flex:0 0 auto;padding:12px 18px}
+.find-clear{background:none;border:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;font-weight:600;padding:4px 0}
+.find-clear:hover{color:var(--ink)}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -109,6 +118,7 @@ const CONFIG={SYNC_URL:'/api',CHALLENGE:'smoke-30'};
 const PIN_KEY='smoke30:admin-pin';
 let PEOPLE=[];
 let TAB='crm'; // crm | points | hours | weight
+let QUERY='';
 
 const el=h=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -196,25 +206,80 @@ function render(){
   if(pin.value)load();
 }
 
+function matchPerson(p, q){
+  if(!q)return true;
+  const hay=[p.name,p.phone,p.dateStarted,String(p.startingWeight??''),String(p.currentWeight??'')]
+    .join(' ').toLowerCase();
+  return q.split(/\s+/).filter(Boolean).every(tok=>hay.includes(tok));
+}
+function filteredPeople(){
+  const q=String(QUERY||'').trim().toLowerCase();
+  if(!q)return PEOPLE.slice();
+  return PEOPLE.filter(p=>matchPerson(p,q));
+}
+
 function renderDashboard(body){
   body.innerHTML='';
-  const people=PEOPLE;
-  if(!people.length){
+  const all=PEOPLE;
+  if(!all.length){
     body.appendChild(el('<p class="fine" style="margin-top:16px">Nobody has joined yet.</p>'));
     return;
   }
+  const people=filteredPeople();
   const wk=Date.now()-7*864e5;
-  const active=people.filter(p=>p.lastActive>wk).length;
-  const done=people.filter(p=>p.total&&p.sessions>=p.total).length;
-  const totalHrs=people.reduce((s,p)=>s+(p.hours||0),0);
-  const totalPts=people.reduce((s,p)=>s+(p.points||0),0);
+  const active=all.filter(p=>p.lastActive>wk).length;
+  const done=all.filter(p=>p.total&&p.sessions>=p.total).length;
+  const totalHrs=all.reduce((s,p)=>s+(p.hours||0),0);
+  const totalPts=all.reduce((s,p)=>s+(p.points||0),0);
   body.appendChild(el(`<div class="statrow" style="margin-top:16px">
-    <div><div class="n">${people.length}</div><div class="l">On roster</div></div>
+    <div><div class="n">${all.length}</div><div class="l">On roster</div></div>
     <div><div class="n">${active}</div><div class="l">Active 7d</div></div>
     <div><div class="n">${done}</div><div class="l">Finished</div></div>
     <div><div class="n">${fmtHrs(totalHrs)}</div><div class="l">Hours</div></div>
     <div><div class="n">${totalPts}</div><div class="l">Points</div></div>
   </div>`));
+
+  body.appendChild(el(`<p class="eyebrow" style="margin-top:18px">Find participant</p>
+    <div class="find">
+      <input id="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="Name or phone…" value="${esc(QUERY)}">
+      <button type="button" class="btn accent sm" id="find">Find</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:20px">
+      <p class="fine" id="findmeta" style="margin:0"></p>
+      <button type="button" class="find-clear" id="clearq" ${QUERY?'':'hidden'}>Clear</button>
+    </div>`));
+
+  const qInput=document.getElementById('q');
+  const findMeta=document.getElementById('findmeta');
+  const runFind=()=>{
+    QUERY=qInput.value.trim();
+    document.getElementById('clearq').hidden=!QUERY;
+    renderDashboard(body);
+    const again=document.getElementById('q');
+    if(again){again.focus();const n=again.value.length;again.setSelectionRange(n,n)}
+  };
+  document.getElementById('find').onclick=runFind;
+  qInput.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();runFind()}};
+  qInput.oninput=()=>{
+    // live filter as they type
+    QUERY=qInput.value;
+    document.getElementById('clearq').hidden=!String(QUERY).trim();
+    const list=document.getElementById('list');
+    if(!list)return;
+    const matched=filteredPeople();
+    findMeta.textContent=QUERY.trim()
+      ? (matched.length? matched.length+' match'+(matched.length===1?'':'es') : 'No matches')
+      : '';
+    if(TAB==='crm') renderCrm(list, matched);
+    else renderBoard(list, matched, TAB);
+  };
+  document.getElementById('clearq').onclick=()=>{
+    QUERY='';
+    renderDashboard(body);
+  };
+  findMeta.textContent=QUERY.trim()
+    ? (people.length? people.length+' match'+(people.length===1?'':'es')+' of '+all.length : 'No matches for “'+QUERY.trim()+'”')
+    : '';
 
   body.appendChild(el(`<p class="eyebrow" style="margin-top:16px">Sort / view</p>
   <div class="tabs" id="tabs">
@@ -229,10 +294,12 @@ function renderDashboard(body){
 
   const list=el('<div id="list"></div>');
   body.appendChild(list);
-  if(TAB==='crm') renderCrm(list, people);
+  if(!people.length){
+    list.appendChild(el(`<p class="fine" style="margin-top:12px">No participants match “${esc(QUERY.trim())}”. Clear search to see the full roster.</p>`));
+  }else if(TAB==='crm') renderCrm(list, people);
   else renderBoard(list, people, TAB);
 
-  body.appendChild(el('<p class="fine" style="margin-top:14px">Points / Hours / Weight tabs re-sort the roster. CRM edits phone and weights. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost.</p>'));
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Use Find to jump to a callsign or phone. Points / Hours / Weight tabs re-sort the visible roster. CRM edits phone and weights.</p>'));
 }
 
 function sortBoard(people, mode){
