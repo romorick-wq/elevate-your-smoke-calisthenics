@@ -79,6 +79,7 @@ body{
 .metrics div{background:rgba(16,20,18,.05);border-radius:10px;padding:8px 6px;text-align:center}
 .metrics .v{font-family:var(--disp);font-weight:800;font-size:16px;line-height:1}
 .metrics .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:600}
+.metrics div.hi{background:rgba(232,93,4,.16);outline:1.5px solid var(--accent)}
 .rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent);flex:0 0 28px}
 .note{border-left:3px solid var(--accent);padding:8px 0 8px 12px;margin:16px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
 .err{color:var(--danger);margin-top:12px}
@@ -215,7 +216,8 @@ function renderDashboard(body){
     <div><div class="n">${totalPts}</div><div class="l">Points</div></div>
   </div>`));
 
-  body.appendChild(el(`<div class="tabs" id="tabs">
+  body.appendChild(el(`<p class="eyebrow" style="margin-top:16px">Sort / view</p>
+  <div class="tabs" id="tabs">
     <button type="button" data-tab="crm" class="${TAB==='crm'?'on':''}">CRM</button>
     <button type="button" data-tab="points" class="${TAB==='points'?'on':''}">Points</button>
     <button type="button" data-tab="hours" class="${TAB==='hours'?'on':''}">Hours</button>
@@ -230,38 +232,40 @@ function renderDashboard(body){
   if(TAB==='crm') renderCrm(list, people);
   else renderBoard(list, people, TAB);
 
-  body.appendChild(el('<p class="fine" style="margin-top:14px">Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost from starting weight. Edit CRM fields and Save.</p>'));
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Points / Hours / Weight tabs re-sort the roster. CRM edits phone and weights. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost.</p>'));
 }
 
 function sortBoard(people, mode){
   const arr=people.slice();
-  if(mode==='hours') arr.sort((a,b)=>(b.hours||0)-(a.hours||0)||(b.points||0)-(a.points||0));
+  if(mode==='hours') arr.sort((a,b)=>(Number(b.hours)||0)-(Number(a.hours)||0)||(Number(b.points)||0)-(Number(a.points)||0));
   else if(mode==='weight') arr.sort((a,b)=>{
-    const aw=a.weightLostPct==null?-999:a.weightLostPct;
-    const bw=b.weightLostPct==null?-999:b.weightLostPct;
-    return bw-aw||(b.points||0)-(a.points||0);
+    const aw=a.weightLostPct==null?-1e9:Number(a.weightLostPct);
+    const bw=b.weightLostPct==null?-1e9:Number(b.weightLostPct);
+    return bw-aw||(Number(b.points)||0)-(Number(a.points)||0);
   });
-  else arr.sort((a,b)=>(b.points||0)-(a.points||0)||(b.hours||0)-(a.hours||0));
+  else arr.sort((a,b)=>(Number(b.points)||0)-(Number(a.points)||0)||(Number(b.hours)||0)-(Number(a.hours)||0));
   return arr;
 }
 
 function renderBoard(list, people, mode){
   list.innerHTML='';
-  const title=mode==='hours'?'Hours board':mode==='weight'?'Weight-change board':'Points board';
+  const title=mode==='hours'?'Ranked by hours':mode==='weight'?'Ranked by bodyweight change':'Ranked by points';
   list.appendChild(el(`<p class="eyebrow" style="margin-top:12px">${esc(title)}</p>`));
   sortBoard(people, mode).forEach((p,i)=>{
     const pct=p.total?Math.round(100*p.sessions/p.total):0;
     const wLabel=p.weightLostPct==null?'No weight logged':fmtPct(p.weightLostPct)+' BW';
+    const pri=mode==='hours'?fmtHrs(p.hours):mode==='weight'?(p.weightLostPct==null?'—':fmtPct(p.weightLostPct)):String(p.points||0);
+    const priLab=mode==='hours'?'Hours':mode==='weight'?'BW change':'Points';
     const row=el(`<div class="person">
       <div class="prow">
-        <span class="pnwrap"><span class="rank">${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
-        <span class="pd">${esc(ago(p.lastActive))}</span>
+        <span class="pnwrap"><span class="rank">#${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
+        <span class="pd"><b style="font-family:var(--disp);font-size:18px;color:var(--ink)">${esc(pri)}</b><br>${esc(priLab)} · ${esc(ago(p.lastActive))}</span>
       </div>
       <div class="pbar"><i style="width:${pct}%"></i></div>
       <div class="metrics">
-        <div><div class="v">${p.points||0}</div><div class="k">Points</div></div>
-        <div><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
-        <div><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
+        <div class="${mode==='points'?'hi':''}"><div class="v">${p.points||0}</div><div class="k">Points</div></div>
+        <div class="${mode==='hours'?'hi':''}"><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
+        <div class="${mode==='weight'?'hi':''}"><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
       </div>
       <div class="prow"><span class="pm">${p.sessions||0}/${p.total||0} sessions \u00b7 streak ${p.streak||0}</span>
         <span class="pm">${p.weightMilestones||0} wt · ${p.hoursMilestones||0} hr milestones</span></div>
