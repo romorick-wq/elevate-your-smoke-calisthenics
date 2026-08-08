@@ -193,8 +193,16 @@ function render(){
       }
       try{sessionStorage.setItem(PIN_KEY,code)}catch(e){}
       PEOPLE=d.people||[];
-      renderDashboard(body);
+      try{
+        renderDashboard(body);
+      }catch(renderErr){
+        console.error(renderErr);
+        body.innerHTML='';
+        err.textContent='Roster loaded but the admin screen failed to render. Refresh and try again.';
+        err.hidden=false;
+      }
     }catch(e){
+      console.error(e);
       body.innerHTML='';
       err.textContent='Could not reach the roster. Try again in a moment.';
       err.hidden=false;
@@ -239,7 +247,8 @@ function renderDashboard(body){
     <div><div class="n">${totalPts}</div><div class="l">Points</div></div>
   </div>`));
 
-  body.appendChild(el(`<p class="eyebrow" style="margin-top:18px">Find participant</p>
+  body.appendChild(el(`<div class="findwrap">
+    <p class="eyebrow" style="margin-top:18px">Find participant</p>
     <div class="find">
       <input id="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="Name or phone…" value="${esc(QUERY)}">
       <button type="button" class="btn accent sm" id="find">Find</button>
@@ -247,7 +256,8 @@ function renderDashboard(body){
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:20px">
       <p class="fine" id="findmeta" style="margin:0"></p>
       <button type="button" class="find-clear" id="clearq" ${QUERY?'':'hidden'}>Clear</button>
-    </div>`));
+    </div>
+  </div>`));
 
   const qInput=document.getElementById('q');
   const findMeta=document.getElementById('findmeta');
@@ -281,12 +291,14 @@ function renderDashboard(body){
     ? (people.length? people.length+' match'+(people.length===1?'':'es')+' of '+all.length : 'No matches for “'+QUERY.trim()+'”')
     : '';
 
-  body.appendChild(el(`<p class="eyebrow" style="margin-top:16px">Sort / view</p>
-  <div class="tabs" id="tabs">
-    <button type="button" data-tab="crm" class="${TAB==='crm'?'on':''}">CRM</button>
-    <button type="button" data-tab="points" class="${TAB==='points'?'on':''}">Points</button>
-    <button type="button" data-tab="hours" class="${TAB==='hours'?'on':''}">Hours</button>
-    <button type="button" data-tab="weight" class="${TAB==='weight'?'on':''}">Weight</button>
+  body.appendChild(el(`<div>
+    <p class="eyebrow" style="margin-top:16px">Sort / view</p>
+    <div class="tabs" id="tabs">
+      <button type="button" data-tab="crm" class="${TAB==='crm'?'on':''}">CRM</button>
+      <button type="button" data-tab="points" class="${TAB==='points'?'on':''}">Points</button>
+      <button type="button" data-tab="hours" class="${TAB==='hours'?'on':''}">Hours</button>
+      <button type="button" data-tab="weight" class="${TAB==='weight'?'on':''}">Weight</button>
+    </div>
   </div>`));
   body.querySelectorAll('#tabs button').forEach(b=>{
     b.onclick=()=>{TAB=b.dataset.tab;renderDashboard(body)};
