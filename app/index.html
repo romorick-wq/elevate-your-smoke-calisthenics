@@ -155,6 +155,37 @@ a.linkbtn{color:var(--olive-soft)}
 .stamp span{font-family:var(--disp);font-weight:800;font-size:30px;letter-spacing:-.02em;text-align:center;line-height:.95}
 .stamp small{display:block;font-size:11px;letter-spacing:.1em;margin-top:6px;opacity:.7;font-weight:600}
 @keyframes press{from{transform:scale(1.35);opacity:0}to{transform:scale(1);opacity:1}}
+.launch{
+  margin:16px 0 0;padding:14px;border-radius:var(--radius-sm);background:var(--surface2);
+  border:1px solid var(--line);
+}
+.launch .eyebrow{margin-bottom:10px}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cd div{text-align:center;background:rgba(16,20,18,.05);border-radius:10px;padding:10px 4px}
+.cd .n{font-family:var(--disp);font-weight:800;font-size:26px;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cd .l{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;font-weight:600}
+.launch .fine{margin:10px 0 0}
+.demobtn{
+  display:flex;align-items:center;gap:12px;width:100%;margin:14px 0 0;padding:12px;border:1.5px solid var(--line);
+  border-radius:var(--radius-sm);background:var(--surface2);cursor:pointer;text-align:left;color:inherit;font-family:var(--body);
+}
+.demobtn:hover{border-color:var(--accent)}
+.demobtn .play{
+  flex:0 0 44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-ink);
+  display:grid;place-items:center;font-size:16px;font-weight:800;
+}
+.demobtn .t{font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:-.02em;display:block}
+.demobtn .s{font-size:12px;color:var(--muted);margin-top:2px;display:block}
+.promo-ov{position:fixed;inset:0;z-index:80;background:rgba(10,12,10,.88);display:flex;align-items:center;justify-content:center;padding:18px;animation:fadein .2s ease both}
+.promo-ov .box{width:min(520px,100%);background:#0c100a;border-radius:16px;overflow:hidden;border:1px solid rgba(244,237,224,.12)}
+.promo-ov video{display:block;width:100%;height:auto;background:#000;aspect-ratio:4/3;object-fit:cover}
+.promo-ov .cap{
+  min-height:64px;padding:12px 14px;font-size:14px;line-height:1.4;color:#F4EDE0;background:#121610;
+  border-top:3px solid var(--accent);
+}
+.promo-ov .actions{display:flex;gap:8px;padding:12px 14px 14px;background:#121610}
+.promo-ov .actions .btn{margin:0}
+video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system-ui,sans-serif;font-size:15px;line-height:1.35}
 .field{margin:14px 0 6px}
 .field label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600}
 .field input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
@@ -257,7 +288,7 @@ const CONFIG={
 };
 
 const KEY='smoke30:v1';
-let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,si:0,timeLeft:0,paused:false,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points'};
+let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,si:0,timeLeft:0,paused:false,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points',countdown:null};
 
 /* ---------- movement library ---------- */
 const M={
@@ -541,7 +572,10 @@ const EX={
 
 /* ---------- figure renderer ---------- */
 const REDUCED=()=>window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-function clearRafs(){S.rafs.forEach(id=>cancelAnimationFrame(id));S.rafs=[]}
+function clearRafs(){
+  S.rafs.forEach(id=>cancelAnimationFrame(id));S.rafs=[];
+  if(S.countdown){clearInterval(S.countdown);S.countdown=null}
+}
 function figureNode(name,cls){
   const ex=EX[name],wrap=document.createElement('div');
   wrap.className='figbox '+(cls||'');
@@ -772,7 +806,7 @@ function moveRow(label,name,dur){
    ========================================================= */
 function render(){
   clearRafs();
-  document.querySelectorAll('.overlay').forEach(n=>n.remove());
+  document.querySelectorAll('.overlay,.promo-ov').forEach(n=>n.remove());
   const a=app();if(!a)return;
   a.innerHTML='';
   try{
@@ -783,12 +817,107 @@ function render(){
   }
   window.scrollTo(0,0);
 }
+const LAUNCH_AT=new Date('2026-08-15T09:00:00-05:00').getTime(); // Aug 15, 9am CDT
+function launchParts(now){
+  const ms=Math.max(0,LAUNCH_AT-(now||Date.now()));
+  const sec=Math.floor(ms/1000);
+  return {
+    done:ms<=0,
+    d:Math.floor(sec/86400),
+    h:Math.floor((sec%86400)/3600),
+    m:Math.floor((sec%3600)/60),
+    s:sec%60
+  };
+}
+function paintCountdown(){
+  const eld=document.getElementById('cd-d');
+  if(!eld)return;
+  const p=launchParts();
+  if(p.done){
+    eld.textContent='0';document.getElementById('cd-h').textContent='0';
+    document.getElementById('cd-m').textContent='0';document.getElementById('cd-s').textContent='0';
+    const note=document.getElementById('cd-note');
+    if(note)note.textContent='Kickoff day. The card is live — lock your callsign and train.';
+    if(S.countdown){clearInterval(S.countdown);S.countdown=null}
+    return;
+  }
+  eld.textContent=String(p.d);
+  document.getElementById('cd-h').textContent=String(p.h).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(p.m).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(p.s).padStart(2,'0');
+}
+function showPromoDemo(){
+  document.querySelectorAll('.promo-ov').forEach(n=>n.remove());
+  const ov=el(`<div class="promo-ov" role="dialog" aria-label="Mission demo">
+    <div class="box">
+      <video id="promo" playsinline controls autoplay muted>
+        <source src="promo-demo.mp4" type="video/mp4">
+        <track kind="captions" src="promo-demo.vtt" srclang="en" label="English" default>
+      </video>
+      <div class="cap" id="promocap">Nine minutes a day. Military standard. No gym.</div>
+      <div class="actions">
+        <button type="button" class="btn accent" id="promogo">Begin mission brief</button>
+        <button type="button" class="btn ghost" id="promoclose">Close</button>
+      </div>
+    </div>
+  </div>`);
+  document.body.appendChild(ov);
+  const v=ov.querySelector('#promo');
+  const cap=ov.querySelector('#promocap');
+  const cues=[
+    [0,'Nine minutes a day. Military standard. No gym.'],
+    [3,'Push strength — press power you can trust under load.'],
+    [5.6,'Leg power — move with force from the ground up.'],
+    [8.2,'Core armor — a midsection that holds when it counts.'],
+    [10.8,'Pull standard — own your bodyweight. Bar optional.'],
+    [13.4,'Conditioning — by August 15, show up sharper.'],
+    [16,'Pace and grit — transform starts the day you lock in.'],
+    [18.6,'Elevate your smoke — grit, fit, standard.'],
+    [21.2,'View the card. Sign up now. Kickoff August 15.'],
+  ];
+  const syncCap=()=>{
+    const t=v.currentTime||0;
+    let text=cues[0][1];
+    for(const [at,line] of cues){if(t>=at)text=line}
+    if(cap.textContent!==text)cap.textContent=text;
+  };
+  v.addEventListener('timeupdate',syncCap);
+  v.addEventListener('loadeddata',()=>{try{v.play()}catch(e){}});
+  // Prefer showing captions track if browser supports it
+  try{
+    if(v.textTracks&&v.textTracks[0])v.textTracks[0].mode='showing';
+  }catch(e){}
+  const close=()=>{try{v.pause()}catch(e){}ov.remove()};
+  ov.querySelector('#promoclose').onclick=close;
+  ov.onclick=e=>{if(e.target===ov)close()};
+  ov.querySelector('#promogo').onclick=()=>{
+    close();
+    clearHash();
+    S.screen=S.me?'quiz':'join';S.qi=0;S.answers={};render();
+  };
+}
 function cover(a){
+  const left=launchParts();
   a.appendChild(el(`<div class="sheet" style="padding-top:0">
     <div class="photoframe" id="hero"></div>
     <p class="eyebrow">Military calisthenics \u00b7 9-minute daily PT</p>
     <h2 class="display h-xl">Elevate<br>your smoke.</h2>
     <p class="quote">\u201CSmoke is the heat you leave on the floor. Elevate it \u2014 your grit, your fit, your standard \u2014 until the man who shows up is impossible to ignore.\u201D</p>
+    <div class="launch" id="launch">
+      <p class="eyebrow">Mission kickoff \u00b7 August 15</p>
+      <div class="cd" aria-live="polite">
+        <div><div class="n" id="cd-d">${left.d}</div><div class="l">Days</div></div>
+        <div><div class="n" id="cd-h">${String(left.h).padStart(2,'0')}</div><div class="l">Hours</div></div>
+        <div><div class="n" id="cd-m">${String(left.m).padStart(2,'0')}</div><div class="l">Mins</div></div>
+        <div><div class="n" id="cd-s">${String(left.s).padStart(2,'0')}</div><div class="l">Secs</div></div>
+      </div>
+      <p class="fine" id="cd-note">Countdown is live from today. Browse the movements, lock your callsign, and start logging — you do not have to wait for kickoff.</p>
+    </div>
+    <button type="button" class="demobtn" id="demo">
+      <span class="play" aria-hidden="true">\u25B6</span>
+      <span><span class="t">Watch the 9-day transform demo</span>
+      <span class="s">In-app preview · captions on · push, legs, core, pace</span></span>
+    </button>
     <p class="lede">A 30-day bodyweight card built around your age, level, and joints. Timed sessions. Exact form photos. No gym. No fluff. No subscription.</p>
     <div class="note">Pain is a stop signal. Effort is not. If you have a condition that affects exercise, clear it with a doctor before you start.</div>
     <div style="flex:1;min-height:22px"></div>
@@ -805,6 +934,9 @@ function cover(a){
     hero.appendChild(img);
   }catch(e){console.error(e)}
   hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>Military calisthenics</span></div>`));
+  paintCountdown();
+  S.countdown=setInterval(paintCountdown,1000);
+  document.getElementById('demo').onclick=()=>showPromoDemo();
   document.getElementById('go').onclick=()=>{clearHash();S.screen=S.me?'quiz':'join';S.qi=0;S.answers={};render()};
 }
 function quiz(a){
