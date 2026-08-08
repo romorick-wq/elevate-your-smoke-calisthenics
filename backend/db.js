@@ -1,9 +1,10 @@
 const { Pool } = require('pg');
-
-const SESSION_MINUTES = 9;
-const PTS_PER_SESSION = 10;
-const PTS_PER_5PCT_WEIGHT = 100;
-const PTS_PER_5PCT_HOURS = 50;
+const {
+  SESSION_MINUTES,
+  scorePerson,
+  scoringExplain,
+  n,
+} = require('./score');
 
 let pool;
 
@@ -42,6 +43,7 @@ async function init() {
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS starting_weight REAL`);
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS current_weight REAL`);
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS date_started DATE`);
+  await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS league TEXT NOT NULL DEFAULT ''`);
   await db.query(`
     CREATE TABLE IF NOT EXISTS sessions (
       id BIGSERIAL PRIMARY KEY,
@@ -57,13 +59,13 @@ async function init() {
     CREATE INDEX IF NOT EXISTS sessions_challenge_idx ON sessions (challenge, when_at DESC);
   `);
   await db.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS sessions_one_per_day_idx
+      ON sessions (participant_id, challenge, day)
+      WHERE day > 0;
+  `);
+  await db.query(`
     CREATE INDEX IF NOT EXISTS participants_challenge_idx ON participants (challenge, last_active DESC);
   `);
-}
-
-function n(v) {
-  const x = Number(v);
-  return Number.isFinite(x) ? x : 0;
 }
 
 function parseWeight(v) {
@@ -73,38 +75,17 @@ function parseWeight(v) {
   return w;
 }
 
-/** Hours, weight change %, and points from progress fields. */
-function scorePerson(p) {
-  const sessions = n(p.sessions);
-  const total = n(p.total);
-  const hours = Math.round((sessions * SESSION_MINUTES) / 60 * 100) / 100;
-  const startW = p.startingWeight === '' || p.startingWeight == null ? null : Number(p.startingWeight);
-  const curW = p.currentWeight === '' || p.currentWeight == null ? null : Number(p.currentWeight);
-  let weightLostPct = null;
-  let weightDelta = null;
-  if (startW != null && curW != null && startW > 0) {
-    weightDelta = Math.round((startW - curW) * 10) / 10;
-    weightLostPct = Math.round(((startW - curW) / startW) * 1000) / 10;
-  }
-  const hoursPct = total > 0 ? (sessions / total) * 100 : 0;
-  const weightMilestones = weightLostPct != null && weightLostPct > 0 ? Math.floor(weightLostPct / 5) : 0;
-  const hoursMilestones = Math.floor(hoursPct / 5);
-  const points =
-    sessions * PTS_PER_SESSION +
-    weightMilestones * PTS_PER_5PCT_WEIGHT +
-    hoursMilestones * PTS_PER_5PCT_HOURS;
-  return {
-    hours,
-    weightDelta,
-    weightLostPct,
-    weightMilestones,
-    hoursMilestones,
-    points,
-  };
-}
-
 function enrich(person) {
   return { ...person, ...scorePerson(person) };
+}
+
+function parseLeague(v) {
+  const s = String(v || '')
+    .trim()
+    .toLowerCase();
+  if (s === 'brothers' || s === 'brother' || s === 'men' || s === 'male' || s === 'm') return 'brothers';
+  if (s === 'ladies' || s === 'lady' || s === 'women' || s === 'female' || s === 'f') return 'ladies';
+  return '';
 }
 
 async function upsertParticipant(body) {
@@ -121,22 +102,27 @@ async function upsertParticipant(body) {
   if (startIn === undefined || curIn === undefined) {
     return { ok: false, error: 'bad weight' };
   }
+  const leagueIn = parseLeague(body.league);
 
   await db.query(
     `INSERT INTO participants
        (id, challenge, name, joined, last_active, sessions, total, streak, day, per_week,
-        starting_weight, current_weight)
-     VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10)
+        starting_weight, current_weight, league)
+     VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10, $11)
      ON CONFLICT (id, challenge) DO UPDATE SET
        name = EXCLUDED.name,
        last_active = NOW(),
-       sessions = EXCLUDED.sessions,
-       total = EXCLUDED.total,
-       streak = EXCLUDED.streak,
+       sessions = GREATEST(participants.sessions, EXCLUDED.sessions),
+       total = GREATEST(participants.total, EXCLUDED.total),
+       streak = GREATEST(participants.streak, EXCLUDED.streak),
        day = EXCLUDED.day,
        per_week = EXCLUDED.per_week,
        starting_weight = COALESCE(EXCLUDED.starting_weight, participants.starting_weight),
-       current_weight = COALESCE(EXCLUDED.current_weight, participants.current_weight)`,
+       current_weight = COALESCE(EXCLUDED.current_weight, participants.current_weight),
+       league = CASE
+         WHEN EXCLUDED.league <> '' THEN EXCLUDED.league
+         ELSE participants.league
+       END`,
     [
       id,
       challenge,
@@ -148,18 +134,40 @@ async function upsertParticipant(body) {
       n(body.perWeek),
       startIn,
       curIn,
+      leagueIn,
     ]
   );
 
+  let logged = false;
+  let duplicate = false;
   if (body.action === 'log') {
-    await db.query(
-      `INSERT INTO sessions (participant_id, name, challenge, day, sessions_after)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [id, name, challenge, n(body.day), n(body.sessions)]
-    );
+    const day = n(body.day);
+    if (day > 0) {
+      const { rows } = await db.query(
+        `SELECT id FROM sessions WHERE participant_id = $1 AND challenge = $2 AND day = $3 LIMIT 1`,
+        [id, challenge, day]
+      );
+      if (rows.length) {
+        duplicate = true;
+      } else {
+        await db.query(
+          `INSERT INTO sessions (participant_id, name, challenge, day, sessions_after)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [id, name, challenge, day, n(body.sessions)]
+        );
+        logged = true;
+      }
+    } else {
+      await db.query(
+        `INSERT INTO sessions (participant_id, name, challenge, day, sessions_after)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [id, name, challenge, day, n(body.sessions)]
+      );
+      logged = true;
+    }
   }
 
-  return { ok: true };
+  return { ok: true, logged, duplicate };
 }
 
 function dateOnly(v) {
@@ -187,6 +195,7 @@ function rowToPerson(r) {
     startingWeight: r.starting_weight == null ? '' : Number(r.starting_weight),
     currentWeight: r.current_weight == null ? '' : Number(r.current_weight),
     dateStarted: started,
+    league: parseLeague(r.league) || '',
   };
 }
 
@@ -194,7 +203,7 @@ async function loadPeople(challenge) {
   const db = getPool();
   const { rows } = await db.query(
     `SELECT id, name, challenge, joined, last_active, sessions, total, streak, day, per_week,
-            phone, starting_weight, current_weight, date_started
+            phone, starting_weight, current_weight, date_started, league
      FROM participants
      WHERE ($1 = '' OR challenge = $1)
      ORDER BY last_active DESC`,
@@ -221,6 +230,7 @@ async function loadPeople(challenge) {
         startingWeight: base.startingWeight !== '' ? base.startingWeight : other.startingWeight,
         currentWeight: base.currentWeight !== '' ? base.currentWeight : other.currentWeight,
         dateStarted: base.dateStarted || other.dateStarted,
+        league: base.league || other.league || '',
       });
     }
   }
@@ -236,18 +246,22 @@ async function getRoster(challenge) {
 async function getLeaderboard(challenge) {
   const people = (await loadPeople(challenge)).map((p) => ({
     name: p.name,
+    league: p.league || '',
     sessions: p.sessions,
     total: p.total,
     streak: p.streak,
     hours: p.hours,
     weightLostPct: p.weightLostPct,
-    weightDelta: p.weightDelta,
     points: p.points,
     weightMilestones: p.weightMilestones,
     hoursMilestones: p.hoursMilestones,
     lastActive: p.lastActive,
   }));
-  return { ok: true, people, meta: { sessionMinutes: SESSION_MINUTES } };
+  return {
+    ok: true,
+    people,
+    meta: { sessionMinutes: SESSION_MINUTES, scoring: scoringExplain() },
+  };
 }
 
 async function updateParticipantDetails(challenge, name, details) {
@@ -262,6 +276,7 @@ async function updateParticipantDetails(challenge, name, details) {
   if (startingWeight === undefined || currentWeight === undefined) {
     return { ok: false, error: 'bad weight' };
   }
+  const league = parseLeague(details.league);
 
   let dateStarted = null;
   if (details.dateStarted) {
@@ -277,9 +292,10 @@ async function updateParticipantDetails(challenge, name, details) {
      SET phone = $3,
          starting_weight = $4,
          current_weight = $5,
-         date_started = COALESCE($6::date, date_started, joined::date)
+         date_started = COALESCE($6::date, date_started, joined::date),
+         league = $7
      WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
-    [c, personName, phone, startingWeight, currentWeight, dateStarted]
+    [c, personName, phone, startingWeight, currentWeight, dateStarted, league]
   );
   if (!rowCount) return { ok: false, error: 'not found' };
   return { ok: true, updated: rowCount };
@@ -304,6 +320,60 @@ async function deleteParticipant(challenge, name) {
   return { ok: true, deleted: rowCount };
 }
 
+
+/** Participant self-delete — requires matching id + callsign. */
+async function deleteOwnParticipant(challenge, id, name) {
+  const db = getPool();
+  const c = String(challenge || '').slice(0, 64);
+  const pid = String(id || '').slice(0, 64);
+  const personName = String(name || '').trim().slice(0, 64);
+  if (!c || !pid || !personName) return { ok: false, error: 'bad request' };
+  const { rowCount } = await db.query(
+    `DELETE FROM participants
+     WHERE challenge = $1 AND id = $2 AND lower(trim(name)) = lower(trim($3))`,
+    [c, pid, personName]
+  );
+  if (!rowCount) return { ok: false, error: 'not found' };
+  await db.query(
+    `DELETE FROM sessions WHERE challenge = $1 AND participant_id = $2`,
+    [c, pid]
+  );
+  return { ok: true, deleted: rowCount };
+}
+
+async function updateOwnParticipant(challenge, id, details) {
+  const db = getPool();
+  const c = String(challenge || '').slice(0, 64);
+  const pid = String(id || '').slice(0, 64);
+  if (!c || !pid) return { ok: false, error: 'bad request' };
+  const newName = details.name != null ? String(details.name).trim().slice(0, 32) : null;
+  if (newName != null && newName.length < 2) return { ok: false, error: 'bad name' };
+  const league = details.league != null ? parseLeague(details.league) : '';
+  const startIn = details.startingWeight !== undefined ? parseWeight(details.startingWeight) : undefined;
+  const curIn = details.currentWeight !== undefined ? parseWeight(details.currentWeight) : undefined;
+  if (startIn === undefined || curIn === undefined) {
+    if (details.startingWeight !== undefined || details.currentWeight !== undefined) {
+      return { ok: false, error: 'bad weight' };
+    }
+  }
+  const { rows } = await db.query(
+    `SELECT id FROM participants WHERE challenge = $1 AND id = $2 LIMIT 1`,
+    [c, pid]
+  );
+  if (!rows.length) return { ok: false, error: 'not found' };
+  await db.query(
+    `UPDATE participants SET
+       name = COALESCE($3, name),
+       league = CASE WHEN $4 <> '' THEN $4 ELSE league END,
+       starting_weight = COALESCE($5, starting_weight),
+       current_weight = COALESCE($6, current_weight),
+       last_active = NOW()
+     WHERE challenge = $1 AND id = $2`,
+    [c, pid, newName, league, startIn ?? null, curIn ?? null]
+  );
+  return { ok: true };
+}
+
 module.exports = {
   init,
   upsertParticipant,
@@ -311,5 +381,9 @@ module.exports = {
   getLeaderboard,
   updateParticipantDetails,
   deleteParticipant,
+  deleteOwnParticipant,
+  updateOwnParticipant,
   SESSION_MINUTES,
+  scoringExplain,
+  scorePerson,
 };

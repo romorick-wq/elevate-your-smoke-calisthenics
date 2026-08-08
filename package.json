@@ -1,12 +1,14 @@
 {
   "name": "elevate-your-smoke",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Elevate Your Smoke — calisthenics challenge + roster API",
   "scripts": {
     "start": "node backend/server.js",
     "dev": "node --watch backend/server.js",
-    "install:backend": "npm install --prefix backend"
+    "install:backend": "npm install --prefix backend",
+    "test": "node backend/test/score.test.js",
+    "check": "node --check backend/server.js && node --check backend/db.js && node --check backend/score.js && node --check backend/sms.js"
   },
   "engines": {
     "node": ">=18"

@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Elevate Your Smoke — Calisthenics</title>
-<meta name="description" content="Military calisthenics for men who show up. Elevate your smoke — 9-minute daily PT, 30 days, exact form photos. Free. No gym.">
+<title>Elevate Your Smoke — The Cigar Society</title>
+<meta name="description" content="The Cigar Society presents Elevate Your Smoke — Brothers of the League and Ladies of the League. Nine-minute daily PT. Thirty-day challenge. Kickoff August 15.">
 <meta name="theme-color" content="#101412">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Smoke">
+<meta name="apple-mobile-web-app-title" content="Elevate Your Smoke">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon.png">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0AgMAAABAo+6hAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJUExURUdXOunk1v///4X+bM8AAAABYktHRAJmC3xkAAAAB3RJTUUH6ggFFTssaCLL9wAAAShJREFUaN7tmF0OgzAMg8lDj9D7cAQmkftfZTQwrUibYo9lv/HzN+S6TgsbhlQqlUqlni5RnXG6quoI0wusE2GEsFKWB1fFbbdfoMZrcwEbNxCnm4lK0QUNxeJAaTFavpSOyWTbHY6eUHoaiJ40EwI3tnUb73fReRk2ECbn0k4IfOgL/HCzYXJR7eWFIjvaM14O0N4yj9BeKPtVeqFIZwKIsBsBZu+tK9zdQ9AFacpuxRzthdKJDoWjuVBCIwwLJbJXnxNKdK9y2I7RQaEYhtJixzIaynpLnCgavcCvNBLKozQSCkfXUHquFH15W0Hpbf9Rev1QQuiNgnpCDc3f0CMOS9K3aBxuI//zNHowmNi/Tz6FFup7sZ1PTKneLb2n8dV0KpVKpVKmMwboxNQMQ/tCAAAAAElFTkSuQmCC">
 <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0AgMAAABAo+6hAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAJUExURUdXOunk1v///4X+bM8AAAABYktHRAJmC3xkAAAAB3RJTUUH6ggFFTssaCLL9wAAAShJREFUaN7tmF0OgzAMg8lDj9D7cAQmkftfZTQwrUibYo9lv/HzN+S6TgsbhlQqlUqlni5RnXG6quoI0wusE2GEsFKWB1fFbbdfoMZrcwEbNxCnm4lK0QUNxeJAaTFavpSOyWTbHY6eUHoaiJ40EwI3tnUb73fReRk2ECbn0k4IfOgL/HCzYXJR7eWFIjvaM14O0N4yj9BeKPtVeqFIZwKIsBsBZu+tK9zdQ9AFacpuxRzthdKJDoWjuVBCIwwLJbJXnxNKdK9y2I7RQaEYhtJixzIaynpLnCgavcCvNBLKozQSCkfXUHquFH15W0Hpbf9Rev1QQuiNgnpCDc3f0CMOS9K3aBxuI//zNHowmNi/Tz6FFup7sZ1PTKneLb2n8dV0KpVKpVKmMwboxNQMQ/tCAAAAAElFTkSuQmCC">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -176,6 +178,21 @@ a.linkbtn{color:var(--olive-soft)}
 }
 .demobtn .t{font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:-.02em;display:block}
 .demobtn .s{font-size:12px;color:var(--muted);margin-top:2px;display:block}
+.leagues{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 0}
+.leaguecard{
+  border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:12px 10px;background:var(--surface2);
+}
+.leaguecard .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;display:block}
+.leaguecard .n{font-family:var(--disp);font-weight:800;font-size:16px;letter-spacing:-.02em;margin-top:4px;display:block;line-height:1.15}
+.leaguecard .s{font-size:12px;color:var(--muted);margin-top:6px;display:block;line-height:1.35}
+.leaguepick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
+.leaguepick button{
+  border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:14px 10px;background:var(--surface2);
+  font-family:var(--disp);font-weight:800;font-size:14px;letter-spacing:-.02em;cursor:pointer;color:var(--ink);text-align:left;
+}
+.leaguepick button small{display:block;font-family:var(--body);font-weight:600;font-size:11px;letter-spacing:.04em;color:var(--muted);margin-top:4px}
+.leaguepick button.on{border-color:var(--accent);background:rgba(232,93,4,.12)}
+.tabs.league{margin-top:8px}
 .promo-ov{position:fixed;inset:0;z-index:80;background:rgba(10,12,10,.88);display:flex;align-items:center;justify-content:center;padding:18px;animation:fadein .2s ease both}
 .promo-ov .box{width:min(520px,100%);background:#0c100a;border-radius:16px;overflow:hidden;border:1px solid rgba(244,237,224,.12)}
 .promo-ov video{display:block;width:100%;height:auto;background:#000;aspect-ratio:4/3;object-fit:cover}
@@ -263,6 +280,46 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .trash svg{width:18px;height:18px;display:block}
 .pnwrap{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.cardsec{margin:22px 0 0;padding:16px 0 0;border-top:1px solid var(--line)}
+.cardsec h3{font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:-.03em;margin:0 0 8px;line-height:1.05}
+.timeline{margin:12px 0 0;padding:0;list-style:none}
+.timeline li{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent)}
+.phases{display:grid;gap:8px;margin:12px 0 0}
+.phases .ph{background:var(--surface2);border-radius:12px;padding:12px 14px}
+.phases .ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.phases .ph .n{font-family:var(--disp);font-weight:800;font-size:16px;margin-top:2px}
+.phases .ph .s{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.4}
+.dashhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.dashhead .who{font-size:12px;color:var(--muted);font-weight:600}
+.dashhead .who b{color:var(--ink)}
+.daychip{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:6px}
+.cell.miss{background:rgba(196,60,44,.12);color:var(--danger)}
+.cell.today{outline:2px solid var(--accent);outline-offset:1px}
+.cell.rest{opacity:.55}
+.btn:disabled,.btn[disabled]{opacity:.45;cursor:not-allowed}
+.field .errline{font-size:12px;color:var(--danger);margin-top:4px;min-height:16px}
+.privacybox{border:1.5px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;background:var(--surface2)}
+.privacybox label{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;cursor:pointer}
+.privacybox input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
+.livebanner{background:rgba(63,79,56,.14);border-left:3px solid var(--olive-soft);padding:10px 12px;margin:12px 0 0;font-size:13px;font-weight:600;color:var(--olive-soft)}
+.pbot .btn{min-height:48px}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:360px){
+  .h-xl{font-size:34px!important}
+  .leagues{grid-template-columns:1fr}
+  .cd{grid-template-columns:repeat(2,1fr)}
+}
+.appfoot{
+  margin-top:28px;padding:18px 0 8px;text-align:center;
+  font-size:11px;letter-spacing:.06em;color:var(--muted);font-weight:600;
+  border-top:1px solid var(--line);
+}
+.appfoot b{color:var(--ink);font-weight:700;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -284,11 +341,19 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
    ================================================================ */
 const CONFIG={
   SYNC_URL:'/api',
-  CHALLENGE:'smoke-30'
+  CHALLENGE:'smoke-30',
+  VERSION:'1.1.0',
+  KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
+  KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
+  SESSION_SEC:540,
+  PTS_PER_SESSION:10,
+  PTS_PER_5PCT_CARD:50,
+  PTS_PER_5PCT_WEIGHT:100,
+  MAX_WEIGHT_MILESTONES:4
 };
 
 const KEY='smoke30:v1';
-let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,si:0,timeLeft:0,paused:false,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points',countdown:null};
+let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,slot:null,si:0,timeLeft:0,stepStartedAt:0,paused:false,muted:true,wakeLock:null,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points',boardLeague:'brothers',countdown:null,resume:null,joining:false,boardPeople:null};
 
 /* ---------- movement library ---------- */
 const M={
@@ -717,7 +782,59 @@ const DB={
     return {key:k,value:v};
   }
 };
-async function save(){try{await DB.set(KEY,JSON.stringify({profile:S.profile,log:S.log,me:S.me,weights:S.weights||{starting:'',current:''}}))}catch(e){}}
+async function save(){try{await DB.set(KEY,JSON.stringify({profile:S.profile,log:S.log,me:S.me,weights:S.weights||{starting:'',current:''},resume:S.resume||null}))}catch(e){}}
+function clientScore(){
+  const sessions=Object.keys(S.log||{}).length;
+  const total=S.profile?schedule(S.profile).filter(s=>s.train).length:0;
+  const hours=Math.round(sessions*9/60*100)/100;
+  const startW=S.weights&&S.weights.starting!==''?Number(S.weights.starting):null;
+  const curW=S.weights&&S.weights.current!==''?Number(S.weights.current):null;
+  let weightLostPct=null;
+  if(startW&&curW&&startW>0) weightLostPct=Math.round(((startW-curW)/startW)*1000)/10;
+  const hoursPct=total>0?(sessions/total)*100:0;
+  const weightMilestones=weightLostPct!=null&&weightLostPct>0?Math.min(CONFIG.MAX_WEIGHT_MILESTONES,Math.floor(weightLostPct/5)):0;
+  const hoursMilestones=Math.floor(hoursPct/5);
+  const points=sessions*CONFIG.PTS_PER_SESSION+weightMilestones*CONFIG.PTS_PER_5PCT_WEIGHT+hoursMilestones*CONFIG.PTS_PER_5PCT_CARD;
+  return {sessions,total,hours,points,weightLostPct,weightMilestones,hoursMilestones};
+}
+function bestStreak(){
+  if(!S.profile)return 0;
+  const sl=schedule(S.profile).filter(s=>s.train);
+  let best=0,cur=0;
+  for(const s of sl){ if(S.log[s.i]){cur++;best=Math.max(best,cur)} else cur=0; }
+  return best;
+}
+function announce(msg){
+  let n=document.getElementById('liveann');
+  if(!n){n=document.createElement('div');n.id='liveann';n.className='sr-only';n.setAttribute('aria-live','polite');document.body.appendChild(n)}
+  n.textContent=''; setTimeout(()=>{n.textContent=msg},40);
+}
+async function requestWakeLock(){
+  try{ if(S.wakeLock)return; if(navigator.wakeLock&&navigator.wakeLock.request){ S.wakeLock=await navigator.wakeLock.request('screen'); S.wakeLock.addEventListener('release',()=>{S.wakeLock=null}); } }catch(e){}
+}
+function releaseWakeLock(){ try{if(S.wakeLock){S.wakeLock.release();S.wakeLock=null}}catch(e){} }
+function beep(kind){
+  if(S.muted)return;
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx)return;
+    if(!S._ac)S._ac=new Ctx();
+    const ac=S._ac; if(ac.state==='suspended')ac.resume();
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.connect(g);g.connect(ac.destination);
+    o.frequency.value=kind==='end'?880:(kind==='warn'?660:520);
+    g.gain.value=0.04; o.start();
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.18);
+    o.stop(ac.currentTime+0.2);
+  }catch(e){}
+}
+function vibe(ms){try{if(navigator.vibrate)navigator.vibrate(ms||40)}catch(e){}}
+function persistResume(){
+  if(!S.session||!S.slot){S.resume=null;save();return}
+  S.resume={slotI:S.slot.i,si:S.si,timeLeft:S.timeLeft,paused:!!S.paused,savedAt:Date.now(),type:S.session.type,day:S.session.day};
+  save();
+}
+function clearResume(){S.resume=null;save()}
+function sessionTotalSec(sess){return (sess.steps||[]).reduce((a,b)=>a+(b.sec||0),0)}
 function ensureWeights(){
   if(!S.weights||typeof S.weights!=='object')S.weights={starting:'',current:''};
   if(S.weights.starting==null)S.weights.starting='';
@@ -729,21 +846,18 @@ function clearHash(){
 }
 function applyRoute(){
   const h=(location.hash||'').replace(/^#/,'').toLowerCase();
-  if(h==='board'||h==='leaderboard'){
-    S.screen='board';S.back=S.profile?'plan':'cover';return true;
-  }
-  if(h==='manual'||h==='movements'){
-    S.screen='manual';S.back=S.profile?'plan':'cover';return true;
-  }
-  if(h==='admin'||h==='organizer'){
-    location.replace('/admin');return true;
-  }
+  if(h==='board'||h==='leaderboard'){ S.screen='board';S.back=S.profile?'plan':'cover';return true; }
+  if(h==='manual'||h==='movements'){ S.screen='manual';S.back=S.profile?'plan':'cover';return true; }
+  if(h==='card'||h==='nine'||h==='workout'){ S.screen='card';S.back='cover';return true; }
+  if(h==='privacy'){ S.screen='privacy';S.back=S.profile?'plan':'cover';return true; }
+  if(h==='settings'||h==='profile'){ S.screen=S.me?'settings':'join';S.back=S.profile?'plan':'cover';return true; }
+  if(h==='admin'||h==='organizer'){ location.replace('/admin');return true; }
   return false;
 }
 async function boot(){
   try{const r=await DB.get(KEY);
     if(r&&r.value){const d=JSON.parse(r.value);S.profile=d.profile;S.log=d.log||{};S.me=d.me||null;
-      S.weights=d.weights||{starting:'',current:''};
+      S.weights=d.weights||{starting:'',current:''};S.resume=d.resume||null;
       S.screen=S.profile?'plan':'cover'}
   }catch(e){}
   ensureWeights();
@@ -758,14 +872,7 @@ window.addEventListener('hashchange',()=>{
 });
 /* lets Android offer 'Install app'; iOS uses the meta tags above */
 function installable(){
-  try{
-    const m={name:'Elevate Your Smoke',short_name:'Smoke',display:'standalone',
-      background_color:'#ECEAE4',theme_color:'#101412',start_url:location.href.split('#')[0],
-      icons:[{src:document.querySelector('link[rel=\'apple-touch-icon\']').href,sizes:'180x180',type:'image/png'}]};
-    const l=document.createElement('link');l.rel='manifest';
-    l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
-    document.head.appendChild(l);
-  }catch(e){}
+  try{ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); } }catch(e){}
 }
 /* ---------- helpers ---------- */
 const el=h=>{const d=document.createElement('div');d.innerHTML=h.trim();return d.firstElementChild};
@@ -773,6 +880,7 @@ const app=()=>document.getElementById('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 const head=sub=>`<div class="masthead"><div class="brand"><h1>Elevate Your Smoke</h1><span class="sub">Calisthenics</span></div><div class="no">${sub}</div></div>`;
+const foot=()=>`<p class="appfoot">Made by <b>Cigar Society Dev. Team</b> · v${esc(CONFIG.VERSION)}</p>`;
 
 /* =========================================================
    MOVE DETAIL OVERLAY
@@ -810,14 +918,16 @@ function render(){
   const a=app();if(!a)return;
   a.innerHTML='';
   try{
-    ({cover,join,quiz,build:building,plan,brief,done:doneScreen,manual,coach,board}[S.screen]||cover)(a);
+    ({cover,join,quiz,build:building,plan,brief,done:doneScreen,manual,board,card:cardScreen,privacy:privacyScreen,settings:settingsScreen}[S.screen]||cover)(a);
+    const sheet=a.querySelector('.sheet');
+    if(sheet&&!sheet.querySelector('.appfoot')) sheet.appendChild(el(foot()));
   }catch(err){
     console.error(err);
-    a.innerHTML='<div class="sheet" style="padding:24px"><h2 class="display h-md">Something broke</h2><p class="fine">'+esc(String(err&&err.message||err))+'</p><p style="margin-top:16px"><a class="linkbtn" href="/">Reload app</a> · <a class="linkbtn" href="#board">Leaderboard</a> · <a class="linkbtn" href="/admin">Organizer</a></p></div>';
+    a.innerHTML='<div class="sheet" style="padding:24px"><h2 class="display h-md">Something broke</h2><p class="fine">'+esc(String(err&&err.message||err))+'</p><p style="margin-top:16px"><a class="linkbtn" href="/">Reload app</a> · <a class="linkbtn" href="#board">League boards</a> · <a class="linkbtn" href="/admin">Organizer</a></p></div>';
   }
   window.scrollTo(0,0);
 }
-const LAUNCH_AT=new Date('2026-08-15T09:00:00-05:00').getTime(); // Aug 15, 9am CDT
+const LAUNCH_AT=new Date(CONFIG.KICKOFF_ISO).getTime();
 function launchParts(now){
   const ms=Math.max(0,LAUNCH_AT-(now||Date.now()));
   const sec=Math.floor(ms/1000);
@@ -830,17 +940,22 @@ function launchParts(now){
   };
 }
 function paintCountdown(){
-  const eld=document.getElementById('cd-d');
-  if(!eld)return;
+  const eld=document.getElementById('cd-d'); if(!eld)return;
   const p=launchParts();
+  const live=document.getElementById('cd-live');
+  const digits=document.getElementById('cd-digits');
   if(p.done){
-    eld.textContent='0';document.getElementById('cd-h').textContent='0';
-    document.getElementById('cd-m').textContent='0';document.getElementById('cd-s').textContent='0';
+    eld.textContent='0';
+    ['cd-h','cd-m','cd-s'].forEach(id=>{const n=document.getElementById(id);if(n)n.textContent='00'});
+    if(digits) digits.hidden=true;
+    if(live){ live.hidden=false; }
     const note=document.getElementById('cd-note');
-    if(note)note.textContent='Kickoff day. The card is live — lock your callsign and train.';
+    if(note) note.textContent=CONFIG.KICKOFF_LABEL+' — challenge is live.';
     if(S.countdown){clearInterval(S.countdown);S.countdown=null}
     return;
   }
+  if(digits) digits.hidden=false;
+  if(live) live.hidden=true;
   eld.textContent=String(p.d);
   document.getElementById('cd-h').textContent=String(p.h).padStart(2,'0');
   document.getElementById('cd-m').textContent=String(p.m).padStart(2,'0');
@@ -848,15 +963,15 @@ function paintCountdown(){
 }
 function showPromoDemo(){
   document.querySelectorAll('.promo-ov').forEach(n=>n.remove());
-  const ov=el(`<div class="promo-ov" role="dialog" aria-label="Mission demo">
+  const ov=el(`<div class="promo-ov" role="dialog" aria-modal="true" aria-label="Mission demo">
     <div class="box">
-      <video id="promo" playsinline controls autoplay>
+      <video id="promo" playsinline controls preload="metadata" poster="">
         <source src="promo-demo.mp4" type="video/mp4">
         <track kind="captions" src="promo-demo.vtt" srclang="en" label="English" default>
       </video>
       <div class="cap" id="promocap">Elevate Your Smoke. Nine minutes a day. A thirty-day challenge.</div>
-      <div class="actions">
-        <button type="button" class="btn accent" id="promogo">Begin mission brief</button>
+      <div class="actions" id="promoactions">
+        <button type="button" class="btn accent" id="promogo">Play demo</button>
         <button type="button" class="btn ghost" id="promoclose">Close</button>
       </div>
     </div>
@@ -864,6 +979,8 @@ function showPromoDemo(){
   document.body.appendChild(ov);
   const v=ov.querySelector('#promo');
   const cap=ov.querySelector('#promocap');
+  const go=ov.querySelector('#promogo');
+  const prevFocus=document.activeElement;
   const cues=[
     [0,'Elevate Your Smoke. Nine minutes a day. A thirty-day challenge.'],
     [3,'Push for strength — press power you can trust.'],
@@ -872,72 +989,131 @@ function showPromoDemo(){
     [10.8,'Pull for standard — own your bodyweight.'],
     [13.4,'Conditioning — thirty days. Nine minutes. No gym.'],
     [16,'Pace and grit — transform starts when you lock in.'],
-    [18.6,'By August 15, show up sharper.'],
+    [18.6,'By August 15, 2026, show up sharper.'],
     [21.2,'Lock your callsign. Elevate your smoke.'],
   ];
   const syncCap=()=>{
-    const t=v.currentTime||0;
-    let text=cues[0][1];
+    const t=v.currentTime||0; let text=cues[0][1];
     for(const [at,line] of cues){if(t>=at)text=line}
     if(cap.textContent!==text)cap.textContent=text;
   };
-  v.muted=false;
+  const showEnd=()=>{
+    go.textContent='Join the challenge';
+    const actions=ov.querySelector('#promoactions');
+    if(!ov.querySelector('#promocard')){
+      const b=el('<button type="button" class="btn ghost" id="promocard">View the 9-minute card</button>');
+      actions.insertBefore(b, ov.querySelector('#promoclose'));
+      b.onclick=()=>{close();clearHash();history.replaceState(null,'',location.pathname+'#card');S.screen='card';S.back='cover';render()};
+    }
+  };
+  v.muted=true;
   v.addEventListener('timeupdate',syncCap);
-  v.addEventListener('loadeddata',()=>{v.play().catch(()=>{/* autoplay with sound may need a second tap on controls */})});
-  try{
-    if(v.textTracks&&v.textTracks[0])v.textTracks[0].mode='showing';
-  }catch(e){}
-  const close=()=>{try{v.pause()}catch(e){}ov.remove()};
+  v.addEventListener('play',()=>{go.textContent='Playing…';go.disabled=true; setTimeout(()=>{go.disabled=false;go.textContent='Join the challenge'},800)});
+  v.addEventListener('ended',()=>{showEnd();announce('Demo finished')});
+  try{ if(v.textTracks&&v.textTracks[0])v.textTracks[0].mode='showing'; }catch(e){}
+  const close=()=>{try{v.pause()}catch(e){} ov.remove(); if(prevFocus&&prevFocus.focus)prevFocus.focus()};
   ov.querySelector('#promoclose').onclick=close;
   ov.onclick=e=>{if(e.target===ov)close()};
-  ov.querySelector('#promogo').onclick=()=>{
-    close();
-    clearHash();
-    S.screen=S.me?'quiz':'join';S.qi=0;S.answers={};render();
+  ov.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close()}});
+  go.onclick=()=>{
+    if(v.ended || go.textContent==='Join the challenge'){
+      close(); clearHash(); S.screen=S.me?(S.profile?'plan':'quiz'):'join';S.qi=0;S.answers={};render();
+      return;
+    }
+    v.muted=false;
+    v.play().catch(()=>{ v.muted=true; v.play().catch(()=>{}); });
+    go.textContent='Playing…';
   };
+  go.focus();
 }
 function cover(a){
   const left=launchParts();
+  const live=left.done;
   a.appendChild(el(`<div class="sheet" style="padding-top:0">
     <div class="photoframe" id="hero"></div>
-    <p class="eyebrow">Military calisthenics \u00b7 9-minute daily PT</p>
-    <h2 class="display h-xl">Elevate<br>your smoke.</h2>
-    <p class="quote">\u201CSmoke is the heat you leave on the floor. Elevate it \u2014 your grit, your fit, your standard \u2014 until the man who shows up is impossible to ignore.\u201D</p>
+    <p class="eyebrow">The Cigar Society \u00b7 Elevate Your Smoke</p>
+    <h2 class="display h-xl">Two leagues.<br>One standard.</h2>
+    <p class="quote">Brothers of the League and Ladies of the League run the same 9-minute calisthenics card for thirty days. All fitness levels welcome — every movement scales. ${esc(CONFIG.KICKOFF_LABEL.split('·')[0].trim())} kickoff.</p>
+    <div class="leagues">
+      <div class="leaguecard">
+        <span class="k">Men\u2019s board</span>
+        <span class="n">Brothers of the League</span>
+        <span class="s">Points. Hours. Bodyweight change. Separate board — same standard.</span>
+      </div>
+      <div class="leaguecard">
+        <span class="k">Ladies\u2019 board</span>
+        <span class="n">Ladies of the League</span>
+        <span class="s">Same heat. Same form. Your own league boards.</span>
+      </div>
+    </div>
     <div class="launch" id="launch">
-      <p class="eyebrow">Mission kickoff \u00b7 August 15</p>
-      <div class="cd" aria-live="polite">
+      <p class="eyebrow">Society kickoff</p>
+      <p class="fine" style="margin:0 0 8px;color:var(--ink);font-weight:600">${esc(CONFIG.KICKOFF_LABEL)}</p>
+      <div class="cd" id="cd-digits" aria-live="polite" ${live?'hidden':''}>
         <div><div class="n" id="cd-d">${left.d}</div><div class="l">Days</div></div>
         <div><div class="n" id="cd-h">${String(left.h).padStart(2,'0')}</div><div class="l">Hours</div></div>
         <div><div class="n" id="cd-m">${String(left.m).padStart(2,'0')}</div><div class="l">Mins</div></div>
         <div><div class="n" id="cd-s">${String(left.s).padStart(2,'0')}</div><div class="l">Secs</div></div>
       </div>
-      <p class="fine" id="cd-note">Countdown is live from today. Browse the movements, lock your callsign, and start logging — you do not have to wait for kickoff.</p>
+      <div class="livebanner" id="cd-live" ${live?'':'hidden'}>Challenge is live — the 30-day card is open. Lock a callsign and train.</div>
+      <p class="fine" id="cd-note">${live
+        ? 'Roster stays open. Pick Brothers or Ladies, lock your callsign, and stack sessions.'
+        : 'Roster is open now. Pick Brothers or Ladies, lock your callsign, and start before the bell.'}</p>
     </div>
     <button type="button" class="demobtn" id="demo">
       <span class="play" aria-hidden="true">\u25B6</span>
-      <span><span class="t">Watch the demo — 9 minutes · 30-day challenge</span>
-      <span class="s">Voice-over + captions · push, legs, core, pace</span></span>
+      <span><span class="t">Watch the demo — 9-minute card · 30-day challenge</span>
+      <span class="s">Voice-over + captions · see the Society standard</span></span>
     </button>
-    <p class="lede">A 30-day bodyweight card built around your age, level, and joints. Timed sessions. Exact form photos. No gym. No fluff. No subscription.</p>
-    <div class="note">Pain is a stop signal. Effort is not. If you have a condition that affects exercise, clear it with a doctor before you start.</div>
+    <p class="lede">Elevate Your Smoke is The Cigar Society\u2019s bodyweight calisthenics card: timed PT, exact form demos, dual league boards, and bragging rights that stick. No gym. No fluff. No subscription.</p>
+
+    <section class="cardsec" id="nine" aria-labelledby="nine-title">
+      <h3 id="nine-title">Your 9-minute card</h3>
+      <p class="fine">Total time <b>9:00</b> exactly — warm-up, three circuit rounds, finisher, cool-down. Equipment: floor space; optional sturdy door/table for rows; optional pull-up bar. Beginners use easier progressions (wall push-up, chair squat). Higher levels shorten rest and raise the movement ladder.</p>
+      <div class="phases">
+        <div class="ph"><span class="k">0:00–1:00</span><span class="n">Warm-up</span><span class="s">Two 30-second mobility / activation moves.</span></div>
+        <div class="ph"><span class="k">1:00–7:00</span><span class="n">Main circuit · 3 rounds</span><span class="s">Four movements. Level 1: 20s work / 10s rest. Level 2+: 25s work / 5s rest.</span></div>
+        <div class="ph"><span class="k">7:00–8:00</span><span class="n">Finisher</span><span class="s">Sixty seconds on the pace move — steady cadence.</span></div>
+        <div class="ph"><span class="k">8:00–9:00</span><span class="n">Cool-down</span><span class="s">Two 30-second stretches. Breathe down.</span></div>
+      </div>
+      <p class="fine" style="margin-top:10px">Stop immediately for sharp pain, chest pain, faintness, severe shortness of breath, or loss of coordination. This challenge is not medical advice — check with a clinician if you have an injury, health condition, pregnancy, or long inactivity.</p>
+    </section>
+
+    <section class="cardsec" aria-labelledby="prog-title">
+      <h3 id="prog-title">30-day progression</h3>
+      <ul class="timeline">
+        <li><span class="w">Days 1–7</span><span class="fine">Find your cadence. Rest days are programmed — take them. Miss a day? Resume the next open session. Do not double up to chase a streak.</span></li>
+        <li><span class="w">Days 8–14</span><span class="fine">Same 9:00 structure. Form first. Lower or raise level in settings after a finished card, not mid-session.</span></li>
+        <li><span class="w">Days 15–21</span><span class="fine">Consistency beats hero days. Catch-up means completing your next scheduled session — not stacking two hard cards back-to-back.</span></li>
+        <li><span class="w">Days 22–30</span><span class="fine">Last ten days step movements up one level automatically. Still nine minutes. Still scalable.</span></li>
+      </ul>
+    </section>
+
+    <section class="cardsec" aria-labelledby="pts-title">
+      <h3 id="pts-title">How points work</h3>
+      <p class="fine"><b>${CONFIG.PTS_PER_SESSION} pts</b> per completed session · <b>${CONFIG.PTS_PER_5PCT_CARD} pts</b> every 5% of the card finished · <b>${CONFIG.PTS_PER_5PCT_WEIGHT} pts</b> every 5% bodyweight change from your starting weight (capped). Hours = sessions \u00d7 9 minutes. Boards refresh when you open them. Public: callsign, league, progress. Private: phone and raw weights (organizer CRM only). Healthy weight change only — never cut aggressively for points.</p>
+    </section>
+
+    <div class="note">Pain is a stop signal. Effort is not. Verify doors, tables, chairs, and boxes before rows or step-ups.</div>
     <div style="flex:1;min-height:22px"></div>
-    <button class="btn accent" id="go" type="button">Begin mission brief</button>
+    <button class="btn accent" id="go" type="button">Join the Society card</button>
+    <button class="btn ghost" id="seecard" type="button" style="margin-top:8px">See the 9-minute card</button>
     <div style="text-align:center;margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
       <a class="linkbtn" href="#manual">Movement manual</a>
-      <a class="linkbtn" href="#board">Leaderboard</a>
+      <a class="linkbtn" href="#board">League boards</a>
+      <a class="linkbtn" href="#privacy">Privacy</a>
       <a class="linkbtn" href="/admin">Organizer</a>
     </div>
   </div>`));
   const hero=document.getElementById('hero');
-  try{
-    const img=exerciseImg('push-up','cover');
-    hero.appendChild(img);
-  }catch(e){console.error(e)}
-  hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>Military calisthenics</span></div>`));
+  try{ hero.appendChild(exerciseImg('push-up','cover')); }catch(e){}
+  hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>The Cigar Society</span></div>`));
   paintCountdown();
-  S.countdown=setInterval(paintCountdown,1000);
+  if(S.countdown) clearInterval(S.countdown);
+  if(!live) S.countdown=setInterval(paintCountdown,1000);
   document.getElementById('demo').onclick=()=>showPromoDemo();
-  document.getElementById('go').onclick=()=>{clearHash();S.screen=S.me?'quiz':'join';S.qi=0;S.answers={};render()};
+  document.getElementById('go').onclick=()=>{clearHash();S.screen=S.me?(S.profile?'plan':'quiz'):'join';S.qi=0;S.answers={};render()};
+  document.getElementById('seecard').onclick=()=>{history.replaceState(null,'',location.pathname+'#card');S.screen='card';S.back='cover';render()};
 }
 function quiz(a){
   const q=Q[S.qi];
@@ -994,9 +1170,11 @@ const API=()=>{
 const tracking=()=>!!API();
 
 /* ---- identity: a display name and a random device id, nothing else ---- */
-function setMe(name){
-  S.me={id:'p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4),
-        name:name.trim().slice(0,32),joined:Date.now()};
+function setMe(name,league){
+  const prev=S.me||{};
+  S.me={id:prev.id||('p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4)),
+        name:name.trim().slice(0,32),joined:prev.joined||Date.now(),
+        league:league||prev.league||''};
   save();return S.me;
 }
 /* ---- transport: never blocks the workout; failures go in a queue ---- */
@@ -1023,7 +1201,8 @@ function report(action){
   const nextS=S.profile?nextSlot():null;
   const body={action,challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,
     sessions:Object.keys(S.log).length,total,streak:S.profile?streak():0,
-    day:nextS?nextS.i+1:(S.profile?30:0),perWeek:S.profile?S.profile.days:0};
+    day:nextS?nextS.i+1:(S.profile?30:0),perWeek:S.profile?S.profile.days:0,
+    league:S.me.league||''};
   if(S.weights&&S.weights.starting!==''&&S.weights.starting!=null)body.startingWeight=Number(S.weights.starting);
   if(S.weights&&S.weights.current!==''&&S.weights.current!=null)body.currentWeight=Number(S.weights.current);
   apiPost(body).catch(()=>queueAdd(body));
@@ -1031,49 +1210,72 @@ function report(action){
 
 /* ---- join screen ---- */
 function join(a){
+  let league=(S.me&&S.me.league)||'';
   a.appendChild(el(`<div class="sheet">${head('CALLSIGN')}
-    <p class="eyebrow">Step one \u00b7 roster</p>
-    <h2 class="display h-lg">Put a callsign<br>on the roster.</h2>
+    <p class="eyebrow">The Cigar Society \u00b7 roster</p>
+    <h2 class="display h-lg">Pick your league.<br>Lock your name.</h2>
     <div class="rule"></div>
+    <p class="eyebrow">League</p>
+    <div class="leaguepick" id="leaguepick" role="group" aria-label="League">
+      <button type="button" data-league="brothers" aria-pressed="${league==='brothers'?'true':'false'}" class="${league==='brothers'?'on':''}">Brothers of the League<small>Men\u2019s board</small></button>
+      <button type="button" data-league="ladies" aria-pressed="${league==='ladies'?'true':'false'}" class="${league==='ladies'?'on':''}">Ladies of the League<small>Ladies\u2019 board</small></button>
+    </div>
+    <p class="field errline" id="leagueerr" role="alert"></p>
     <div class="field"><label for="nm">Callsign</label>
-      <input id="nm" maxlength="32" autocomplete="off" autocapitalize="words" placeholder="e.g. Marcus R."></div>
-    <p class="fine" id="err" style="color:var(--danger);min-height:16px"></p>
+      <input id="nm" maxlength="32" autocomplete="nickname" autocapitalize="words" placeholder="e.g. Marcus R." aria-describedby="nmhint nmerr">
+      <p class="hint" id="nmhint">2–32 characters. Public on league boards.</p>
+      <p class="errline" id="nmerr" role="alert"></p>
+    </div>
+    <div class="privacybox">
+      <label><input type="checkbox" id="ack"> <span>I understand my callsign, league, and progress appear on the public league boards. Organizers may see callsign, league, progress, phone, and weights if entered. Quiz answers stay on this device. This is not medical advice.</span></label>
+    </div>
+    <p class="errline" id="ackerr" role="alert"></p>
     <div class="note">${tracking()
-      ? 'Callsign only. No email. No phone. Age and injuries stay on this device \u2014 the organizer sees your name, which days you finished, and when you were last active. Everything else stays on this device.'
-      : 'Roster tracking is not switched on for this copy, so nothing is sent anywhere. Your card is saved on this device only.'}</div>
+      ? 'Age and injury answers stay on this device. Bodyweight is optional and used only for the weight board and milestone points.'
+      : 'Roster tracking is off on this copy — your card saves on this device only.'}</div>
     <div style="flex:1;min-height:20px"></div>
-    <button class="btn" id="go">Lock callsign</button>
+    <button class="btn" id="go" disabled>Lock callsign</button>
     <div style="text-align:center"><button class="linkbtn" id="back">Back</button></div>
   </div>`));
   const inp=document.getElementById('nm');
+  const go=document.getElementById('go');
+  const ack=document.getElementById('ack');
   if(S.me)inp.value=S.me.name;
-  document.getElementById('go').onclick=()=>{
+  const valid=()=>{
     const v=inp.value.trim();
-    if(v.length<2){document.getElementById('err').textContent='Type a callsign so the organizer can find you on the roster.';inp.focus();return}
-    setMe(v);report('join');
-    S.screen=S.profile?'plan':'quiz';S.qi=0;S.answers={};render();
+    const okLeague=!!league;
+    const okName=v.length>=2&&v.length<=32;
+    const okAck=ack.checked;
+    go.disabled=!(okLeague&&okName&&okAck)||S.joining;
+    document.getElementById('leagueerr').textContent=okLeague?'':'Pick Brothers or Ladies of the League.';
+    document.getElementById('nmerr').textContent=inp.value&&!okName?'Callsign must be 2–32 characters.':'';
+    document.getElementById('ackerr').textContent=(!okAck&&(okLeague||okName))?'Confirm the privacy note to continue.':'';
+    return okLeague&&okName&&okAck;
   };
-  inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('go').click()};
+  document.getElementById('leaguepick').onclick=e=>{
+    const b=e.target.closest('button[data-league]'); if(!b)return;
+    league=b.dataset.league;
+    document.querySelectorAll('#leaguepick button').forEach(x=>{
+      const on=x.dataset.league===league; x.classList.toggle('on',on); x.setAttribute('aria-pressed',on?'true':'false');
+    });
+    valid();
+  };
+  inp.oninput=valid; ack.onchange=valid; valid();
+  go.onclick=async()=>{
+    if(!valid()||S.joining)return;
+    S.joining=true; go.disabled=true; go.textContent='Locking…';
+    const v=inp.value.trim();
+    try{
+      setMe(v,league);
+      report('join');
+      S.screen=S.profile?'plan':'quiz';S.qi=0;S.answers={};render();
+    }catch(e){
+      document.getElementById('nmerr').textContent='Could not save. Check your connection and try again.';
+      go.textContent='Lock callsign'; S.joining=false; valid();
+    }
+  };
+  inp.onkeydown=e=>{if(e.key==='Enter')go.click()};
   document.getElementById('back').onclick=()=>{S.screen='cover';render()};
-}
-
-/* ---- organizer dashboard ---- */
-const ago=ts=>{
-  if(!ts)return 'never';
-  const d=Math.floor((Date.now()-ts)/864e5);
-  return d<=0?'today':d===1?'yesterday':d+' days ago';
-};
-function coach(a){
-  // Live CRM lives at /admin — keep a soft landing if hash routed here
-  a.appendChild(el(`<div class="sheet">${head('ORGANIZER')}
-    <p class="eyebrow">Admin CRM</p>
-    <h2 class="display h-lg">Open the<br>organizer desk.</h2>
-    <p class="fine" style="margin:12px 0 0">Phone, weights, hours, points, and roster controls are on the admin CRM.</p>
-    <div class="rule"></div>
-    <a class="btn accent" href="/admin">Open admin CRM</a>
-    <div style="text-align:center;margin-top:12px"><button type="button" class="linkbtn" id="back">Back</button></div>
-  </div>`));
-  document.getElementById('back').onclick=()=>{clearHash();S.screen=S.profile?'plan':'cover';render()};
 }
 function renderRoster(body,people){
   body.innerHTML='';
@@ -1154,11 +1356,17 @@ function board(a){
     history.replaceState(null,'',location.pathname+location.search+'#board');
   }
   if(!S.boardTab)S.boardTab='points';
-  a.appendChild(el(`<div class="sheet" id="boardsheet">${head('LEADERBOARD')}
-    <p class="eyebrow">Challenge \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
-    <h2 class="display h-lg">Who is<br>elevating.</h2>
-    <p class="fine" style="margin:12px 0 0">Tap a sort below to rank the roster. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight lost.</p>
-    <p class="eyebrow" style="margin-top:16px">Sort roster by</p>
+  if(!S.boardLeague)S.boardLeague='brothers';
+  a.appendChild(el(`<div class="sheet" id="boardsheet">${head('LEAGUE BOARDS')}
+    <p class="eyebrow">The Cigar Society \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
+    <h2 class="display h-lg">Brothers.<br>Ladies.</h2>
+    <p class="fine" style="margin:12px 0 0">Two boards. Same standard. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight change (capped at 4 milestones). Hours = sessions × 9 minutes. Ties: points, then hours. Refreshes on open. Public: callsign + progress — not phone or raw weight.</p>
+    <p class="eyebrow" style="margin-top:16px">League</p>
+    <div class="tabs league" id="leagues" role="tablist" aria-label="League">
+      <button type="button" role="tab" data-league="brothers" aria-selected="${S.boardLeague==='brothers'?'true':'false'}" class="${S.boardLeague==='brothers'?'on':''}">Brothers</button>
+      <button type="button" role="tab" data-league="ladies" aria-selected="${S.boardLeague==='ladies'?'true':'false'}" class="${S.boardLeague==='ladies'?'on':''}">Ladies</button>
+    </div>
+    <p class="eyebrow" style="margin-top:14px">Sort by</p>
     <div class="tabs" id="tabs" role="tablist" aria-label="Sort leaderboard">
       <button type="button" role="tab" data-tab="points" aria-selected="${S.boardTab==='points'?'true':'false'}" class="${S.boardTab==='points'?'on':''}">Points</button>
       <button type="button" role="tab" data-tab="hours" aria-selected="${S.boardTab==='hours'?'true':'false'}" class="${S.boardTab==='hours'?'on':''}">Hours</button>
@@ -1180,18 +1388,25 @@ function board(a){
       x.classList.toggle('on',on);
       x.setAttribute('aria-selected',on?'true':'false');
     });
+    document.querySelectorAll('#leagues button').forEach(x=>{
+      const on=x.dataset.league===S.boardLeague;
+      x.classList.toggle('on',on);
+      x.setAttribute('aria-selected',on?'true':'false');
+    });
   };
+  const leagueLabel=()=>S.boardLeague==='ladies'?'Ladies of the League':'Brothers of the League';
   const paint=()=>{
-    const people=S.boardPeople||[];
+    const all=S.boardPeople||[];
+    const people=all.filter(p=>(p.league||'')===S.boardLeague);
     body.innerHTML='';
     if(!people.length){
-      body.appendChild(el('<p class="fine" style="margin-top:12px">Nobody on the board yet. Lock a callsign and log a session.</p>'));
+      body.appendChild(el(`<p class="fine" style="margin-top:12px">No one on the ${esc(leagueLabel())} board yet. Lock a callsign in that league and log a session.</p>`));
       return;
     }
-    const title=S.boardTab==='hours'?'Ranked by hours trained'
+    const title=S.boardTab==='hours'?'Ranked by hours'
       :S.boardTab==='weight'?'Ranked by bodyweight change'
       :'Ranked by points';
-    body.appendChild(el(`<p class="eyebrow" style="margin-top:8px">${esc(title)} \u00b7 ${people.length} athletes</p>`));
+    body.appendChild(el(`<p class="eyebrow" style="margin-top:8px">${esc(leagueLabel())} \u00b7 ${esc(title)} \u00b7 ${people.length}</p>`));
     sortBoard(people,S.boardTab).forEach((p,i)=>{
       const wLabel=p.weightLostPct==null?'No weight':fmtPct(p.weightLostPct)+' BW';
       const pri=primarySortValue(p,S.boardTab);
@@ -1218,6 +1433,14 @@ function board(a){
     if(!b)return;
     e.preventDefault();
     S.boardTab=b.dataset.tab;
+    syncTabs();
+    paint();
+  };
+  document.getElementById('leagues').onclick=e=>{
+    const b=e.target.closest('button[data-league]');
+    if(!b)return;
+    e.preventDefault();
+    S.boardLeague=b.dataset.league;
     syncTabs();
     paint();
   };
@@ -1249,36 +1472,46 @@ function plan(a){
   const w=S.weights;
   const p=S.profile,sl=schedule(p),next=nextSlot();
   const total=sl.filter(s=>s.train).length,doneN=Object.keys(S.log).length;
+  const sc=clientScore();
   const sess=next?buildSession(next,p):null;
   const num=next?sl.filter(s=>s.train).indexOf(next)+1:total;
-  a.appendChild(el(`<div class="sheet">${head('CARD \u00b7 30-DAY PT')}
-    <div class="statrow">
-      <div><div class="n">${doneN}</div><div class="l">Logged</div></div>
+  const leagueLab=S.me&&S.me.league==='ladies'?'Ladies of the League':S.me&&S.me.league==='brothers'?'Brothers of the League':'League TBD';
+  const dayLabel=next?('Day '+(next.i+1)+' of 30'):'Card complete';
+  const canResume=S.resume&&next&&S.resume.slotI===next.i&&(Date.now()-S.resume.savedAt)<6*3600e3;
+  a.appendChild(el(`<div class="sheet">${head('DASHBOARD')}
+    <div class="dashhead"><div>
+      <span class="daychip">${esc(dayLabel)}</span>
+      <h2 class="display h-lg" style="font-size:28px">Your 30-day<br>calisthenics card</h2>
+      <p class="who" style="margin-top:8px">${S.me?`<b>${esc(S.me.name)}</b> · ${esc(leagueLab)}`:'Guest'}${sc.points?` · <b>${sc.points}</b> pts`:''}</p>
+    </div></div>
+    <div class="statrow" style="margin-top:14px">
+      <div><div class="n">${doneN}</div><div class="l">Done / ${total}</div></div>
       <div><div class="n">${streak()}</div><div class="l">Streak</div></div>
-      <div><div class="n">${total-doneN}</div><div class="l">To go</div></div>
+      <div><div class="n">${bestStreak()}</div><div class="l">Best</div></div>
+      <div><div class="n">${sc.hours}</div><div class="l">Hours</div></div>
     </div>
-    <p class="quote cardquote">Elevate your smoke \u2014 grit, fit, standard. Nine minutes. Show up.</p>
+    <p class="fine" style="margin:10px 0 0">Missed a day? Resume the next open session — do not double volume just to protect a streak.</p>
     <div id="today"></div>
     <div class="block" style="margin-top:14px" id="wtblock">
-      <p class="eyebrow">Weight check-in</p>
-      <p class="fine" style="margin:0 0 8px">Starting + current weight unlock the weight board and 5% milestone points.</p>
+      <p class="eyebrow">Weight check-in (optional)</p>
+      <p class="fine" style="margin:0 0 8px">Unlocks the weight board. Points cap at ${CONFIG.MAX_WEIGHT_MILESTONES} milestones. Change steadily. Not medical advice.</p>
       <div class="wtrow">
-        <div class="field"><label for="wstart">Start lbs</label>
+        <div class="field"><label for="wstart">Starting weight (lbs)</label>
           <input id="wstart" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="180" value="${esc(w.starting||'')}"></div>
-        <div class="field"><label for="wcur">Now lbs</label>
+        <div class="field"><label for="wcur">Current weight (lbs)</label>
           <input id="wcur" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="175" value="${esc(w.current||'')}"></div>
         <button type="button" class="btn accent sm" id="wsave">Save</button>
       </div>
-      <p class="fine" id="wmsg" style="min-height:16px;margin-top:8px"></p>
+      <p class="fine" id="wmsg" style="min-height:16px;margin-top:8px" role="status"></p>
     </div>
-    <p class="eyebrow" style="margin-top:22px">The card \u00b7 thirty days</p>
-    <div class="weeks" id="weeks"></div>
-    <div class="rule thin" style="margin-top:22px"></div>
-    <p class="fine"><b>A</b> ${FOCUS.A} \u00b7 <b>B</b> ${FOCUS.B} \u00b7 <b>C</b> ${FOCUS.C}. Blank days are rest \u2014 they are part of the plan, not a gap in it. The last ten days step every movement up a level.</p>
-    <a class="btn ghost sm" href="#manual" id="man" style="margin-top:14px;text-align:center;text-decoration:none">Movement manual</a>
+    <p class="eyebrow" style="margin-top:22px">30-day grid</p>
+    <div class="weeks" id="weeks" role="list" aria-label="Thirty day card"></div>
+    <p class="fine" style="margin-top:8px"><b>A</b> ${FOCUS.A} · <b>B</b> ${FOCUS.B} · <b>C</b> ${FOCUS.C}. Dots are recovery. Last ten days step movements up one level.</p>
+    <a class="btn ghost sm" href="#manual" style="margin-top:14px;text-align:center;text-decoration:none">Movement manual</a>
     <div style="text-align:center;margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
-      <a class="linkbtn" href="#board">Leaderboard</a>
-      <a class="linkbtn" href="/admin">Organizer</a>
+      <a class="linkbtn" href="#board">League boards</a>
+      <a class="linkbtn" href="#settings">Profile</a>
+      <a class="linkbtn" href="#privacy">Privacy</a>
       <button type="button" class="linkbtn" id="reset">Start a new card</button>
     </div>
   </div>`));
@@ -1292,42 +1525,71 @@ function plan(a){
     msg.style.color='var(--olive-soft)';msg.textContent='Saved to your roster.';
   };
   const t=document.getElementById('today');
+  if(canResume && sess){
+    t.appendChild(el(`<div class="block" style="margin-top:12px;border-left:3px solid var(--accent);padding-left:12px">
+      <p class="eyebrow">Interrupted session</p>
+      <p class="fine">Resume your 9-minute workout or discard it.</p>
+      <button type="button" class="btn accent" id="resume" style="margin-top:10px">Resume 9-minute workout</button>
+      <button type="button" class="btn ghost sm" id="discard" style="margin-top:8px">Discard</button>
+    </div>`));
+    document.getElementById('resume').onclick=()=>{
+      S.session=sess;S.slot=next;S.si=S.resume.si||0;S.timeLeft=S.resume.timeLeft||sess.steps[S.si].sec;S.paused=!!S.resume.paused;
+      startSession(true);
+    };
+    document.getElementById('discard').onclick=()=>{clearResume();render()};
+  }
   if(sess){
     t.appendChild(el(`<div class="block invert" style="margin-top:12px">
-      <p class="eyebrow">Day ${next.i+1} of 30 \u00b7 session ${num} of ${total}</p>
+      <p class="eyebrow">Day ${next.i+1} of 30 · session ${num} of ${total} · level ${sess.lvl}</p>
       <h3 class="display h-md" style="margin:2px 0 0">${FOCUS[sess.type]}</h3>
       <p style="font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;margin:9px 0 0;opacity:.85">
-        9 MIN \u00b7 ${sess.rounds} ROUNDS \u00b7 ${sess.work}S ON / ${sess.rest}S OFF</p></div>`));
-    const list=el('<div class="block"><p class="eyebrow">Today\u2019s movements \u2014 tap for the standard</p><ul class="movelist"></ul></div>');
+        9:00 · ${sess.rounds} ROUNDS · ${sess.work}S ON / ${sess.rest}S OFF</p></div>`));
+    const list=el('<div class="block"><p class="eyebrow">Today\u2019s main movements</p><ul class="movelist"></ul></div>');
     const ul=list.querySelector('ul');
     sess.main.forEach((m,i)=>ul.appendChild(moveRow(['Push','Legs','Core','Pace'][i],m.n,sess.work+'s')));
     t.appendChild(list);
-    const b=el('<button class="btn accent" id="start" type="button">Start session</button>');
+    const b=el('<button class="btn accent" id="start" type="button">Start today\u2019s 9-minute workout</button>');
     t.appendChild(b);
-    b.onclick=()=>{clearHash();S.session=sess;S.slot=next;S.screen='brief';render()};
-  }else{
+    b.onclick=()=>{clearHash();clearResume();S.session=sess;S.slot=next;S.screen='brief';render()};
+  }else if(!canResume){
     t.appendChild(el(`<div class="block invert" style="margin-top:12px">
       <p class="eyebrow">Card complete</p>
       <h3 class="display h-md" style="margin:2px 0 0">All ${total} sessions logged</h3>
-      <p style="font-size:14px;line-height:1.5;margin:10px 0 0">Thirty days done. Start a fresh card and it rebuilds a level higher from where you finished.</p></div>`));
+      <p style="font-size:14px;line-height:1.5;margin:10px 0 0">Thirty days done. Build the next card a level higher when ready.</p></div>`));
     const b=el('<button class="btn" id="again" type="button">Build the next card</button>');
     t.appendChild(b);
-    b.onclick=()=>{if(S.profile.level<3)S.profile.level++;S.log={};save();render()};
+    b.onclick=()=>{if(S.profile.level<3)S.profile.level++;S.log={};clearResume();save();render()};
   }
   const W=document.getElementById('weeks');
+  const firstOpen=next?next.i:-1;
   for(let r=0;r<5;r++){
     const row=el(`<div class="wk"><span class="lab">${String(r*6+1).padStart(2,'0')}</span><div class="cells six"></div></div>`);
     const c=row.querySelector('.cells');
     for(let d=0;d<6;d++){
       const s=sl[r*6+d],isNext=next&&next.i===s.i;
-      const cls=['cell',s.train?'train':'',S.log[s.i]?'done':'',isNext?'next':''].filter(Boolean).join(' ');
-      c.appendChild(el(`<div class="${cls}">${s.train?s.type:'\u00b7'}</div>`));
+      const missed=s.train&&!S.log[s.i]&&firstOpen>=0&&s.i<firstOpen;
+      const cls=['cell',s.train?'train':'rest',S.log[s.i]?'done':'',isNext?'next today':'',missed?'miss':''].filter(Boolean).join(' ');
+      c.appendChild(el(`<div class="${cls}" role="listitem">${s.train?s.type:'\u00b7'}</div>`));
     }
     W.appendChild(row);
   }
+  if(tracking()&&S.me){
+    (async()=>{
+      try{
+        const u=API()+(API().includes('?')?'&':'?')+'action=leaderboard&challenge='+encodeURIComponent(CONFIG.CHALLENGE);
+        const r=await fetch(u,{cache:'no-store'}); const d=await r.json();
+        if(!d.ok)return;
+        const league=S.me.league||'';
+        const list=(d.people||[]).filter(x=>(x.league||'')===league).sort((a,b)=>(b.points||0)-(a.points||0));
+        const idx=list.findIndex(x=>(x.name||'').toLowerCase()===(S.me.name||'').toLowerCase());
+        const who=document.querySelector('.who');
+        if(idx>=0&&who) who.innerHTML += ` · Board <b>#${idx+1}</b>`;
+      }catch(e){}
+    })();
+  }
   document.getElementById('reset').onclick=()=>{
-    if(confirm('This clears your logged sessions and runs the questions again.')){
-      clearHash();S.profile=null;S.log={};save();S.screen='cover';render();}
+    if(confirm('Clear logged sessions and re-run the mission brief?')){
+      clearHash();clearResume();S.profile=null;S.log={};save();S.screen='cover';render();}
   };
 }
 /* ---------- movement manual ---------- */
@@ -1392,23 +1654,41 @@ function brief(a){
   document.getElementById('back').onclick=()=>{S.screen='plan';render()};
 }
 /* ---------- player ---------- */
-function startSession(){
-  S.si=0;S.paused=false;
+function startSession(fromResume){
+  if(!fromResume){ S.si=0;S.paused=false; }
   document.querySelectorAll('.player').forEach(n=>n.remove());
-  document.body.appendChild(el('<div class="player" id="player"></div>'));
-  loadStep();
+  document.body.appendChild(el('<div class="player" id="player" role="dialog" aria-label="Nine minute workout"></div>'));
+  requestWakeLock();
+  if(!window._eysVis){
+    window._eysVis=true;
+    document.addEventListener('visibilitychange',()=>{
+      if(!document.getElementById('player'))return;
+      if(document.hidden){ S.paused=true; persistResume(); const b=document.getElementById('pause'); if(b)b.textContent='Resume'; }
+      else requestWakeLock();
+    });
+  }
+  loadStep(!!fromResume);
 }
-function loadStep(){
+function loadStep(keepTime){
   const st=S.session.steps[S.si];
   if(!st){endSession();return}
-  S.timeLeft=st.sec;paintStep();
+  if(!keepTime) S.timeLeft=st.sec;
+  paintStep();
+  persistResume();
   clearInterval(S.tick);
   S.tick=setInterval(()=>{
     if(S.paused)return;
     S.timeLeft--;
+    if(S.timeLeft===3||S.timeLeft===2||S.timeLeft===1){ beep('warn'); vibe(30); }
+    if(S.timeLeft===0){ beep('end'); vibe([40,40,40]); }
     const t=document.getElementById('t');if(t)t.textContent=mmss(Math.max(0,S.timeLeft));
-    const b=document.getElementById('barfill');if(b)b.style.width=(100*(1-S.timeLeft/st.sec))+'%';
-    if(S.timeLeft<=0){clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}S.si++;loadStep()}
+    const b=document.getElementById('barfill');if(b)b.style.width=(100*(1-Math.max(0,S.timeLeft)/st.sec))+'%';
+    if(S.timeLeft%5===0) persistResume();
+    if(S.timeLeft<=0){
+      clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
+      announce((st.phase||'')+' complete');
+      S.si++; loadStep(false);
+    }
   },1000);
 }
 function demoTips(name){
@@ -1439,7 +1719,11 @@ function paintStep(){
       <button class="btn ghost sm" id="pause" style="flex:1">${S.paused?'Resume':'Pause'}</button>
       <button class="btn sm" id="skip" style="flex:1.6">${st.kind==='rest'?'Skip rest':'Done \u2192'}</button>
     </div>
-    <div style="text-align:center;padding-bottom:16px"><button class="linkbtn" id="quit">End session</button></div>`;
+    <div style="text-align:center;padding-bottom:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+      <button class="linkbtn" id="mute" type="button">${S.muted?'Unmute cues':'Mute cues'}</button>
+      <button class="linkbtn" id="restart" type="button">Restart</button>
+      <button class="linkbtn" id="quit" type="button">End session</button>
+    </div>`;
   if(st.kind==='work'&&EX[st.n]){
     p.querySelector('#figslot').appendChild(exerciseImg(st.n,'hero'));
   }
@@ -1457,19 +1741,39 @@ function paintStep(){
       if(dots)[...dots.children].forEach((d,i)=>d.className=i===tipI?'on':'');
     },3200);
   }
-  p.querySelector('#pause').onclick=()=>{S.paused=!S.paused;p.querySelector('#pause').textContent=S.paused?'Resume':'Pause'};
-  p.querySelector('#skip').onclick=()=>{clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}S.si++;loadStep()};
+  p.querySelector('#pause').onclick=()=>{
+    S.paused=!S.paused; persistResume();
+    p.querySelector('#pause').textContent=S.paused?'Resume':'Pause';
+    announce(S.paused?'Paused':'Resumed');
+  };
+  p.querySelector('#skip').onclick=()=>{
+    if(st.kind!=='rest' && !confirm('Skip this movement?')) return;
+    clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}S.si++;loadStep(false);
+  };
+  const muteBtn=p.querySelector('#mute');
+  if(muteBtn) muteBtn.onclick=()=>{
+    S.muted=!S.muted;
+    if(!S.muted){ try{ if(!S._ac){const Ctx=window.AudioContext||window.webkitAudioContext;S._ac=new Ctx()} S._ac.resume(); beep('warn'); }catch(e){} }
+    muteBtn.textContent=S.muted?'Unmute cues':'Mute cues';
+  };
+  const restartBtn=p.querySelector('#restart');
+  if(restartBtn) restartBtn.onclick=()=>{
+    if(!confirm('Restart this 9-minute workout from the warm-up?'))return;
+    clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
+    S.si=0;S.paused=false;loadStep(false);
+  };
   p.querySelector('#quit').onclick=()=>{
     if(confirm('End here? This session will not be marked on the card.')){
       clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}
-      clearRafs();p.remove();S.screen='plan';render();}
+      clearRafs();releaseWakeLock();clearResume();p.remove();S.screen='plan';render();}
   };
 }
 function endSession(){
-  clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}clearRafs();
+  clearInterval(S.tick);if(S.tipTick){clearInterval(S.tipTick);S.tipTick=null}clearRafs();releaseWakeLock();
   const p=document.getElementById('player');if(p)p.remove();
-  S.log[S.slot.i]={at:Date.now()};save();report('log');
-  S.screen='done';render();
+  if(S.log[S.slot.i]){ clearResume(); S.screen='done'; render(); return; }
+  S.log[S.slot.i]={at:Date.now()}; clearResume(); save(); report('log');
+  S.screen='done';render(); announce('Session logged');
 }
 function doneScreen(a){
   const total=schedule(S.profile).filter(s=>s.train).length,n=Object.keys(S.log).length;
@@ -1481,6 +1785,92 @@ function doneScreen(a){
     <button class="btn" id="back">Back to the card</button></div>`));
   document.getElementById('back').onclick=()=>{S.screen='plan';render()};
 }
+
+function cardScreen(a){
+  const sample={days:4,level:1,age:'30',goal:'fit',limit:'none',gear:'none'};
+  const slot={i:0,block:0,train:true,type:'A'};
+  const sess=buildSession(slot,sample);
+  const total=sessionTotalSec(sess);
+  a.appendChild(el(`<div class="sheet">${head('9-MINUTE CARD')}
+    <p class="eyebrow">Exact structure · ${total}s = 9:00</p>
+    <h2 class="display h-lg">Warm-up.<br>Circuit. Finish.</h2>
+    <p class="fine" style="margin:12px 0 0">Level 1 uses 20s work / 10s rest. Level 2+ uses 25s / 5s. Same nine minutes. Beginners start with wall push-ups, chair squats, and table rows.</p>
+    <div class="phases">
+      <div class="ph"><span class="k">Warm-up · 60s</span><span class="n">${esc(sess.steps[0].n)} + ${esc(sess.steps[1].n)}</span><span class="s">30s each</span></div>
+      <div class="ph"><span class="k">Main · 6:00</span><span class="n">${sess.main.map(m=>m.n).join(' · ')}</span><span class="s">3 rounds · ${sess.work}s on / ${sess.rest}s rest</span></div>
+      <div class="ph"><span class="k">Finisher · 60s</span><span class="n">${esc(sess.main[3].n)}</span><span class="s">Steady cadence</span></div>
+      <div class="ph"><span class="k">Cool-down · 60s</span><span class="n">Two stretches</span><span class="s">30s each</span></div>
+    </div>
+    <div class="note" style="margin-top:16px">Stop for sharp pain, chest pain, faintness, severe shortness of breath, or loss of coordination. Not medical advice.</div>
+    <div style="flex:1;min-height:20px"></div>
+    <button class="btn accent" id="go" type="button">Join the Society card</button>
+    <button class="btn ghost" id="back" type="button" style="margin-top:8px">Back</button>
+  </div>`));
+  document.getElementById('go').onclick=()=>{clearHash();S.screen='join';render()};
+  document.getElementById('back').onclick=()=>{clearHash();S.screen=S.back||'cover';render()};
+}
+function privacyScreen(a){
+  a.appendChild(el(`<div class="sheet">${head('PRIVACY')}
+    <h2 class="display h-lg">What stays<br>visible.</h2>
+    <p class="fine" style="margin:12px 0 0"><b>League boards (public):</b> callsign, league, sessions, streak, points, hours, bodyweight change percent if logged.</p>
+    <p class="fine"><b>Organizers:</b> callsign, league, progress, phone and weights if entered in CRM, last active.</p>
+    <p class="fine"><b>This device only:</b> mission-brief answers (goal, level, age band, injuries).</p>
+    <p class="fine"><b>Bodyweight:</b> optional. Used for the weight board and capped milestone points.</p>
+    <p class="fine"><b>Retention:</b> roster data stays for the challenge until organizer or self-delete from Profile.</p>
+    <p class="fine"><b>Callsign / leave:</b> update or delete from Profile.</p>
+    <div style="flex:1;min-height:20px"></div>
+    <button class="btn" id="back" type="button">Back</button>
+  </div>`));
+  document.getElementById('back').onclick=()=>{clearHash();S.screen=S.back||(S.profile?'plan':'cover');render()};
+}
+function settingsScreen(a){
+  if(!S.me){S.screen='join';render();return}
+  a.appendChild(el(`<div class="sheet">${head('PROFILE')}
+    <h2 class="display h-lg">Callsign<br>& league</h2>
+    <div class="field"><label for="sn">Callsign</label>
+      <input id="sn" maxlength="32" value="${esc(S.me.name||'')}"></div>
+    <div class="leaguepick" id="lp">
+      <button type="button" data-league="brothers" class="${S.me.league==='brothers'?'on':''}">Brothers</button>
+      <button type="button" data-league="ladies" class="${S.me.league==='ladies'?'on':''}">Ladies</button>
+    </div>
+    <p class="fine" id="serr" style="min-height:16px"></p>
+    <button class="btn accent" id="savep" type="button">Save profile</button>
+    <button class="btn ghost" id="leave" type="button" style="margin-top:8px">Leave challenge / delete roster</button>
+    <div style="text-align:center;margin-top:12px"><button class="linkbtn" id="back">Back to dashboard</button></div>
+  </div>`));
+  let league=S.me.league||'';
+  document.getElementById('lp').onclick=e=>{
+    const b=e.target.closest('button[data-league]'); if(!b)return;
+    league=b.dataset.league;
+    document.querySelectorAll('#lp button').forEach(x=>x.classList.toggle('on',x.dataset.league===league));
+  };
+  document.getElementById('savep').onclick=async()=>{
+    const name=document.getElementById('sn').value.trim();
+    const err=document.getElementById('serr');
+    if(name.length<2){err.textContent='Callsign must be at least 2 characters.';return}
+    if(!league){err.textContent='Pick a league.';return}
+    setMe(name,league); report('ping');
+    if(tracking()){
+      try{
+        await fetch('/api/me/update',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name,league})});
+      }catch(e){}
+    }
+    err.style.color='var(--olive-soft)'; err.textContent='Saved.';
+  };
+  document.getElementById('leave').onclick=async()=>{
+    if(!confirm('Delete your roster entry for this challenge? Local card data on this device will also clear.'))return;
+    if(tracking()){
+      try{
+        await fetch('/api/me/delete',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name})});
+      }catch(e){}
+    }
+    S.me=null;S.profile=null;S.log={};clearResume();save();S.screen='cover';render();
+  };
+  document.getElementById('back').onclick=()=>{clearHash();S.screen='plan';render()};
+}
+
 boot();
 
 </script>

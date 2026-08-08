@@ -23,8 +23,8 @@ docs/SETUP-roster.md        Railway setup
 
 ## URLs & secrets
 
-- App: `https://app-production-74bd.up.railway.app`
-- Admin: `https://app-production-74bd.up.railway.app/admin`
+- App: `https://elevate-your-smoke.up.railway.app`
+- Admin: `https://elevate-your-smoke.up.railway.app/admin`
 - Organizer pin: Railway env `ORGANIZER_CODE` (currently set in Railway Variables)
 - Project: Railway `elevate-your-smoke`, service `app`, env `production`
 
@@ -51,24 +51,29 @@ railway up --detach
 
 ```bash
 railway deployment list --limit 1
-curl -sI https://app-production-74bd.up.railway.app/admin | head -5
+curl -sI https://elevate-your-smoke.up.railway.app/admin | head -5
 ```
 
 ## Product rules (do not drift)
 
-- **Theme**: orange accent `#E85D04` (not lime). Military / badass tone.
+- **Theme**: orange accent `#E85D04` (not lime). Military / badass tone. Brand as **The Cigar Society**.
+- **Leagues**: Dual boards — **Brothers of the League** (`league: brothers`) and **Ladies of the League** (`league: ladies`). Join picks a league; public `#board` filters by league tabs; admin can edit league.
 - **Copy**: PT-standard language — “Standard” cues, “Kill this fault”, mission briefing quiz.
 - **Form media**: looping muted `<video>` photo presentations (start↔finish); JPG posters as fallback. Real form shots — no stick figures, no random gym lifestyle shots.
-- **Admin roster fields** (per person, editable + Save): phone, starting weight, current weight, date started. Trash deletes.
-- **Admin CRM** (`/admin`): Find/search by name or phone; tabs for CRM, Points, Hours, Weight boards; tracks hours (`sessions × 9 min`) and points.
-- **Points**: 10 per session + 50 every 5% of the card completed + 100 every 5% bodyweight lost from starting weight.
-- **Public leaderboard**: `GET /api/leaderboard?challenge=` (no pin) — Points / Hours / Weight tabs in the app.
+- **Admin roster fields** (per person, editable + Save): league, phone, starting weight, current weight, date started. Trash deletes.
+- **Admin CRM** (`/admin`): Find/search by name or phone; league filter (All / Brothers / Ladies); tabs for CRM, Text (SMS), Points, Hours, Weight; tracks hours (`sessions × 9 min`) and points.
+- **Points**: 10 per session + 50 every 5% of the card completed + 100 every 5% bodyweight lost (capped at 4 milestones / 20%). Source: `backend/score.js`.
+- **Kickoff**: `CONFIG.KICKOFF_ISO` / `CONFIG.KICKOFF_LABEL` in `app/index.html`.
+- **Participant self-service**: `POST /api/me/update`, `POST /api/me/delete` (id + callsign).
+- **SMS**: Admin Text tab + per-person Text. Device Messages fallback; optional Twilio env vars.
+- **Public leaderboard**: `GET /api/leaderboard?challenge=` (no pin) — Brothers / Ladies + Points / Hours / Weight in the app.
 - **Admin APIs**:
   - `GET /api/roster?pin=&challenge=`
   - `GET /api/leaderboard?challenge=`
-  - `POST /api/roster/update` `{ pin, challenge, name, phone, startingWeight, currentWeight, dateStarted }`
+  - `POST /api/roster/update` `{ pin, challenge, name, phone, startingWeight, currentWeight, dateStarted, league }`
   - `POST /api/roster/delete` `{ pin, challenge, name }`
-- Participant quiz answers stay on-device; roster gets name + progress + weights (participant check-in or admin).
+  - `POST /api/roster/sms` `{ pin, challenge, message, people?: [{name,phone}], name?, league? }`
+- Participant quiz answers stay on-device; roster gets name + league + progress + weights (participant check-in or admin).
 
 ## When editing exercises
 

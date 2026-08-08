@@ -36,6 +36,13 @@ body{
 }
 .masthead h1{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:-.02em;margin:0;line-height:1}
 .masthead .sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;margin-top:5px;display:block;font-weight:500}
+.masthead .logout{
+  flex:0 0 auto;border:1.5px solid rgba(244,247,238,.35);background:transparent;color:#F4F7EE;
+  border-radius:999px;padding:8px 14px;font-family:var(--disp);font-weight:700;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+}
+.masthead .logout:hover{border-color:#F4F7EE;background:rgba(244,247,238,.1)}
+.masthead .logout[hidden]{display:none!important}
 .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
 .display{font-family:var(--disp);font-weight:800;letter-spacing:-.03em;line-height:.95;margin:0}
 .h-lg{font-size:34px}
@@ -65,9 +72,10 @@ body{
 .tabs button.on{background:var(--ink);color:#F7F6F2;border-color:var(--ink)}
 .field{margin:14px 0 6px}
 .field label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600}
-.field input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
+.field input,.field select{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
   font-family:var(--disp);font-weight:700;font-size:26px;letter-spacing:-.02em;color:var(--ink);
-  padding:4px 2px;-webkit-appearance:none}
+  padding:4px 2px;-webkit-appearance:none;appearance:none}
+.field select{font-size:18px;cursor:pointer}
 .person{border-bottom:1px solid var(--line);padding:14px 0}
 .person.cold{opacity:.7}
 .prow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
@@ -92,11 +100,12 @@ body{
 .meta .field{margin:0}
 .meta .field.full{grid-column:1 / -1}
 .meta .field label{margin-bottom:4px}
-.meta .field input{
+.meta .field input,.meta .field select{
   font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:0;
   border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface2);
 }
-.meta .field input:focus{outline:none;border-color:var(--accent)}
+.meta .field input:focus,.meta .field select:focus{outline:none;border-color:var(--accent)}
+.meta .field select{cursor:pointer}
 .save-row{display:flex;align-items:center;gap:10px;margin-top:10px}
 .save-row .btn{width:auto;flex:1;margin:0}
 .find{display:flex;gap:8px;align-items:stretch;margin:14px 0 4px}
@@ -108,6 +117,27 @@ body{
 .find .btn{width:auto;margin:0;flex:0 0 auto;padding:12px 18px}
 .find-clear{background:none;border:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;font-weight:600;padding:4px 0}
 .find-clear:hover{color:var(--ink)}
+.appfoot{
+  margin-top:28px;padding:18px 0 8px;text-align:center;
+  font-size:11px;letter-spacing:.06em;color:var(--muted);font-weight:600;
+  border-top:1px solid var(--line);
+}
+.appfoot b{color:var(--ink);font-weight:700;letter-spacing:.04em}
+.smsbox{margin-top:12px}
+.smsbox textarea{
+  width:100%;min-height:120px;resize:vertical;font-family:var(--body);font-weight:500;font-size:15px;
+  border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface2);color:var(--ink);
+  line-height:1.45;
+}
+.smsbox textarea:focus{outline:none;border-color:var(--accent)}
+.smsmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.smsmeta .chars{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+.sms-actions{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.sms-actions .btn{margin:0}
+.sms-result{margin-top:12px;font-size:13px;line-height:1.45;color:var(--muted)}
+.sms-result.ok{color:var(--olive-soft);font-weight:600}
+.sms-result.bad{color:var(--danger);font-weight:600}
+.btn.textme{background:transparent;color:var(--ink);border:1.5px solid var(--line);flex:1}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -117,8 +147,12 @@ body{
 const CONFIG={SYNC_URL:'/api',CHALLENGE:'smoke-30'};
 const PIN_KEY='smoke30:admin-pin';
 let PEOPLE=[];
-let TAB='crm'; // crm | points | hours | weight
+let TAB='crm'; // crm | points | hours | weight | text
+let LEAGUE='all'; // all | brothers | ladies
 let QUERY='';
+let SMS_TARGET=null; // null = blast, or {name, phone} for one person
+let SMS_DRAFT='';
+let SMS_TWILIO=false; // true when Railway has Twilio env
 
 const el=h=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -135,6 +169,7 @@ const ago=ts=>{
   return d<=0?'today':d===1?'yesterday':d+' days ago';
 };
 const pinCode=()=>{try{return sessionStorage.getItem(PIN_KEY)||''}catch(e){return ''}};
+const clearPin=()=>{try{sessionStorage.removeItem(PIN_KEY)}catch(e){}};
 const fmtHrs=h=> (h==null||h==='')? '—' : (Number(h).toFixed(Number(h)>=10?1:2).replace(/\.?0+$/,'')+'h');
 const fmtPct=p=>{
   if(p==null)return '—';
@@ -142,20 +177,50 @@ const fmtPct=p=>{
   return (n>0?'+':'')+n.toFixed(1)+'%';
 };
 
+function logout(){
+  clearPin();
+  PEOPLE=[];
+  TAB='crm';
+  LEAGUE='all';
+  QUERY='';
+  render();
+}
+
+function setLoggedInChrome(on){
+  const title=document.getElementById('admintitle');
+  const blurb=document.getElementById('adminblurb');
+  const gate=document.getElementById('gate');
+  const out=document.getElementById('logout');
+  if(title) title.innerHTML=on?'Roster<br>CRM':'Admin<br>login';
+  if(blurb) blurb.hidden=!!on;
+  if(gate) gate.hidden=!!on;
+  if(out) out.hidden=!on;
+}
+
 function render(){
   const app=document.getElementById('app');
   app.innerHTML='';
   app.appendChild(el(`<div class="sheet">
-    <div class="masthead"><div class="brand"><h1>Elevate Your Smoke</h1><span class="sub">Admin CRM</span></div></div>
+    <div class="masthead">
+      <div class="brand"><h1>Elevate Your Smoke</h1><span class="sub">Admin CRM</span></div>
+      <button type="button" class="logout" id="logout" hidden>Log out</button>
+    </div>
     <p class="eyebrow">Roster \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
-    <h2 class="display h-lg">Admin<br>login</h2>
-    <p class="fine" style="margin:12px 0 0">Organizer CRM — track every participant\u2019s phone, weights, hours, and points. 100 pts per 5% bodyweight lost. 50 pts per 5% of the card completed. 10 pts per session.</p>
+    <h2 class="display h-lg" id="admintitle">Admin<br>login</h2>
+    <p class="fine" id="adminblurb" style="margin:12px 0 0">Organizer CRM — Brothers / Ladies leagues, phone, weights, hours, and points. 100 pts per 5% bodyweight lost. 50 pts per 5% of the card completed. 10 pts per session.</p>
     <div class="rule"></div>
     <div id="gate"></div>
     <div id="body"></div>
     <div style="flex:1;min-height:24px"></div>
-    <div style="text-align:center"><a class="linkbtn" href="/">Back to the workout</a></div>
+    <div style="text-align:center;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px">
+      <a class="linkbtn" href="/">Back to the workout</a>
+      <button type="button" class="linkbtn" id="logout2" hidden>Log out</button>
+    </div>
+    <p class="appfoot" style="margin-top:18px;border:0;padding-top:0">Made by <b>Cigar Society Dev. Team</b> · v1.1.0</p>
   </div>`));
+
+  document.getElementById('logout').onclick=logout;
+  document.getElementById('logout2').onclick=logout;
 
   const gate=document.getElementById('gate');
   const body=document.getElementById('body');
@@ -164,7 +229,7 @@ function render(){
     return;
   }
 
-  gate.appendChild(el(`<div>
+  gate.appendChild(el(`<div id="loginform">
     <div class="field"><label for="pin">Organizer code</label>
       <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" autofocus></div>
     <button class="btn accent" id="load" style="margin-top:14px">Log in</button>
@@ -187,23 +252,31 @@ function render(){
       const d=await r.json();
       if(!d.ok){
         body.innerHTML='';
+        setLoggedInChrome(false);
         err.textContent=d.error==='bad pin'?'That code did not match.':'Could not read the roster.';
         err.hidden=false;
         return;
       }
       try{sessionStorage.setItem(PIN_KEY,code)}catch(e){}
       PEOPLE=d.people||[];
+      await refreshSmsMode();
+      setLoggedInChrome(true);
+      document.getElementById('logout2').hidden=false;
       try{
         renderDashboard(body);
       }catch(renderErr){
         console.error(renderErr);
         body.innerHTML='';
+        setLoggedInChrome(false);
+        document.getElementById('logout2').hidden=true;
         err.textContent='Roster loaded but the admin screen failed to render. Refresh and try again.';
         err.hidden=false;
       }
     }catch(e){
       console.error(e);
       body.innerHTML='';
+      setLoggedInChrome(false);
+      document.getElementById('logout2').hidden=true;
       err.textContent='Could not reach the roster. Try again in a moment.';
       err.hidden=false;
     }
@@ -214,23 +287,50 @@ function render(){
   if(pin.value)load();
 }
 
+function leagueLabel(v){
+  if(v==='brothers')return 'Brothers';
+  if(v==='ladies')return 'Ladies';
+  return 'Unassigned';
+}
 function matchPerson(p, q){
   if(!q)return true;
-  const hay=[p.name,p.phone,p.dateStarted,String(p.startingWeight??''),String(p.currentWeight??'')]
+  const hay=[p.name,p.phone,p.dateStarted,p.league,leagueLabel(p.league),String(p.startingWeight??''),String(p.currentWeight??'')]
     .join(' ').toLowerCase();
   return q.split(/\s+/).filter(Boolean).every(tok=>hay.includes(tok));
 }
 function filteredPeople(){
+  let list=PEOPLE.slice();
+  if(LEAGUE==='brothers'||LEAGUE==='ladies') list=list.filter(p=>(p.league||'')===LEAGUE);
   const q=String(QUERY||'').trim().toLowerCase();
-  if(!q)return PEOPLE.slice();
-  return PEOPLE.filter(p=>matchPerson(p,q));
+  if(!q)return list;
+  return list.filter(p=>matchPerson(p,q));
 }
 
 function renderDashboard(body){
   body.innerHTML='';
   const all=PEOPLE;
   if(!all.length){
-    body.appendChild(el('<p class="fine" style="margin-top:16px">Nobody has joined yet.</p>'));
+    body.appendChild(el(`<div style="margin-top:8px">
+      <p class="fine">Nobody has joined yet. Share the app link and have them lock a callsign.</p>
+      <button type="button" class="btn ghost sm" id="reload" style="margin-top:14px">Refresh roster</button>
+    </div>`));
+    const reload=document.getElementById('reload');
+    if(reload) reload.onclick=async()=>{
+      const code=pinCode();
+      if(!code){logout();return}
+      body.innerHTML='<p class="fine" style="margin-top:16px">Loading\u2026</p>';
+      try{
+        const u=API()+(API().includes('?')?'&':'?')+'action=roster&challenge='+
+          encodeURIComponent(CONFIG.CHALLENGE)+'&pin='+encodeURIComponent(code);
+        const r=await fetch(u,{redirect:'follow'});
+        const d=await r.json();
+        if(!d.ok){logout();return}
+        PEOPLE=d.people||[];
+        renderDashboard(body);
+      }catch(e){
+        body.innerHTML='<p class="fine err" style="margin-top:16px">Could not reach the roster.</p>';
+      }
+    };
     return;
   }
   const people=filteredPeople();
@@ -280,7 +380,8 @@ function renderDashboard(body){
     findMeta.textContent=QUERY.trim()
       ? (matched.length? matched.length+' match'+(matched.length===1?'':'es') : 'No matches')
       : '';
-    if(TAB==='crm') renderCrm(list, matched);
+    if(TAB==='text') renderText(list, matched);
+    else if(TAB==='crm') renderCrm(list, matched);
     else renderBoard(list, matched, TAB);
   };
   document.getElementById('clearq').onclick=()=>{
@@ -292,26 +393,266 @@ function renderDashboard(body){
     : '';
 
   body.appendChild(el(`<div>
-    <p class="eyebrow" style="margin-top:16px">Sort / view</p>
+    <p class="eyebrow" style="margin-top:16px">League</p>
+    <div class="tabs" id="leagues">
+      <button type="button" data-league="all" class="${LEAGUE==='all'?'on':''}">All</button>
+      <button type="button" data-league="brothers" class="${LEAGUE==='brothers'?'on':''}">Brothers</button>
+      <button type="button" data-league="ladies" class="${LEAGUE==='ladies'?'on':''}">Ladies</button>
+    </div>
+    <p class="eyebrow" style="margin-top:14px">Sort / view</p>
     <div class="tabs" id="tabs">
       <button type="button" data-tab="crm" class="${TAB==='crm'?'on':''}">CRM</button>
+      <button type="button" data-tab="text" class="${TAB==='text'?'on':''}">Text</button>
       <button type="button" data-tab="points" class="${TAB==='points'?'on':''}">Points</button>
       <button type="button" data-tab="hours" class="${TAB==='hours'?'on':''}">Hours</button>
       <button type="button" data-tab="weight" class="${TAB==='weight'?'on':''}">Weight</button>
     </div>
   </div>`));
+  body.querySelectorAll('#leagues button').forEach(b=>{
+    b.onclick=()=>{LEAGUE=b.dataset.league;renderDashboard(body)};
+  });
   body.querySelectorAll('#tabs button').forEach(b=>{
-    b.onclick=()=>{TAB=b.dataset.tab;renderDashboard(body)};
+    b.onclick=()=>{
+      TAB=b.dataset.tab;
+      if(TAB!=='text') SMS_TARGET=null;
+      renderDashboard(body);
+    };
   });
 
   const list=el('<div id="list"></div>');
   body.appendChild(list);
-  if(!people.length){
-    list.appendChild(el(`<p class="fine" style="margin-top:12px">No participants match “${esc(QUERY.trim())}”. Clear search to see the full roster.</p>`));
+  if(TAB==='text'){
+    renderText(list, people);
+  }else if(!people.length){
+    list.appendChild(el(`<p class="fine" style="margin-top:12px">${QUERY.trim()
+      ? 'No participants match “'+esc(QUERY.trim())+'”. Clear search to see the full roster.'
+      : 'No one in this league filter yet.'}</p>`));
   }else if(TAB==='crm') renderCrm(list, people);
   else renderBoard(list, people, TAB);
 
-  body.appendChild(el('<p class="fine" style="margin-top:14px">Use Find to jump to a callsign or phone. Points / Hours / Weight tabs re-sort the visible roster. CRM edits phone and weights.</p>'));
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Filter by Brothers / Ladies, then Find by callsign or phone. Text tab blasts or singles out anyone with a phone on file. CRM edits league, phone, and weights.</p>'));
+}
+
+function hasPhone(p){
+  return !!(p&&String(p.phone||'').replace(/\D/g,'').length>=10);
+}
+function phoneCount(people){
+  return (people||[]).filter(hasPhone).length;
+}
+function normalizePhoneClient(raw){
+  const digits=String(raw||'').replace(/\D/g,'');
+  if(!digits)return '';
+  if(digits.length===10)return '+1'+digits;
+  if(digits.length===11&&digits.startsWith('1'))return '+'+digits;
+  if(String(raw||'').trim().startsWith('+')&&digits.length>=10&&digits.length<=15)return '+'+digits;
+  return '';
+}
+/** Build a Messages deep-link that works on iPhone / Mac / Android. */
+function buildSmsUri(phones, body){
+  const nums=[];
+  const seen=new Set();
+  (phones||[]).forEach(raw=>{
+    const n=normalizePhoneClient(raw);
+    if(!n||seen.has(n))return;
+    seen.add(n);
+    nums.push(n);
+  });
+  if(!nums.length)return '';
+  const enc=encodeURIComponent(String(body||''));
+  const ua=navigator.userAgent||'';
+  const apple=/iPhone|iPad|Macintosh|Mac OS X/i.test(ua);
+  // Digits without + for address lists (Apple Messages prefers this)
+  const addrs=nums.map(n=>n.replace(/^\+/,'')).join(',');
+  if(apple){
+    return 'sms:/open?addresses='+addrs+'&body='+enc;
+  }
+  if(nums.length===1) return 'sms:'+nums[0]+'?body='+enc;
+  return 'sms:'+addrs+'?body='+enc;
+}
+function openDeviceSms(phones, body){
+  const uri=buildSmsUri(phones, body);
+  if(!uri)return false;
+  // Prefer location assign so iOS handles sms: reliably
+  window.location.href=uri;
+  return true;
+}
+
+async function refreshSmsMode(){
+  try{
+    const r=await fetch('/api/health',{cache:'no-store'});
+    const d=await r.json();
+    SMS_TWILIO=!!(d&&d.sms);
+  }catch(e){SMS_TWILIO=false}
+}
+
+async function postSms(payload){
+  const r=await fetch('/api/roster/sms',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  return r.json();
+}
+
+function renderText(list, people){
+  list.innerHTML='';
+  const pin=pinCode();
+  const withPhone=phoneCount(people);
+  const allPhone=phoneCount(PEOPLE);
+  const solo=SMS_TARGET;
+  const scopeLab=solo
+    ? ('Texting '+solo.name+(solo.phone?' · '+solo.phone:''))
+    : (LEAGUE==='brothers'?'Brothers of the League'
+      :LEAGUE==='ladies'?'Ladies of the League'
+      :QUERY.trim()?'Current Find results'
+      :'Full roster');
+  const targetN=solo?1:withPhone;
+  const modeLab=SMS_TWILIO
+    ? 'Twilio is live — texts send from the server.'
+    : 'Opens your Messages app with everyone loaded. Tap Send there. (Add Twilio on Railway for one-tap server blasts.)';
+  const primaryLab=SMS_TWILIO
+    ? (solo?'Send text':'Send to '+targetN)
+    : (solo?'Open Messages':'Open Messages · '+targetN);
+
+  list.appendChild(el(`<div class="smsbox">
+    <p class="eyebrow" style="margin-top:12px">Group text \u00b7 SMS</p>
+    <p class="fine" style="margin:0 0 10px">${solo
+      ? 'Individual message. Clear the target below to blast the filtered roster instead.'
+      : 'Message goes to everyone in <b>'+esc(scopeLab)+'</b> who has a phone on file ('+withPhone+' of '+(people.length||0)+' shown'+(LEAGUE!=='all'||QUERY.trim()?' · '+allPhone+' on full roster':'')+').'}</p>
+    <p class="fine" style="margin:0 0 10px;color:var(--ink)">${esc(modeLab)}</p>
+    ${solo?`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+      <p class="fine" style="margin:0;color:var(--ink);font-weight:600">${esc(scopeLab)}</p>
+      <button type="button" class="find-clear" id="cleartarget">Clear target</button>
+    </div>`:''}
+    <label class="eyebrow" for="smsmsg" style="display:block">Message</label>
+    <textarea id="smsmsg" maxlength="1500" placeholder="Society update — kickoff reminder, schedule change, keep elevating…">${esc(SMS_DRAFT)}</textarea>
+    <div class="smsmeta">
+      <span class="chars" id="smschars">${(SMS_DRAFT||'').length} / 1500</span>
+      <span class="fine" style="margin:0">${solo?'1 recipient':targetN+' recipients'}</span>
+    </div>
+    <div class="sms-actions">
+      <button type="button" class="btn accent" id="smssend">${esc(primaryLab)}</button>
+      ${!solo?`<button type="button" class="btn ghost sm" id="smsall">${SMS_TWILIO?'Send to all roster phones ('+allPhone+')':'Open Messages · all roster ('+allPhone+')'}</button>`:''}
+    </div>
+    <p class="sms-result" id="smsresult" hidden></p>
+    <p class="fine" style="margin-top:12px">Skip anyone without a usable phone. Best on iPhone or Mac with Messages. For unattended server sends, set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER on Railway.</p>
+  </div>`));
+
+  const ta=document.getElementById('smsmsg');
+  const chars=document.getElementById('smschars');
+  const result=document.getElementById('smsresult');
+  const syncChars=()=>{
+    SMS_DRAFT=ta.value;
+    chars.textContent=ta.value.length+' / 1500';
+  };
+  ta.oninput=syncChars;
+
+  const clearT=document.getElementById('cleartarget');
+  if(clearT) clearT.onclick=()=>{SMS_TARGET=null;renderText(list, people)};
+
+  const showResult=(ok, text)=>{
+    result.hidden=false;
+    result.className='sms-result '+(ok?'ok':'bad');
+    result.textContent=text;
+  };
+
+  const recipientsFor=(mode)=>{
+    if(solo) return [{name:solo.name,phone:solo.phone}];
+    if(mode==='all') return PEOPLE.filter(hasPhone).map(p=>({name:p.name,phone:p.phone}));
+    return people.filter(hasPhone).map(p=>({name:p.name,phone:p.phone}));
+  };
+
+  const runDevice=(mode)=>{
+    const message=ta.value.trim();
+    if(!message){showResult(false,'Type a message first.');ta.focus();return}
+    const rec=recipientsFor(mode);
+    const phones=rec.map(r=>r.phone);
+    if(!phones.length){showResult(false,'Nobody in that set has a phone yet.');return}
+    const label=solo?solo.name:(mode==='all'?'all roster phones':scopeLab);
+    if(!confirm('Open Messages for '+phones.length+' number'+(phones.length===1?'':'s')+' ('+label+')? Review the thread, then tap Send.'))return;
+    // Chunk large groups — iOS can choke past ~10–15 addresses
+    const CHUNK=12;
+    if(phones.length>CHUNK){
+      let i=0;
+      const next=()=>{
+        const slice=phones.slice(i,i+CHUNK);
+        if(!slice.length)return;
+        openDeviceSms(slice, message);
+        i+=CHUNK;
+        if(i<phones.length){
+          setTimeout(()=>{
+            if(confirm('Opened batch '+(Math.ceil(i/CHUNK))+' of '+Math.ceil(phones.length/CHUNK)+'. Open the next batch?')) next();
+            else showResult(true,'Opened Messages for '+i+' of '+phones.length+'. Tap Send in each thread.');
+          },600);
+        }else{
+          showResult(true,'Opened Messages for all '+phones.length+'. Tap Send in each thread.');
+        }
+      };
+      next();
+      return;
+    }
+    if(openDeviceSms(phones, message)){
+      showResult(true,'Messages opened with '+phones.length+' recipient'+(phones.length===1?'':'s')+'. Tap Send.');
+    }else{
+      showResult(false,'Could not build an SMS link for those numbers.');
+    }
+  };
+
+  const runTwilio=async(mode)=>{
+    const message=ta.value.trim();
+    if(!message){showResult(false,'Type a message first.');ta.focus();return}
+    if(!pin){showResult(false,'Session expired. Log in again.');return}
+    let confirmMsg='';
+    let payload={pin,challenge:CONFIG.CHALLENGE,message};
+    if(solo){
+      confirmMsg='Text '+solo.name+' now?';
+      payload.people=[{name:solo.name,phone:solo.phone}];
+    }else if(mode==='all'){
+      if(!allPhone){showResult(false,'Nobody on the full roster has a phone yet.');return}
+      confirmMsg='Text all '+allPhone+' roster phones via Twilio?';
+    }else{
+      if(!withPhone){showResult(false,'Nobody in this filter has a phone yet.');return}
+      confirmMsg='Text '+withPhone+' people in '+scopeLab+' via Twilio?';
+      payload.people=people.filter(hasPhone).map(p=>({name:p.name,phone:p.phone}));
+    }
+    if(!confirm(confirmMsg))return;
+    const btn=document.getElementById('smssend');
+    const btnAll=document.getElementById('smsall');
+    if(btn){btn.disabled=true;btn.textContent='Sending…'}
+    if(btnAll)btnAll.disabled=true;
+    result.hidden=true;
+    try{
+      const d=await postSms(payload);
+      if(d.error==='sms not configured'){
+        SMS_TWILIO=false;
+        showResult(false,'Twilio dropped offline — use Messages instead.');
+        renderText(list, people);
+      }else if(d.error==='bad pin'){
+        showResult(false,'Organizer code rejected. Log out and back in.');
+      }else if(d.error==='no phones'){
+        showResult(false,'No usable phone numbers in that set.');
+      }else if(d.error==='empty message'){
+        showResult(false,'Type a message first.');
+      }else{
+        const s=(d.meta&&d.meta.sent)||(d.sent&&d.sent.length)||0;
+        const f=(d.meta&&d.meta.failed)||(d.failed&&d.failed.length)||0;
+        const k=(d.meta&&d.meta.skipped)||(d.skipped&&d.skipped.length)||0;
+        if(f===0&&s>0) showResult(true,'Sent '+s+' text'+(s===1?'':'s')+(k?' · skipped '+k:'')+'.');
+        else if(s>0) showResult(false,'Sent '+s+', failed '+f+(k?' · skipped '+k:'')+'. Check numbers and Twilio.');
+        else showResult(false,d.error||('Failed'+(f?' ('+f+')':'')+'.'));
+      }
+    }catch(e){
+      showResult(false,'Could not reach the SMS API.');
+    }
+    if(btn){btn.disabled=false;btn.textContent=solo?'Send text':'Send to '+targetN}
+    if(btnAll)btnAll.disabled=false;
+  };
+
+  const runSend=(mode)=> SMS_TWILIO ? runTwilio(mode) : runDevice(mode);
+
+  document.getElementById('smssend').onclick=()=>runSend(solo?'one':'filter');
+  const allBtn=document.getElementById('smsall');
+  if(allBtn) allBtn.onclick=()=>runSend('all');
 }
 
 function sortBoard(people, mode){
@@ -329,7 +670,8 @@ function sortBoard(people, mode){
 function renderBoard(list, people, mode){
   list.innerHTML='';
   const title=mode==='hours'?'Ranked by hours':mode==='weight'?'Ranked by bodyweight change':'Ranked by points';
-  list.appendChild(el(`<p class="eyebrow" style="margin-top:12px">${esc(title)}</p>`));
+  const leagueBit=LEAGUE==='brothers'?'Brothers of the League · ':LEAGUE==='ladies'?'Ladies of the League · ':'';
+  list.appendChild(el(`<p class="eyebrow" style="margin-top:12px">${esc(leagueBit+title)}</p>`));
   sortBoard(people, mode).forEach((p,i)=>{
     const pct=p.total?Math.round(100*p.sessions/p.total):0;
     const wLabel=p.weightLostPct==null?'No weight logged':fmtPct(p.weightLostPct)+' BW';
@@ -338,7 +680,7 @@ function renderBoard(list, people, mode){
     const row=el(`<div class="person">
       <div class="prow">
         <span class="pnwrap"><span class="rank">#${i+1}</span><span class="pn">${esc(p.name||'\u2014')}</span></span>
-        <span class="pd"><b style="font-family:var(--disp);font-size:18px;color:var(--ink)">${esc(pri)}</b><br>${esc(priLab)} · ${esc(ago(p.lastActive))}</span>
+        <span class="pd"><b style="font-family:var(--disp);font-size:18px;color:var(--ink)">${esc(pri)}</b><br>${esc(priLab)} · ${esc(leagueLabel(p.league))} · ${esc(ago(p.lastActive))}</span>
       </div>
       <div class="pbar"><i style="width:${pct}%"></i></div>
       <div class="metrics">
@@ -368,12 +710,13 @@ function renderCrm(list, people){
     const curVal=p.currentWeight===''||p.currentWeight==null?'':p.currentWeight;
     const startedVal=p.dateStarted||'';
     const phoneVal=p.phone||'';
+    const leagueVal=p.league==='ladies'?'ladies':p.league==='brothers'?'brothers':'';
     const uid='p'+idx;
     const wLabel=p.weightLostPct==null?'—':fmtPct(p.weightLostPct);
     const row=el(`<div class="person${cold?' cold':''}">
       <div class="prow"><span class="pnwrap"><span class="pn">${esc(p.name||'\u2014')}</span>
         <button type="button" class="trash" title="Remove from roster" aria-label="Remove ${esc(p.name||'participant')}">${trashIcon}</button></span>
-        <span class="pd">${esc(ago(p.lastActive))}</span></div>
+        <span class="pd">${esc(leagueLabel(p.league))} · ${esc(ago(p.lastActive))}</span></div>
       <div class="pbar"><i style="width:${pct}%"></i></div>
       <div class="metrics">
         <div><div class="v">${p.points||0}</div><div class="k">Points</div></div>
@@ -383,6 +726,12 @@ function renderCrm(list, people){
       <div class="prow"><span class="pm">${p.sessions||0} of ${p.total||0} sessions \u00b7 day ${p.day||1}</span>
         <span class="pm">${p.streak||0} streak</span></div>
       <div class="meta">
+        <div class="field full"><label for="${uid}-league">League</label>
+          <select id="${uid}-league">
+            <option value="" ${!leagueVal?'selected':''}>Unassigned</option>
+            <option value="brothers" ${leagueVal==='brothers'?'selected':''}>Brothers of the League</option>
+            <option value="ladies" ${leagueVal==='ladies'?'selected':''}>Ladies of the League</option>
+          </select></div>
         <div class="field full"><label for="${uid}-phone">Phone number</label>
           <input id="${uid}-phone" type="tel" inputmode="tel" autocomplete="off" placeholder="555-0100" value="${esc(phoneVal)}"></div>
         <div class="field"><label for="${uid}-start">Starting weight</label>
@@ -394,6 +743,7 @@ function renderCrm(list, people){
       </div>
       <div class="save-row">
         <button type="button" class="btn accent sm" data-save>Save</button>
+        <button type="button" class="btn textme sm" data-text ${hasPhone(p)?'':'disabled'} title="${hasPhone(p)?'Text this person':'Add a phone first'}">Text</button>
       </div>
       <p class="okmsg" hidden></p>
       <p class="fine err" hidden></p>
@@ -412,17 +762,27 @@ function renderCrm(list, people){
       }catch(e){alert('Could not reach the roster.')}
     };
 
+    row.querySelector('[data-text]').onclick=()=>{
+      if(!hasPhone(p)){alert('Add and save a phone number first.');return}
+      SMS_TARGET={name:p.name,phone:row.querySelector('#'+uid+'-phone').value.trim()||p.phone};
+      TAB='text';
+      renderDashboard(body);
+      const ta=document.getElementById('smsmsg');
+      if(ta)ta.focus();
+    };
+
     row.querySelector('[data-save]').onclick=async()=>{
       const ok=row.querySelector('.okmsg');
       const bad=row.querySelector('.err');
       ok.hidden=true;bad.hidden=true;
+      const league=row.querySelector('#'+uid+'-league').value;
       const phone=row.querySelector('#'+uid+'-phone').value.trim();
       const startingWeight=row.querySelector('#'+uid+'-start').value.trim();
       const currentWeight=row.querySelector('#'+uid+'-cur').value.trim();
       const dateStarted=row.querySelector('#'+uid+'-started').value;
       try{
         const r=await fetch('/api/roster/update',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name,phone,startingWeight,currentWeight,dateStarted})});
+          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name,phone,startingWeight,currentWeight,dateStarted,league})});
         const d=await r.json();
         if(!d.ok){
           bad.textContent=d.error==='bad pin'?'Organizer code rejected.':
@@ -432,23 +792,26 @@ function renderCrm(list, people){
           bad.hidden=false;
           return;
         }
+        p.league=league;
         p.phone=phone;
         p.startingWeight=startingWeight===''?'':Number(startingWeight);
         p.currentWeight=currentWeight===''?'':Number(currentWeight);
         p.dateStarted=dateStarted;
+        const pd=row.querySelector('.pd');
+        if(pd)pd.textContent=leagueLabel(p.league)+' · '+ago(p.lastActive);
         // Refresh derived scores locally
         const startW=p.startingWeight===''?null:Number(p.startingWeight);
         const curW=p.currentWeight===''?null:Number(p.currentWeight);
         if(startW!=null&&curW!=null&&startW>0){
           p.weightDelta=Math.round((startW-curW)*10)/10;
           p.weightLostPct=Math.round(((startW-curW)/startW)*1000)/10;
-          p.weightMilestones=p.weightLostPct>0?Math.floor(p.weightLostPct/5):0;
+          p.weightMilestones=p.weightLostPct>0?Math.min(4,Math.floor(p.weightLostPct/5)):0;
         }else{
           p.weightDelta=null;p.weightLostPct=null;p.weightMilestones=0;
         }
         const hoursPct=p.total>0?(p.sessions/p.total)*100:0;
         p.hoursMilestones=Math.floor(hoursPct/5);
-        p.points=(p.sessions||0)*10+(p.weightMilestones||0)*100+(p.hoursMilestones||0)*50;
+        p.points=(p.sessions||0)*10+Math.min(4,p.weightMilestones||0)*100+(p.hoursMilestones||0)*50;
         ok.textContent='Saved.';
         ok.hidden=false;
         // Update metrics display without full re-render so the save message stays

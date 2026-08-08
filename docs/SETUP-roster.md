@@ -84,10 +84,28 @@ Public leaderboard (no pin): `GET /api/leaderboard?challenge=smoke-30`.
 **sessions** — one row every time somebody finishes a nine-minute session
 (attendance log).
 
+## Group text (SMS)
+
+Admin **Text** tab + per-person **Text** on CRM cards.
+
+**Works now (no Twilio):** opens the organizer’s Messages app with recipients
+and the message filled in — tap Send. Best on iPhone or Mac. Large blasts
+open in batches of 12.
+
+**Optional Twilio (server sends for you):** Railway variables
+
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_FROM_NUMBER` — E.164, e.g. `+15551234567`
+
+Save phones on each CRM card. US 10-digit numbers are normalized to `+1…`.
+
+`GET /api/health` returns `"sms": true` when Twilio is configured.
+
 ## What does not leave the phone
 
-Quiz answers (goal, level, age band, injuries) stay on-device. No email, no
-phone number, no login. Anonymous nicknames are fine.
+Quiz answers (goal, level, age band, injuries) stay on-device. No email and no
+login. Callsigns and optional organizer-entered phones live on the roster.
 
 ## Local development
 
@@ -97,6 +115,10 @@ npm install
 # Use the public DATABASE_URL from Railway Postgres, or a local Postgres
 export DATABASE_URL='postgresql://…'
 export ORGANIZER_CODE='1234'
+# optional SMS:
+# export TWILIO_ACCOUNT_SID=…
+# export TWILIO_AUTH_TOKEN=…
+# export TWILIO_FROM_NUMBER=+1…
 npm run dev
 ```
 
