@@ -1,51 +1,92 @@
 /**
- * Twilio SMS helper. Uses env:
+ * Twilio SMS helper. Env (Railway):
  *   TWILIO_ACCOUNT_SID
  *   TWILIO_AUTH_TOKEN
- *   TWILIO_FROM_NUMBER  (E.164, e.g. +15551234567)
+ *   TWILIO_FROM_NUMBER              (E.164, e.g. +15551234567)
+ *   OR TWILIO_MESSAGING_SERVICE_SID  (alternative to From)
  */
 
+function env(name) {
+  const v = process.env[name];
+  return v != null && String(v).trim() ? String(v).trim() : '';
+}
+
+function smsMissing() {
+  const missing = [];
+  if (!env('TWILIO_ACCOUNT_SID')) missing.push('TWILIO_ACCOUNT_SID');
+  if (!env('TWILIO_AUTH_TOKEN')) missing.push('TWILIO_AUTH_TOKEN');
+  if (!env('TWILIO_FROM_NUMBER') && !env('TWILIO_MESSAGING_SERVICE_SID')) {
+    missing.push('TWILIO_FROM_NUMBER or TWILIO_MESSAGING_SERVICE_SID');
+  }
+  return missing;
+}
+
 function smsConfigured() {
-  return !!(
-    process.env.TWILIO_ACCOUNT_SID &&
-    process.env.TWILIO_AUTH_TOKEN &&
-    process.env.TWILIO_FROM_NUMBER
-  );
+  return smsMissing().length === 0;
+}
+
+function smsStatus() {
+  const missing = smsMissing();
+  return {
+    configured: missing.length === 0,
+    missing,
+    fromMode: env('TWILIO_MESSAGING_SERVICE_SID')
+      ? 'messaging_service'
+      : env('TWILIO_FROM_NUMBER')
+        ? 'from_number'
+        : 'none',
+  };
 }
 
 /** Normalize to E.164 for US numbers; return '' if unusable. */
 function normalizePhone(raw) {
-  const digits = String(raw || '').replace(/\D/g, '');
+  const trimmed = String(raw || '').trim();
+  const digits = trimmed.replace(/\D/g, '');
   if (!digits) return '';
   if (digits.length === 10) return '+1' + digits;
   if (digits.length === 11 && digits.startsWith('1')) return '+' + digits;
-  if (String(raw || '').trim().startsWith('+') && digits.length >= 10 && digits.length <= 15) {
+  if (trimmed.startsWith('+') && digits.length >= 10 && digits.length <= 15) {
     return '+' + digits;
   }
+  // Allow already-international without leading + if 11–15 digits
+  if (digits.length >= 11 && digits.length <= 15) return '+' + digits;
   return '';
 }
 
 async function sendOne(to, body) {
-  const sid = process.env.TWILIO_ACCOUNT_SID;
-  const token = process.env.TWILIO_AUTH_TOKEN;
-  const from = process.env.TWILIO_FROM_NUMBER;
+  const sid = env('TWILIO_ACCOUNT_SID');
+  const token = env('TWILIO_AUTH_TOKEN');
+  const from = env('TWILIO_FROM_NUMBER');
+  const messagingSid = env('TWILIO_MESSAGING_SERVICE_SID');
   const url = `https://api.twilio.com/2010-04-01/Accounts/${encodeURIComponent(sid)}/Messages.json`;
   const auth = Buffer.from(`${sid}:${token}`).toString('base64');
-  const params = new URLSearchParams({ To: to, From: from, Body: body });
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${auth}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params.toString(),
-  });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) {
-    const msg = data.message || data.error_message || `Twilio HTTP ${r.status}`;
-    return { ok: false, to, error: msg };
+  const params = new URLSearchParams({ To: to, Body: body });
+  if (messagingSid) params.set('MessagingServiceSid', messagingSid);
+  else params.set('From', from);
+
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), 20000) : null;
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+      signal: ctrl ? ctrl.signal : undefined,
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      const msg = data.message || data.error_message || `Twilio HTTP ${r.status}`;
+      return { ok: false, to, error: msg, code: data.code };
+    }
+    return { ok: true, to, sid: data.sid || '' };
+  } catch (err) {
+    return { ok: false, to, error: String(err.message || err) };
+  } finally {
+    if (timer) clearTimeout(timer);
   }
-  return { ok: true, to, sid: data.sid || '' };
 }
 
 /**
@@ -54,7 +95,12 @@ async function sendOne(to, body) {
  */
 async function sendSms(people, message) {
   if (!smsConfigured()) {
-    return { ok: false, error: 'sms not configured' };
+    return {
+      ok: false,
+      error: 'sms not configured',
+      hint: 'Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_FROM_NUMBER (or TWILIO_MESSAGING_SERVICE_SID) on Railway.',
+      missing: smsMissing(),
+    };
   }
   const text = String(message || '').trim();
   if (!text) return { ok: false, error: 'empty message' };
@@ -107,4 +153,10 @@ async function sendSms(people, message) {
   };
 }
 
-module.exports = { smsConfigured, normalizePhone, sendSms };
+module.exports = {
+  smsConfigured,
+  smsMissing,
+  smsStatus,
+  normalizePhone,
+  sendSms,
+};

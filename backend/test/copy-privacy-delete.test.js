@@ -44,7 +44,13 @@ assert.ok(indexHtml.includes('weight-loss percent'));
 assert.ok(indexHtml.includes('RESUME_VERSION'));
 assert.ok(indexHtml.includes('advanceResumeAcrossGap'));
 assert.ok(indexHtml.includes('MIN_COMPLETE_MS'));
-assert.ok(indexHtml.includes('idempotencyKey'));
+assert.ok(indexHtml.includes('primaryCtaLabel') || indexHtml.includes('Go to active'));
+assert.ok(fs.existsSync(path.join(__dirname, '../../app/website.html')));
+const site = fs.readFileSync(path.join(__dirname, '../../app/website.html'), 'utf8');
+assert.ok(site.includes('Go to active'));
+assert.ok(site.includes('id="boards"'));
+assert.ok(site.includes('/admin'));
+assert.ok(site.includes('/api/leaderboard'));
 
 // Phase cards use stacked flex (no absolute overlap layout)
 assert.ok(indexHtml.includes('.phases .ph{background:var(--surface2)'));

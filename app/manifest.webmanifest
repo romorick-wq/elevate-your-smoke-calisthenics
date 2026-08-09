@@ -2,7 +2,7 @@
   "name": "Elevate Your Smoke",
   "short_name": "Elevate Smoke",
   "description": "The Cigar Society nine-minute, 30-day calisthenics challenge.",
-  "start_url": "/",
+  "start_url": "/app",
   "display": "standalone",
   "background_color": "#1a2218",
   "theme_color": "#101412",

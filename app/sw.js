@@ -1,6 +1,6 @@
 /* Elevate Your Smoke — cache static workout assets only. Never cache /api or /admin. */
-const CACHE = 'eys-static-v1.1.1';
-const PRECACHE = ['/', '/index.html', '/icon.png', '/manifest.webmanifest'];
+const CACHE = 'eys-static-v1.1.3';
+const PRECACHE = ['/', '/website.html', '/app', '/icon.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -38,7 +38,9 @@ self.addEventListener('fetch', (event) => {
 
   if (
     url.pathname.startsWith('/exercises/') ||
+    url.pathname.startsWith('/audio/') ||
     url.pathname.endsWith('.mp4') ||
+    url.pathname.endsWith('.mp3') ||
     url.pathname.endsWith('.jpg') ||
     url.pathname.endsWith('.png') ||
     url.pathname.endsWith('.vtt') ||
