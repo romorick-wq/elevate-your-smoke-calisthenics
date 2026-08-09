@@ -136,7 +136,7 @@ a.linkbtn{color:var(--olive-soft)}
 .player.rest .cue{color:rgba(244,247,238,.85)}
 .nextup{font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:12px;opacity:.55;font-weight:600}
 .figslot{flex:0 0 auto;margin:0 -18px 4px;min-height:0}
-.demotip{margin:10px auto 0;max-width:340px;text-align:left;border-left:3px solid var(--accent);padding:6px 0 6px 12px;background:transparent}
+.demotip{margin:10px auto 0;max-width:340px;text-align:left;border-top:2px solid var(--accent);padding:10px 0 6px;background:transparent}
 .demotip .lab{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(244,247,238,.55);display:block;margin-bottom:3px;font-weight:600}
 .demotip .txt{font-size:13px;line-height:1.4;color:rgba(244,247,238,.9)}
 .player.rest .demotip{display:none}
@@ -145,16 +145,23 @@ a.linkbtn{color:var(--olive-soft)}
 .howdots i.on{background:var(--accent)}
 .pbot{padding:12px 18px 8px;display:flex;gap:10px}
 .pbot .btn{margin:0}
+.playermore{margin:0 18px 14px;border-top:1px solid rgba(244,247,238,.14);padding-top:8px}
+.playermore>summary{list-style:none;cursor:pointer;color:rgba(244,247,238,.72);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:10px 4px;min-height:44px;display:flex;align-items:center;justify-content:center}
+.playermore>summary::-webkit-details-marker{display:none}
+.playermore[open]>summary{color:#F4F7EE}
+.playermore .moreacts{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding-bottom:4px}
+.playermore .linkbtn{color:rgba(244,247,238,.78)}
+.playermore .linkbtn:hover,.playermore .linkbtn:focus-visible{color:var(--accent)}
 .player .btn{background:var(--accent);color:var(--accent-ink);border-radius:999px}
 .player .btn.ghost{background:rgba(244,247,238,.08);color:#F4F7EE;border:1px solid rgba(244,247,238,.18)}
 .player.rest .btn{background:var(--accent);color:var(--accent-ink);border:0;box-shadow:none}
 .player.rest .btn.ghost{background:transparent;color:#F4F7EE;border:1px solid rgba(244,247,238,.25);box-shadow:none}
-.bar{height:3px;background:rgba(255,255,255,.12)}
-.bar i{display:block;height:100%;background:var(--accent);transition:width .3s linear}
+.bar{height:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:var(--accent);transform:scaleX(0);transform-origin:left center;transition:transform .3s linear;will-change:transform}
 .player.rest .bar i{background:var(--accent)}
 .stampwrap{display:grid;place-items:center;padding:26px 0 10px}
 .stamp{width:150px;height:150px;border:3px solid var(--accent);border-radius:50%;display:grid;place-items:center;
-  color:var(--accent-ink);background:var(--accent);transform:none;box-shadow:none;animation:press .45s cubic-bezier(.2,1.2,.5,1) both}
+  color:var(--accent-ink);background:var(--accent);transform:none;box-shadow:none;animation:press .45s cubic-bezier(.16,1,.3,1) both}
 .stamp span{font-family:var(--disp);font-weight:800;font-size:30px;letter-spacing:-.02em;text-align:center;line-height:.95}
 .stamp small{display:block;font-size:11px;letter-spacing:.1em;margin-top:6px;opacity:.7;font-weight:600}
 @keyframes press{from{transform:scale(1.35);opacity:0}to{transform:scale(1);opacity:1}}
@@ -238,7 +245,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .pd,.pm{font-size:11px;letter-spacing:.04em;color:var(--muted);font-weight:500}
 .pbar{height:6px;border:0;margin:8px 0 5px;background:rgba(16,20,18,.08);border-radius:99px;overflow:hidden}
 .pbar i{display:block;height:100%;background:var(--olive-soft);border-radius:99px}
-.note{border-left:3px solid var(--accent);padding:8px 0 8px 12px;margin:16px 0 0;font-size:13px;line-height:1.5;color:var(--muted);background:transparent}
+.note{border-left:0;border-top:2px solid var(--accent);padding:10px 0 8px;margin:16px 0 0;font-size:13px;line-height:1.5;color:var(--muted);background:transparent}
 .hidden{display:none}
 .figbox{display:none}
 .fig,.figmini,.fighero{display:none}
@@ -275,12 +282,14 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .briefcard .cap .k{font-size:9px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;font-weight:600}
 .briefcard .cap .n{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:-.02em;line-height:1.1;margin-top:2px}
 .quote{font-family:var(--disp);font-weight:700;font-size:17px;line-height:1.35;letter-spacing:-.02em;color:var(--ink);margin:14px 0 0}
-.quote.cardquote{font-size:14px;margin:14px 0 4px;padding:12px 14px;background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
-.trash{flex:0 0 auto;width:34px;height:34px;border:0;background:transparent;color:var(--danger);cursor:pointer;border-radius:8px;display:grid;place-items:center;padding:0}
+.quote.cardquote{font-size:14px;margin:14px 0 4px;padding:12px 14px;background:var(--surface2);border-top:2px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.trash{flex:0 0 auto;width:44px;height:44px;border:0;background:transparent;color:var(--danger);cursor:pointer;border-radius:8px;display:grid;place-items:center;padding:0}
 .trash:hover{background:rgba(196,60,44,.1)}
 .trash svg{width:18px;height:18px;display:block}
 .pnwrap{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .cardsec{margin:22px 0 0;padding:16px 0 0;border-top:1px solid var(--line)}
@@ -303,6 +312,14 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .dashhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .dashhead .who{font-size:12px;color:var(--muted);font-weight:600}
 .dashhead .who b{color:var(--ink)}
+.fold{border:1px solid var(--line);background:var(--surface2);border-radius:var(--radius-sm);margin:12px 0 0;padding:0}
+.fold>summary{list-style:none;cursor:pointer;padding:14px;font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.02em;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::after{content:'+';font-family:var(--disp);font-weight:800;color:var(--accent-text);font-size:18px;line-height:1}
+.fold[open]>summary::after{content:'\2212'}
+.fold>summary:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:var(--radius-sm)}
+.fold .foldbody{padding:0 14px 14px}
+.fold .foldhint{font-size:12.5px;color:var(--muted);font-weight:500;font-family:var(--body)}
 .daychip{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent-text);margin-bottom:6px}
 .cell.miss{background:rgba(196,60,44,.12);color:var(--danger)}
 .cell.today{outline:2px solid var(--accent);outline-offset:1px}
@@ -312,11 +329,8 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .privacybox{border:1.5px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;background:var(--surface2)}
 .privacybox label{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;cursor:pointer}
 .privacybox input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
-.livebanner{background:rgba(63,79,56,.14);border-left:3px solid var(--olive-soft);padding:10px 12px;margin:12px 0 0;font-size:13px;font-weight:600;color:var(--olive-soft)}
+.livebanner{background:rgba(63,79,56,.14);border-left:0;border-top:2px solid var(--olive-soft);padding:10px 12px;margin:12px 0 0;font-size:13px;font-weight:600;color:var(--olive-soft)}
 .pbot .btn{min-height:48px}
-@media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
-}
 @media (max-width:360px){
   .h-xl{font-size:34px!important}
   .leagues{grid-template-columns:1fr}
@@ -386,7 +400,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.1.6',
+  VERSION:'1.1.9',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -1313,22 +1327,9 @@ function cover(a){
     <div class="photoframe" id="hero"></div>
     <p class="eyebrow">The Cigar Society \u00b7 Elevate Your Smoke</p>
     <h2 class="display h-xl">Two leagues.<br>One standard.</h2>
+    <p class="quote">Brothers and Ladies run the same 9-minute card for thirty days. ${esc(CONFIG.KICKOFF_LABEL.split('·')[0].trim())} kickoff.</p>
     <button class="btn accent" id="go" type="button" style="margin-top:16px">${esc(primaryCtaLabel())}</button>
-    <p class="quote">Brothers of the League and Ladies of the League run the same 9-minute calisthenics card for thirty days. All fitness levels welcome — every movement scales. ${esc(CONFIG.KICKOFF_LABEL.split('·')[0].trim())} kickoff.</p>
-    <div class="leagues">
-      <div class="leaguecard">
-        <span class="k">Men\u2019s board</span>
-        <span class="n">Brothers of the League</span>
-        <span class="s">Points. Hours. Weight lost %. Separate board — same standard.</span>
-      </div>
-      <div class="leaguecard">
-        <span class="k">Ladies\u2019 board</span>
-        <span class="n">Ladies of the League</span>
-        <span class="s">Same heat. Same form. Your own league boards.</span>
-      </div>
-    </div>
-    <div class="launch" id="launch">
-      <p class="eyebrow">Society kickoff</p>
+    <div class="launch" id="launch" style="margin-top:14px">
       <p class="fine" style="margin:0 0 8px;color:var(--ink);font-weight:600">${esc(CONFIG.KICKOFF_LABEL)}</p>
       <div class="cd" id="cd-digits" aria-live="polite" ${live?'hidden':''}>
         <div><div class="n" id="cd-d">${left.d}</div><div class="l">Days</div></div>
@@ -1336,53 +1337,15 @@ function cover(a){
         <div><div class="n" id="cd-m">${String(left.m).padStart(2,'0')}</div><div class="l">Mins</div></div>
         <div><div class="n" id="cd-s">${String(left.s).padStart(2,'0')}</div><div class="l">Secs</div></div>
       </div>
-      <div class="livebanner" id="cd-live" ${live?'':'hidden'}>Challenge is live — the 30-day card is open. Lock a callsign and train.</div>
-      <p class="fine" id="cd-note">${live
-        ? 'Roster stays open. Pick Brothers or Ladies, lock your callsign, and stack sessions.'
-        : 'Roster is open now. Pick Brothers or Ladies, lock your callsign, and start before the bell.'}</p>
+      <div class="livebanner" id="cd-live" ${live?'':'hidden'}>Challenge is live — lock a callsign and train.</div>
     </div>
-    <button type="button" class="demobtn" id="demo">
+    <button type="button" class="demobtn" id="demo" style="margin-top:12px">
       <span class="play" aria-hidden="true">\u25B6</span>
-      <span><span class="t">Watch the demo — 9-minute card · 30-day challenge</span>
-      <span class="s">Voice-over + captions · see the Society standard</span></span>
+      <span><span class="t">Watch the demo</span>
+      <span class="s">9-minute card · voice-over + captions</span></span>
     </button>
     <button class="btn ghost" id="seecard" type="button" style="margin-top:8px">See the 9-minute card</button>
-    <p class="lede">Elevate Your Smoke is The Cigar Society\u2019s bodyweight calisthenics card: timed PT, exact form demos, dual league boards, and bragging rights that stick. No gym. No fluff. No subscription.</p>
-
-    <div class="cover-grid">
-    <section class="cardsec span2" id="nine" aria-labelledby="nine-title">
-      <h3 id="nine-title">Your 9-minute card</h3>
-      <p class="fine">Total time <b>9:00</b> exactly — warm-up, three circuit rounds, finisher, cool-down. Equipment: floor space; optional sturdy door/table for rows; optional pull-up bar. Beginners use easier progressions (wall push-up, chair squat). Higher levels shorten rest and raise the movement ladder.</p>
-      <div class="phases">
-        <div class="ph"><span class="k">0:00–1:00</span><span class="n">Warm-up</span><span class="s">Two 30-second mobility / activation moves.</span></div>
-        <div class="ph"><span class="k">1:00–7:00</span><span class="n">Main circuit · 3 rounds</span><span class="s">Four movements. Level 1: 20s work / 10s rest. Level 2+: 25s work / 5s rest.</span></div>
-        <div class="ph"><span class="k">7:00–8:00</span><span class="n">Finisher</span><span class="s">Sixty seconds on the pace move — steady cadence.</span></div>
-        <div class="ph"><span class="k">8:00–9:00</span><span class="n">Cool-down</span><span class="s">Two 30-second stretches. Breathe down.</span></div>
-      </div>
-      <p class="fine" style="margin-top:10px">Stop immediately for sharp pain, chest pain, faintness, severe shortness of breath, or loss of coordination. This challenge is not medical advice — check with a clinician if you have an injury, health condition, pregnancy, or long inactivity.</p>
-    </section>
-
-    <section class="cardsec" aria-labelledby="prog-title">
-      <h3 id="prog-title">30-day progression</h3>
-      <ul class="timeline">
-        <li><span class="w">Days 1–7</span><span class="fine">Find your cadence. Rest days are programmed — take them. Miss a day? Resume the next open session. Do not double up to chase a streak.</span></li>
-        <li><span class="w">Days 8–14</span><span class="fine">Same 9:00 structure. Form first. Lower or raise level in settings after a finished card, not mid-session.</span></li>
-        <li><span class="w">Days 15–21</span><span class="fine">Consistency beats hero days. Catch-up means completing your next scheduled session — not stacking two hard cards back-to-back.</span></li>
-        <li><span class="w">Days 21–30</span><span class="fine">Final ten days step movements up one level automatically. Still nine minutes. Still scalable.</span></li>
-      </ul>
-    </section>
-
-    <section class="cardsec" aria-labelledby="pts-title">
-      <h3 id="pts-title">How points work</h3>
-      <p class="fine"><b>${CONFIG.PTS_PER_SESSION} pts</b> per completed session · <b>${CONFIG.PTS_PER_5PCT_CARD} pts</b> every 5% of the card finished · <b>${CONFIG.PTS_PER_5PCT_WEIGHT} pts</b> every 5% <b>bodyweight lost</b> (gain = 0; capped at ${CONFIG.MAX_WEIGHT_MILESTONES} milestones). Hours = sessions \u00d7 9 minutes. Public boards show callsign, league, sessions, streak, points, hours, and weight-loss % only — never raw lbs or phone. Healthy loss only — never cut aggressively for points.</p>
-    </section>
-
-    </div><!--cover-grid-end-->
-    <div class="note">Pain is a stop signal. Effort is not. Verify doors, tables, chairs, and boxes before rows or step-ups.</div>
-    <div style="flex:1;min-height:22px"></div>
-    <button class="btn accent" id="go2" type="button">${esc(primaryCtaLabel())}</button>
-    <button class="btn ghost" id="seecard2" type="button" style="margin-top:8px">See the 9-minute card</button>
-    <div style="text-align:center;margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
+    <div style="text-align:center;margin-top:10px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
       <a class="linkbtn" href="/">Society site</a>
       <a class="linkbtn" href="#manual">Movement manual</a>
       <a class="linkbtn" href="#board">League boards</a>
@@ -1407,9 +1370,7 @@ function cover(a){
   const start=()=>{clearHash();S.screen=S.me?(S.profile?'plan':'quiz'):'join';S.qi=0;S.answers={};render()};
   const openCard=()=>{history.replaceState(null,'',location.pathname+'#card');S.screen='card';S.back='cover';render()};
   document.getElementById('go').onclick=start;
-  document.getElementById('go2').onclick=start;
   document.getElementById('seecard').onclick=openCard;
-  document.getElementById('seecard2').onclick=openCard;
 }
 function quiz(a){
   const q=Q[S.qi];
@@ -1544,20 +1505,20 @@ function join(a){
     <p class="field errline" id="leagueerr" role="alert"></p>
     <div class="field"><label for="nm">Callsign (organizer)</label>
       <input id="nm" maxlength="32" autocomplete="name" autocapitalize="words" placeholder="e.g. Marcus R." aria-describedby="nmhint nmerr">
-      <p class="hint" id="nmhint">2–32 characters. Organizers see this on the CRM. Public boards use your display name.</p>
+      <p class="hint" id="nmhint">Organizers see this. Boards use your display name.</p>
       <p class="errline" id="nmerr" role="alert"></p>
     </div>
     <div class="field"><label for="dn">Display name (public board)</label>
       <input id="dn" maxlength="32" autocomplete="nickname" autocapitalize="words" placeholder="e.g. Smoke King" aria-describedby="dnhint dnerr">
-      <p class="hint" id="dnhint">Optional nickname on league boards. Leave blank to show your callsign.</p>
+      <p class="hint" id="dnhint">Optional. Blank = show callsign on boards.</p>
       <p class="errline" id="dnerr" role="alert"></p>
     </div>
     <div class="privacybox">
-      <label><input type="checkbox" id="ack"> <span>I understand my display name (or callsign if I skip a nickname), league, progress, and weight-loss percent (if logged) appear on public league boards. Callsign stays visible to organizers. Raw weights and phone stay private (organizer CRM only if entered). Quiz answers stay on this device. This is not medical advice.</span></label>
+      <label><input type="checkbox" id="ack"> <span>I understand my display name (or callsign), league, progress, and weight-loss % (if logged) appear on public boards. Raw weights and phone stay private. Not medical advice.</span></label>
     </div>
     <p class="errline" id="ackerr" role="alert"></p>
     <div class="note">${tracking()
-      ? 'Age and injury answers stay on this device. Bodyweight is optional: public boards show loss percent only; raw lbs stay private.'
+      ? 'Mission-brief answers stay on this device. Full privacy details are under Privacy.'
       : 'Roster tracking is off on this copy — your card saves on this device only.'}</div>
     <div style="flex:1;min-height:20px"></div>
     <button class="btn" id="go" disabled>Lock callsign</button>
@@ -1698,21 +1659,24 @@ function board(a){
   if(!S.boardTab)S.boardTab='points';
   if(!S.boardLeague)S.boardLeague='brothers';
   a.appendChild(el(`<div class="sheet" id="boardsheet">${head('LEAGUE BOARDS')}
-    <p class="eyebrow">The Cigar Society \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
     <h2 class="display h-lg">Brothers.<br>Ladies.</h2>
-    <p class="fine" style="margin:12px 0 0">Two boards. Same standard. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight change (capped at 4 milestones). Hours = sessions × 9 minutes. Ties: points, then hours. Refreshes on open. Public: display name + progress — not phone, raw weight, or organizer callsign when a nickname is set.</p>
-    <p class="eyebrow" style="margin-top:16px">League</p>
-    <div class="tabs league" id="leagues" role="tablist" aria-label="League">
+    <p class="fine" style="margin:10px 0 0">Same standard. Sort below — scoring details under Scoring.</p>
+    <div class="tabs league" id="leagues" role="tablist" aria-label="League" style="margin-top:14px">
       <button type="button" role="tab" data-league="brothers" aria-selected="${S.boardLeague==='brothers'?'true':'false'}" class="${S.boardLeague==='brothers'?'on':''}">Brothers</button>
       <button type="button" role="tab" data-league="ladies" aria-selected="${S.boardLeague==='ladies'?'true':'false'}" class="${S.boardLeague==='ladies'?'on':''}">Ladies</button>
     </div>
-    <p class="eyebrow" style="margin-top:14px">Sort by</p>
-    <div class="tabs" id="tabs" role="tablist" aria-label="Sort leaderboard">
+    <div class="tabs" id="tabs" role="tablist" aria-label="Sort leaderboard" style="margin-top:10px">
       <button type="button" role="tab" data-tab="points" aria-selected="${S.boardTab==='points'?'true':'false'}" class="${S.boardTab==='points'?'on':''}">Points</button>
       <button type="button" role="tab" data-tab="hours" aria-selected="${S.boardTab==='hours'?'true':'false'}" class="${S.boardTab==='hours'?'on':''}">Hours</button>
-      <button type="button" role="tab" data-tab="weight" aria-selected="${S.boardTab==='weight'?'true':'false'}" class="${S.boardTab==='weight'?'on':''}">Weight</button>
+      <button type="button" role="tab" data-tab="weight" aria-selected="${S.boardTab==='weight'?'true':'false'}" class="${S.boardTab==='weight'?'on':''}">Weight lost</button>
     </div>
     <div id="body"><p class="fine" style="margin-top:16px">Loading\u2026</p></div>
+    <details class="fold" style="margin-top:14px">
+      <summary>Scoring <span class="foldhint">10 / session · loss only</span></summary>
+      <div class="foldbody">
+        <p class="fine" style="margin:0">${CONFIG.PTS_PER_SESSION} pts per session · ${CONFIG.PTS_PER_5PCT_CARD} every 5% of the card · ${CONFIG.PTS_PER_5PCT_WEIGHT} every 5% bodyweight <b>lost</b> (gain = 0; cap ${CONFIG.MAX_WEIGHT_MILESTONES}). Hours = sessions \u00d7 9 min. Public: display name + progress — not phone or raw lbs.</p>
+      </div>
+    </details>
     <div style="flex:1;min-height:16px"></div>
     <button type="button" class="btn ghost sm" id="back">Back</button>
   </div>`));
@@ -1744,7 +1708,7 @@ function board(a){
       return;
     }
     const title=S.boardTab==='hours'?'Ranked by hours'
-      :S.boardTab==='weight'?'Ranked by bodyweight change'
+      :S.boardTab==='weight'?'Ranked by bodyweight lost'
       :'Ranked by points';
     body.appendChild(el(`<p class="eyebrow" style="margin-top:8px">${esc(leagueLabel())} \u00b7 ${esc(title)} \u00b7 ${people.length}</p>`));
     sortBoard(people,S.boardTab).forEach((p,i)=>{
@@ -1819,7 +1783,7 @@ function plan(a){
   const w=S.weights;
   const p=S.profile;
   if(!profileReady(p)){
-    a.appendChild(el(`<div class="sheet">${head('DASHBOARD')}
+    a.appendChild(el(`<div class="sheet">${head('FIELD CARD')}
       <h2 class="display h-lg">Finish your mission check</h2>
       <p class="lede">Your 30-day card is incomplete on this device. Answer the brief again to rebuild the schedule — progress already logged stays put.</p>
       <button type="button" class="btn accent" id="rebrief" style="margin-top:18px">Continue mission check</button>
@@ -1839,35 +1803,43 @@ function plan(a){
   const dayLabel=next?('Day '+(next.i+1)+' of 30'):'Card complete';
   const resumeOk=S.resume&&S.resume.v===RESUME_VERSION&&next&&S.resume.slotI===next.i&&(Date.now()-S.resume.savedAt)<6*3600e3;
   const canResume=!!(resumeOk&&sess&&(!S.resume.configKey||S.resume.configKey===workoutConfigKey(sess)));
-  a.appendChild(el(`<div class="sheet">${head('DASHBOARD')}
+  const wtHint=w.starting||w.current?'Saved on this device':'Optional · loss % only on boards';
+  const schedN=total||expectedSessions(p.days)||0;
+  a.appendChild(el(`<div class="sheet">${head('FIELD CARD')}
     <div class="dashhead"><div>
       <span class="daychip">${esc(dayLabel)}</span>
-      <h2 class="display h-lg" style="font-size:28px">Your 30-day<br>calisthenics card</h2>
+      <h2 class="display h-lg" style="font-size:28px;margin-top:6px">Train today</h2>
       <p class="who" style="margin-top:8px">${S.me?`<b>${esc(boardNameOf(S.me))}</b> · ${esc(leagueLab)}`:'Guest'}${sc.points?` · <b>${sc.points}</b> pts`:''}</p>
     </div></div>
+    <div id="today"></div>
     <div class="statrow" style="margin-top:14px">
       <div><div class="n">${doneN}</div><div class="l">Done / ${total||'—'}</div></div>
       <div><div class="n">${streak()}</div><div class="l">Streak</div></div>
       <div><div class="n">${bestStreak()}</div><div class="l">Best</div></div>
       <div><div class="n">${sc.hours}</div><div class="l">Hours</div></div>
     </div>
-    <p class="fine" style="margin:10px 0 0"><b>30-day challenge</b> · ${p.days} sessions/week · ${total||expectedSessions(p.days)||'—'} scheduled · ${Math.max(0,DAYS-(total||expectedSessions(p.days)||0))} recovery days. Missed a day? Resume the next open session — do not double volume just to protect a streak.</p>
-    <div id="today"></div>
-    <div class="block" style="margin-top:14px" id="wtblock">
-      <p class="eyebrow">Weight check-in (optional)</p>
-      <p class="fine" style="margin:0 0 8px">Optional. Public boards show <b>weight-loss percent only</b> (not raw lbs). Points: 100 per 5% lost, capped at ${CONFIG.MAX_WEIGHT_MILESTONES} milestones (20%). Gain earns 0 weight points. Not medical advice.</p>
-      <div class="wtrow">
-        <div class="field"><label for="wstart">Starting weight (lbs)</label>
-          <input id="wstart" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="180" value="${esc(w.starting||'')}"></div>
-        <div class="field"><label for="wcur">Current weight (lbs)</label>
-          <input id="wcur" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="175" value="${esc(w.current||'')}"></div>
-        <button type="button" class="btn accent sm" id="wsave">Save</button>
+    <p class="fine" style="margin:10px 0 0">${p.days}/wk · ${schedN} sessions · miss a day, take the next open — do not double up.</p>
+    <details class="fold" id="wtblock">
+      <summary>Weight check-in <span class="foldhint">${esc(wtHint)}</span></summary>
+      <div class="foldbody">
+        <p class="fine" style="margin:0 0 8px">Boards show <b>weight-loss percent only</b>. 100 pts per 5% lost (cap ${CONFIG.MAX_WEIGHT_MILESTONES}). Gain = 0. Not medical advice.</p>
+        <div class="wtrow">
+          <div class="field"><label for="wstart">Starting weight (lbs)</label>
+            <input id="wstart" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="180" value="${esc(w.starting||'')}"></div>
+          <div class="field"><label for="wcur">Current weight (lbs)</label>
+            <input id="wcur" type="number" inputmode="decimal" step="0.1" min="1" max="1000" placeholder="175" value="${esc(w.current||'')}"></div>
+          <button type="button" class="btn accent sm" id="wsave">Save</button>
+        </div>
+        <p class="fine" id="wmsg" style="min-height:16px;margin-top:8px" role="status"></p>
       </div>
-      <p class="fine" id="wmsg" style="min-height:16px;margin-top:8px" role="status"></p>
-    </div>
-    <p class="eyebrow" style="margin-top:22px">30-day grid</p>
-    <div class="weeks" id="weeks" role="list" aria-label="Thirty day card"></div>
-    <p class="fine" style="margin-top:8px"><b>A</b> ${FOCUS.A} · <b>B</b> ${FOCUS.B} · <b>C</b> ${FOCUS.C}. Dots are recovery. Days 21–30 (final ten days) step movements up one level.</p>
+    </details>
+    <details class="fold">
+      <summary>30-day grid <span class="foldhint">${doneN} of ${total||'—'} done</span></summary>
+      <div class="foldbody">
+        <div class="weeks" id="weeks" role="list" aria-label="Thirty day card"></div>
+        <p class="fine" style="margin-top:8px"><b>A</b> ${FOCUS.A} · <b>B</b> ${FOCUS.B} · <b>C</b> ${FOCUS.C}. Dots = recovery. Days 21–30 (final ten) step up one level.</p>
+      </div>
+    </details>
     <a class="btn ghost sm" href="#manual" style="margin-top:14px;text-align:center;text-decoration:none">Movement manual</a>
     <div style="text-align:center;margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
       <a class="linkbtn" href="#board">League boards</a>
@@ -1895,7 +1867,7 @@ function plan(a){
   };
   const t=document.getElementById('today');
   if(canResume && sess){
-    t.appendChild(el(`<div class="block" style="margin-top:12px;border-left:3px solid var(--accent);padding-left:12px">
+    t.appendChild(el(`<div class="block" style="margin-top:12px;border-top:2px solid var(--accent);padding-top:12px">
       <p class="eyebrow">Interrupted session</p>
       <p class="fine">Resume your 9-minute workout or discard it.</p>
       <button type="button" class="btn accent" id="resume" style="margin-top:10px">Resume 9-minute workout</button>
@@ -1922,13 +1894,13 @@ function plan(a){
       <h3 class="display h-md" style="margin:2px 0 0">${FOCUS[sess.type]}</h3>
       <p style="font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;margin:9px 0 0;opacity:.85">
         9:00 · ${sess.rounds} ROUNDS · ${sess.work}S ON / ${sess.rest}S OFF</p></div>`));
-    const list=el('<div class="block"><p class="eyebrow">Today\u2019s main movements</p><ul class="movelist"></ul></div>');
+    const b=el('<button class="btn accent" id="start" type="button" style="margin-top:12px">Start today\u2019s 9-minute workout</button>');
+    t.appendChild(b);
+    b.onclick=()=>{clearHash();clearResume();S.session=sess;S.slot=next;S.screen='brief';render()};
+    const list=el('<div class="block" style="margin-top:12px"><p class="eyebrow">Today\u2019s main movements</p><ul class="movelist"></ul></div>');
     const ul=list.querySelector('ul');
     sess.main.forEach((m,i)=>ul.appendChild(moveRow(['Push','Legs','Core','Pace'][i],m.n,sess.work+'s')));
     t.appendChild(list);
-    const b=el('<button class="btn accent" id="start" type="button">Start today\u2019s 9-minute workout</button>');
-    t.appendChild(b);
-    b.onclick=()=>{clearHash();clearResume();S.session=sess;S.slot=next;S.screen='brief';render()};
   }else if(!canResume){
     t.appendChild(el(`<div class="block invert" style="margin-top:12px">
       <p class="eyebrow">Card complete</p>
@@ -2051,7 +2023,7 @@ function paintTimerUI(st){
   S.timeLeft=Math.max(0, Math.ceil(rem/1000));
   const t=document.getElementById('t'); if(t) t.textContent=mmss(S.timeLeft);
   const b=document.getElementById('barfill');
-  if(b&&st&&st.sec) b.style.width=(100*(1-rem/(st.sec*1000)))+'%';
+  if(b&&st&&st.sec) b.style.transform='scaleX('+(1-rem/(st.sec*1000))+')';
   const secLeft=S.timeLeft;
   if(!S.paused && (secLeft===3||secLeft===2||secLeft===1) && S.lastWarnSec!==secLeft){
     S.lastWarnSec=secLeft; vibe(30);
@@ -2100,7 +2072,7 @@ function startSession(fromResume){
     S.si=0; S.paused=false; S.elapsedActiveMs=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastWarnSec=null; S._coachPhase=null;
   }
   document.querySelectorAll('.player').forEach(n=>n.remove());
-  document.body.appendChild(el('<div class="player" id="player" role="dialog" aria-label="Nine minute workout"></div>'));
+  document.body.appendChild(el('<div class="player" id="player" role="dialog" aria-modal="true" aria-label="Nine minute workout"></div>'));
   requestWakeLock();
   if(!window._eysVis){
     window._eysVis=true;
@@ -2175,26 +2147,30 @@ function paintStep(){
   let tipI=0;
   const showSec=Math.max(0, Math.ceil(remainingMsNow()/1000));
   p.className='player'+(st.kind==='rest'?' rest':'');
-  p.innerHTML=`<div class="ptop"><span class="st">${esc(st.phase)}</span><span class="st">${S.si+1} / ${s.steps.length}</span></div>
-    <div class="bar"><i id="barfill" style="width:${100*(1-remainingMsNow()/((st.sec||1)*1000))}%"></i></div>
+  p.innerHTML=`<div class="ptop"><span class="st" id="phase">${esc(st.phase)}</span><span class="st">${S.si+1} / ${s.steps.length}</span></div>
+    <div class="bar"><i id="barfill" style="transform:scaleX(${1-remainingMsNow()/((st.sec||1)*1000)})"></i></div>
     <div class="pmid">
       <div class="figslot" id="figslot"></div>
       <p class="timer ${st.kind==='rest'?'big':''}" id="t" aria-live="off">${mmss(showSec)}</p>
-      <h2 class="movename">${esc(st.n)}</h2>
+      <h2 class="movename" id="movename">${esc(st.n)}</h2>
       <p class="cue" id="cue">${esc(st.c)}</p>
       ${st.kind==='work'&&tips.lines.length?`<div class="demotip" id="demotip"><span class="lab" id="demolab">Standard</span><div class="txt" id="demotxt">${esc(tipLines[0])}</div>
         <div class="howdots" id="howdots">${tipLines.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join('')}</div></div>`:''}
       ${nx?`<p class="nextup">Next \u2192 ${esc(nx.n)}</p>`:'<p class="nextup">Last one</p>'}
     </div>
     <div class="pbot">
-      <button class="btn ghost sm" id="pause" style="flex:1">${S.paused?'Resume':'Pause'}</button>
+      <button class="btn ghost sm" id="pause" style="flex:1" aria-pressed="${S.paused?'true':'false'}">${S.paused?'Resume':'Pause'}</button>
       <button class="btn sm" id="skip" style="flex:1.6">${st.kind==='rest'?'Skip rest':'Done \u2192'}</button>
     </div>
-    <div style="text-align:center;padding-bottom:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-      <button class="linkbtn" id="mute" type="button">${S.muted?'Unmute coach':'Mute coach'}</button>
-      <button class="linkbtn" id="restart" type="button">Restart</button>
-      <button class="linkbtn" id="quit" type="button">End session</button>
-    </div>`;
+    <details class="playermore">
+      <summary>Session options</summary>
+      <div class="moreacts">
+        <button class="linkbtn" id="mute" type="button">${S.muted?'Unmute coach':'Mute coach'}</button>
+        <button class="linkbtn" id="restart" type="button">Restart</button>
+        <button class="linkbtn" id="quit" type="button">End session</button>
+      </div>
+    </details>`;
+  announce('Step '+(S.si+1)+' of '+s.steps.length+'. '+st.phase+'. '+st.n+'.');
   coachStep(st);
   if(st.kind==='work'&&EX[st.n]){
     p.querySelector('#figslot').appendChild(exerciseImg(st.n,'hero'));
@@ -2225,7 +2201,10 @@ function paintStep(){
       coachCue('paused','Paused.');
     }
     persistResume();
-    p.querySelector('#pause').textContent=S.paused?'Resume':'Pause';
+    const pauseBtn=p.querySelector('#pause');
+    pauseBtn.textContent=S.paused?'Resume':'Pause';
+    pauseBtn.setAttribute('aria-pressed',S.paused?'true':'false');
+    announce(S.paused?'Paused.':'Resumed.');
   };
   p.querySelector('#skip').onclick=()=>{
     if(st.kind!=='rest' && !confirm('Skip this movement? Remaining time will not count toward completion.')) return;
@@ -2355,14 +2334,15 @@ function cardScreen(a){
   a.appendChild(el(`<div class="sheet">${head('9-MINUTE CARD')}
     <p class="eyebrow">Exact structure · ${total}s = 9:00</p>
     <h2 class="display h-lg">Warm-up.<br>Circuit. Finish.</h2>
-    <p class="fine" style="margin:12px 0 0">Level 1 uses 20s work / 10s rest. Level 2+ uses 25s / 5s. Same nine minutes. Beginners start with wall push-ups, chair squats, and table rows.</p>
+    <p class="fine" style="margin:12px 0 0">Level 1: 20s / 10s. Level 2+: 25s / 5s. Same nine minutes. Beginners use wall push-ups, chair squats, table rows.</p>
     <div class="phases">
       <div class="ph"><span class="k">Warm-up · 60s</span><span class="n">${esc(sess.steps[0].n)} + ${esc(sess.steps[1].n)}</span><span class="s">30s each</span></div>
       <div class="ph"><span class="k">Main · 6:00</span><span class="n">${sess.main.map(m=>m.n).join(' · ')}</span><span class="s">3 rounds · ${sess.work}s on / ${sess.rest}s rest</span></div>
       <div class="ph"><span class="k">Finisher · 60s</span><span class="n">${esc(sess.main[3].n)}</span><span class="s">Steady cadence</span></div>
       <div class="ph"><span class="k">Cool-down · 60s</span><span class="n">Two stretches</span><span class="s">30s each</span></div>
     </div>
-    <div class="note" style="margin-top:16px">Stop for sharp pain, chest pain, faintness, severe shortness of breath, or loss of coordination. Not medical advice.</div>
+    <p class="fine" style="margin-top:14px"><b>${CONFIG.PTS_PER_SESSION}</b> pts / session · <b>${CONFIG.PTS_PER_5PCT_CARD}</b> every 5% of card · <b>${CONFIG.PTS_PER_5PCT_WEIGHT}</b> every 5% bodyweight <b>lost</b> (gain = 0). Days 21–30 (Final ten days) step movements up one level.</p>
+    <div class="note" style="margin-top:12px">Pain is a stop signal. Stop for sharp pain, chest pain, faintness, or severe shortness of breath. Not medical advice.</div>
     <div style="flex:1;min-height:20px"></div>
     <button class="btn accent" id="go" type="button">Start now</button>
     <button class="btn ghost" id="back" type="button" style="margin-top:8px">Back</button>
@@ -2402,7 +2382,7 @@ function settingsScreen(a){
     <p class="fine" id="serr" style="min-height:16px"></p>
     <button class="btn accent" id="savep" type="button">Save profile</button>
     <button class="btn ghost" id="leave" type="button" style="margin-top:8px">Leave challenge / delete roster</button>
-    <div style="text-align:center;margin-top:12px"><button class="linkbtn" id="back">Back to dashboard</button></div>
+    <div style="text-align:center;margin-top:12px"><button class="linkbtn" id="back">Back to the card</button></div>
   </div>`));
   let league=S.me.league||'';
   document.getElementById('lp').onclick=e=>{
