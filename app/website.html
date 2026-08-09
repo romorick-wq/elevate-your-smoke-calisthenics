@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Elevate Your Smoke — The Cigar Society</title>
 <meta name="description" content="The Cigar Society presents Elevate Your Smoke — Brothers of the League and Ladies of the League. Nine-minute daily PT. Thirty-day challenge. Kickoff August 15, 2026.">
-<meta name="theme-color" content="#101412">
+<meta name="theme-color" content="#2F3B2A">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
@@ -16,104 +16,115 @@
 <style>
 :root{
   --bg:#ECEAE4; --surface:#F7F6F2; --surface2:#FFFFFF; --ink:#101412;
-  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#E85D04; --accent-ink:#1A0F08;
-  --olive:#2F3B2A; --olive-soft:#3F4F38; --danger:#C43C2C;
+  --muted:#5E6660; --line:rgba(16,20,18,.12);
+  --accent:#E85D04; --accent-text:#A03E02; --accent-ink:#1A0F08;
+  --olive:#2F3B2A; --olive-soft:#3F4F38; --cream-on-olive:#F4F7EE; --danger:#C43C2C;
   --disp:'Syne',system-ui,sans-serif; --body:'Outfit',system-ui,-apple-system,sans-serif;
-  --radius:18px; --radius-sm:12px; --max:1080px;
+  --radius:18px; --radius-sm:12px; --max:720px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
 body{
   margin:0;color:var(--ink);font-family:var(--body);
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(232,93,4,.28), transparent 55%),
-    linear-gradient(165deg,#1a2218 0%, #2a3526 42%, #6d7464 100%);
+    radial-gradient(900px 480px at 50% -8%, rgba(232,93,4,.22), transparent 58%),
+    linear-gradient(165deg, #243024 0%, var(--olive) 38%, var(--olive-soft) 72%, #5a6554 100%);
   min-height:100vh;
+  padding:0 0 env(safe-area-inset-bottom);
 }
 a{color:inherit}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
-.wrap{width:min(100%,var(--max));margin:0 auto;padding:0 20px}
 .site{
   width:min(100%,var(--max));margin:0 auto;background:var(--bg);
   box-shadow:0 18px 50px rgba(16,20,18,.18);overflow:hidden;
+  min-height:100vh;
 }
 .topnav{
   display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:14px 20px;background:linear-gradient(135deg,var(--olive),var(--olive-soft));color:#F4F7EE;
+  padding:14px 20px;background:linear-gradient(135deg,var(--olive),var(--olive-soft));color:var(--cream-on-olive);
 }
-.topnav .brand{font-family:var(--disp);font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none}
-.topnav .brand span{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.7;font-weight:600;margin-top:3px;font-family:var(--body)}
-.navlinks{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.topnav .brand{font-family:var(--disp);font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none;color:var(--cream-on-olive)}
+.topnav .brand span{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.75;font-weight:600;margin-top:3px;font-family:var(--body)}
+.navlinks{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center}
 .navlinks a{
-  color:#F4F7EE;text-decoration:none;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;opacity:.85;padding:6px 2px
+  color:var(--cream-on-olive);text-decoration:none;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;opacity:.9;padding:12px 6px;min-height:44px;display:inline-flex;align-items:center
 }
-.navlinks a:hover{opacity:1;color:var(--accent)}
+.navlinks a:hover{opacity:1;color:#ffb078}
 .hero{
-  position:relative;min-height:min(72vh,640px);display:flex;align-items:flex-end;
-  background:#1a2218;color:#F7F6F2;overflow:hidden;
+  position:relative;min-height:min(100dvh,720px);display:flex;align-items:flex-end;
+  background:#1a2218;color:var(--cream-on-olive);overflow:hidden;
 }
 .hero img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;
+  animation:heroKen 18s ease-in-out alternate both;
 }
 .hero::after{
   content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(16,20,18,.15) 0%, rgba(16,20,18,.72) 55%, rgba(16,20,18,.92) 100%);
+  background:linear-gradient(180deg,rgba(16,20,18,.2) 0%, rgba(16,20,18,.55) 42%, rgba(16,20,18,.92) 100%);
 }
-.hero-inner{position:relative;z-index:1;padding:36px 20px 40px;width:100%;max-width:720px}
+.hero-inner{
+  position:relative;z-index:1;padding:28px 20px 36px;width:100%;
+  animation:riseIn .7s ease-out both;
+}
 .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
-.hero .eyebrow{color:rgba(244,247,238,.75)}
+.hero .eyebrow{color:rgba(244,247,238,.78)}
 .display{font-family:var(--disp);font-weight:800;letter-spacing:-.03em;line-height:.95;margin:0}
-.h-xl{font-size:clamp(40px,7vw,64px)}.h-lg{font-size:clamp(28px,4vw,40px)}.h-md{font-size:24px}
-.lede{font-size:16px;line-height:1.55;margin:14px 0 0;max-width:36rem;color:#2c322e}
-.hero .lede{color:rgba(247,246,242,.88)}
+.h-xl{font-size:clamp(42px,9vw,56px)}.h-lg{font-size:clamp(28px,4vw,40px)}.h-md{font-size:24px}
+.lede{font-size:15.5px;line-height:1.55;margin:14px 0 0;max-width:28rem;color:#2c322e}
+.hero .lede{color:rgba(247,246,242,.9);margin-top:12px;max-width:22rem}
 .fine{font-size:13px;line-height:1.5;color:var(--muted)}
-.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 .btn{
-  display:inline-block;border:0;background:var(--ink);color:#F7F6F2;border-radius:999px;
+  display:inline-flex;align-items:center;justify-content:center;min-height:48px;
+  border:0;background:var(--ink);color:#F7F6F2;border-radius:999px;
   font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.04em;
-  padding:14px 22px;cursor:pointer;text-decoration:none;text-align:center;
+  padding:15px 18px;cursor:pointer;text-decoration:none;text-align:center;
 }
 .btn.accent{background:var(--accent);color:var(--accent-ink)}
-.btn.ghost{background:transparent;color:inherit;border:1.5px solid rgba(247,246,242,.35)}
-.hero .btn.ghost{color:#F7F6F2}
+.btn.ghost{background:transparent;color:inherit;border:1.5px solid rgba(247,246,242,.4)}
+.hero .btn.ghost{color:var(--cream-on-olive)}
+.btn:active{transform:scale(.98)}
 .section{padding:42px 20px;border-top:1px solid var(--line)}
 .section h2{font-family:var(--disp);font-weight:800;font-size:clamp(26px,3.5vw,34px);letter-spacing:-.03em;margin:0 0 10px;line-height:1.05}
 .grid2{display:grid;gap:16px}
-@media (min-width:820px){
-  .grid2{grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media (min-width:640px){
+  .grid2{grid-template-columns:1fr 1fr;gap:16px;align-items:start}
   .span2{grid-column:1 / -1}
 }
 .leaguecard,.ph,.person{
-  background:var(--surface2);border-radius:12px;padding:16px;min-width:0
+  background:var(--surface2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;min-width:0
 }
-.leaguecard .k,.ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;display:block;line-height:1.3}
+.leaguecard .k,.ph .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);font-weight:600;display:block;line-height:1.3}
 .leaguecard .n,.ph .n{font-family:var(--disp);font-weight:800;font-size:18px;display:block;margin-top:6px;line-height:1.15}
 .leaguecard .s,.ph .s{font-size:13px;color:var(--muted);display:block;margin-top:8px;line-height:1.45}
 .phases{display:grid;gap:10px;margin-top:14px}
 .timeline{margin:14px 0 0;padding:0;list-style:none}
 .timeline li{display:grid;grid-template-columns:88px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
-.timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent)}
+.timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent-text)}
 .kick{
-  margin:0 20px;padding:18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);
-  transform:translateY(-28px);position:relative;z-index:2;
+  margin:0;padding:28px 20px;border-top:1px solid var(--line);background:var(--surface);
+}
+.kick .kick-panel{
+  padding:16px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--line);
 }
 .cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.cd > div{background:var(--olive);color:#F4F7EE;border-radius:10px;padding:12px 8px;text-align:center}
+.cd > div{background:var(--olive);color:var(--cream-on-olive);border-radius:10px;padding:12px 8px;text-align:center;min-height:72px}
 .cd .n{font-family:var(--disp);font-weight:800;font-size:28px;line-height:1}
-.cd .l{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-top:4px}
+.cd .l{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-top:4px}
 .livebanner{
-  background:rgba(63,79,56,.14);border-left:3px solid var(--olive-soft);
+  background:rgba(63,79,56,.14);border-top:2px solid var(--olive-soft);
   padding:12px 14px;margin-top:12px;font-size:14px;font-weight:600;color:var(--olive-soft)
 }
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
 .tabs button{
   border:1.5px solid var(--line);background:var(--surface2);border-radius:999px;
-  font-family:var(--body);font-weight:700;font-size:13px;padding:9px 14px;cursor:pointer;color:var(--ink)
+  font-family:var(--body);font-weight:700;font-size:13px;padding:12px 16px;min-height:44px;cursor:pointer;color:var(--ink)
 }
 .tabs button.on{background:var(--ink);color:#F7F6F2;border-color:var(--ink)}
 .boardlist{margin-top:14px;display:grid;gap:10px}
 .person .prow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.rank{font-family:var(--disp);font-weight:800;color:var(--accent);margin-right:8px}
+.rank{font-family:var(--disp);font-weight:800;color:var(--accent-text);margin-right:8px}
 .pn{font-family:var(--disp);font-weight:700;font-size:17px}
 .sortkey{font-family:var(--disp);font-weight:800;font-size:18px;display:block;text-align:right}
 .sortlab{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;text-align:right}
@@ -121,15 +132,16 @@ a{color:inherit}
 .metrics > div{background:var(--bg);border-radius:8px;padding:8px;text-align:center}
 .metrics .v{font-family:var(--disp);font-weight:800;font-size:16px}
 .metrics .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.metrics .hi .v{color:var(--accent)}
+.metrics .hi .v{color:var(--accent-text)}
 .pm{font-size:12px;color:var(--muted)}
-.note{font-size:12.5px;line-height:1.45;color:var(--muted);margin-top:16px;padding:12px;border-left:3px solid var(--accent);background:var(--surface2)}
+.note{font-size:12.5px;line-height:1.45;color:var(--muted);margin-top:16px;padding:12px 0;border-top:2px solid var(--accent);background:transparent}
 .sitefoot{
   padding:28px 20px;text-align:center;border-top:1px solid var(--line);
   font-size:12px;color:var(--muted);font-weight:600
 }
 .sitefoot b{color:var(--ink)}
 .sitefoot .row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px;margin-bottom:12px}
+.sitefoot .row a{min-height:44px;display:inline-flex;align-items:center}
 .visits{
   display:inline-flex;align-items:baseline;gap:8px;margin:0 0 14px;padding:10px 16px;
   background:var(--surface2);border-radius:999px;border:1px solid var(--line);
@@ -138,11 +150,23 @@ a{color:inherit}
 .visits .n{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .visits .l{letter-spacing:.08em;text-transform:uppercase;font-size:10px;font-weight:700}
 .linkbtn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--olive-soft);font-weight:700;text-decoration:underline;text-underline-offset:3px}
-.linkbtn:hover{color:var(--accent)}
-.promo-ov{position:fixed;inset:0;z-index:80;background:rgba(10,12,11,.7);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px)}
-.promo-ov .box{width:min(100%,520px);background:var(--bg);border-radius:18px;padding:16px;max-height:92vh;overflow:auto}
-.promo-ov video{width:100%;border-radius:12px;background:#000;display:block}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+.linkbtn:hover{color:var(--accent-text)}
+.promo-ov{position:fixed;inset:0;z-index:80;background:rgba(10,12,11,.82);display:flex;align-items:center;justify-content:center;padding:16px}
+.promo-ov .box{width:min(100%,520px);background:var(--bg);border-radius:var(--radius);padding:16px;max-height:92vh;overflow:auto}
+.promo-ov video{width:100%;border-radius:var(--radius-sm);background:#000;display:block}
+.promo-ov .btn.ghost{color:var(--ink);border-color:var(--line)}
+@keyframes riseIn{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes heroKen{
+  from{transform:scale(1.06)}
+  to{transform:scale(1)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -162,29 +186,30 @@ a{color:inherit}
   <section class="hero" aria-label="Elevate Your Smoke">
     <img src="/exercises/push-up.jpg" alt="" width="1200" height="800" decoding="async" fetchpriority="high">
     <div class="hero-inner">
-      <p class="eyebrow">The Cigar Society · Elevate Your Smoke</p>
-      <h1 class="display h-xl">Two leagues.<br>One standard.</h1>
-      <p class="lede" id="hero-lede">Brothers of the League and Ladies of the League run the same 9-minute calisthenics card for thirty days. All fitness levels welcome.</p>
+      <p class="eyebrow">The Cigar Society</p>
+      <h1 class="display h-xl">Elevate Your Smoke</h1>
+      <p class="lede" id="hero-lede">Two leagues. One standard. Same 9-minute card for thirty days.</p>
       <div class="ctas">
         <a class="btn accent" id="primary-cta" href="/app">Start now</a>
         <button type="button" class="btn ghost" id="demo-btn">Watch demo</button>
-        <a class="btn ghost" href="#nine">See the card</a>
       </div>
     </div>
   </section>
 
-  <div class="kick" id="kickoff">
-    <p class="eyebrow">Society kickoff</p>
-    <p class="fine" style="margin:0;color:var(--ink);font-weight:600" id="kick-label"></p>
-    <div class="cd" id="cd-digits" aria-live="polite">
-      <div><div class="n" id="cd-d">0</div><div class="l">Days</div></div>
-      <div><div class="n" id="cd-h">00</div><div class="l">Hours</div></div>
-      <div><div class="n" id="cd-m">00</div><div class="l">Mins</div></div>
-      <div><div class="n" id="cd-s">00</div><div class="l">Secs</div></div>
+  <section class="kick" id="kickoff" aria-label="Society kickoff">
+    <div class="kick-panel">
+      <p class="eyebrow">Society kickoff</p>
+      <p class="fine" style="margin:0;color:var(--ink);font-weight:600" id="kick-label"></p>
+      <div class="cd" id="cd-digits" aria-live="polite">
+        <div><div class="n" id="cd-d">0</div><div class="l">Days</div></div>
+        <div><div class="n" id="cd-h">00</div><div class="l">Hours</div></div>
+        <div><div class="n" id="cd-m">00</div><div class="l">Mins</div></div>
+        <div><div class="n" id="cd-s">00</div><div class="l">Secs</div></div>
+      </div>
+      <div class="livebanner" id="cd-live" hidden>Challenge is live — the 30-day card is open. Lock a callsign and train.</div>
+      <p class="fine" id="cd-note" style="margin:10px 0 0"></p>
     </div>
-    <div class="livebanner" id="cd-live" hidden>Challenge is live — the 30-day card is open. Lock a callsign and train.</div>
-    <p class="fine" id="cd-note" style="margin:10px 0 0"></p>
-  </div>
+  </section>
 
   <section class="section" id="leagues">
     <h2>Two leagues. Same heat.</h2>
@@ -204,33 +229,25 @@ a{color:inherit}
   </section>
 
   <section class="section" id="nine">
-    <div class="grid2">
-      <div class="span2">
-        <h2>Your 9-minute card</h2>
-        <p class="fine">Total time <b>9:00</b> exactly — warm-up, three circuit rounds, finisher, cool-down. Level 1: 20s work / 10s rest. Level 2+: 25s / 5s. Beginners scale every move.</p>
-        <div class="phases">
-          <div class="ph"><span class="k">0:00–1:00</span><span class="n">Warm-up</span><span class="s">Two 30-second mobility / activation moves.</span></div>
-          <div class="ph"><span class="k">1:00–7:00</span><span class="n">Main circuit · 3 rounds</span><span class="s">Four movements. Level 1: 20s work / 10s rest. Level 2+: 25s work / 5s rest.</span></div>
-          <div class="ph"><span class="k">7:00–8:00</span><span class="n">Finisher</span><span class="s">Sixty seconds on the pace move — steady cadence.</span></div>
-          <div class="ph"><span class="k">8:00–9:00</span><span class="n">Cool-down</span><span class="s">Two 30-second stretches. Breathe down.</span></div>
-        </div>
-      </div>
+    <h2>Your 9-minute card</h2>
+    <p class="fine">Total time <b>9:00</b> exactly — warm-up, three circuit rounds, finisher, cool-down. Level 1: 20s work / 10s rest. Level 2+: 25s / 5s. Beginners scale every move.</p>
+    <div class="phases">
+      <div class="ph"><span class="k">0:00–1:00</span><span class="n">Warm-up</span><span class="s">Two 30-second mobility / activation moves.</span></div>
+      <div class="ph"><span class="k">1:00–7:00</span><span class="n">Main circuit · 3 rounds</span><span class="s">Four movements. Level 1: 20s work / 10s rest. Level 2+: 25s work / 5s rest.</span></div>
+      <div class="ph"><span class="k">7:00–8:00</span><span class="n">Finisher</span><span class="s">Sixty seconds on the pace move — steady cadence.</span></div>
+      <div class="ph"><span class="k">8:00–9:00</span><span class="n">Cool-down</span><span class="s">Two 30-second stretches. Breathe down.</span></div>
     </div>
   </section>
 
   <section class="section" id="progression">
-    <div class="grid2">
-      <div>
-        <h2>30-day progression</h2>
-        <p class="fine">Calendar length is thirty days. Scheduled sessions depend on the weekly frequency you choose (3–6 days).</p>
-      </div>
-      <ul class="timeline span2">
-        <li><span class="w">Days 1–7</span><span class="fine">Find your cadence. Rest days are programmed — take them. Miss a day? Resume the next open session.</span></li>
-        <li><span class="w">Days 8–14</span><span class="fine">Same 9:00 structure. Form first.</span></li>
-        <li><span class="w">Days 15–21</span><span class="fine">Consistency beats hero days.</span></li>
-        <li><span class="w">Days 21–30</span><span class="fine">Final ten days step movements up one level automatically. Still nine minutes. Still scalable.</span></li>
-      </ul>
-    </div>
+    <h2>30-day progression</h2>
+    <p class="fine">Calendar length is thirty days. Scheduled sessions depend on the weekly frequency you choose (3–6 days).</p>
+    <ul class="timeline">
+      <li><span class="w">Days 1–7</span><span class="fine">Find your cadence. Rest days are programmed — take them. Miss a day? Resume the next open session.</span></li>
+      <li><span class="w">Days 8–14</span><span class="fine">Same 9:00 structure. Form first.</span></li>
+      <li><span class="w">Days 15–21</span><span class="fine">Consistency beats hero days.</span></li>
+      <li><span class="w">Days 21–30</span><span class="fine">Final ten days step movements up one level automatically. Still nine minutes. Still scalable.</span></li>
+    </ul>
   </section>
 
   <section class="section" id="points">
@@ -251,7 +268,7 @@ a{color:inherit}
     <div class="tabs" id="sort-tabs" role="tablist" aria-label="Sort leaderboard">
       <button type="button" role="tab" data-tab="points" class="on" aria-selected="true">Points</button>
       <button type="button" role="tab" data-tab="hours" aria-selected="false">Hours</button>
-      <button type="button" role="tab" data-tab="weight" aria-selected="false">Weight</button>
+      <button type="button" role="tab" data-tab="weight" aria-selected="false">Weight lost</button>
     </div>
     <div class="boardlist" id="board-body"><p class="fine">Loading boards…</p></div>
     <p style="margin-top:16px"><a class="btn accent" id="boards-cta" href="/app">Start now</a></p>
@@ -451,7 +468,7 @@ function showDemo() {
       <p class="fine" style="margin:10px 0 0">Nine minutes a day. Thirty-day challenge.</p>
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <a class="btn accent" href="/app" id="promocta">${esc(ctaLabel())}</a>
-        <button type="button" class="btn ghost" id="promoclose" style="color:var(--ink);border-color:var(--line)">Close</button>
+        <button type="button" class="btn ghost" id="promoclose">Close</button>
       </div>
     </div>
   </div>`);
@@ -463,8 +480,7 @@ function showDemo() {
 document.getElementById('kick-label').textContent = CONFIG.KICKOFF_LABEL;
 document.getElementById('ver').textContent = CONFIG.VERSION;
 document.getElementById('hero-lede').textContent =
-  'Brothers of the League and Ladies of the League run the same 9-minute calisthenics card for thirty days. All fitness levels welcome — every movement scales. ' +
-  CONFIG.KICKOFF_LABEL.split('·')[0].trim() + ' kickoff.';
+  'Two leagues. One standard. Same 9-minute card for thirty days.';
 document.getElementById('points-copy').innerHTML =
   '<b>' + CONFIG.PTS_PER_SESSION + ' pts</b> per completed session · <b>' + CONFIG.PTS_PER_5PCT_CARD +
   ' pts</b> every 5% of the card finished · <b>' + CONFIG.PTS_PER_5PCT_WEIGHT +
