@@ -2152,7 +2152,7 @@ function paintStep(){
     <div class="bar"><i id="barfill" style="transform:scaleX(${1-remainingMsNow()/((st.sec||1)*1000)})"></i></div>
     <div class="pmid">
       <div class="figslot" id="figslot"></div>
-      <p class="timer ${st.kind==='rest'?'big':''}" id="t" aria-live="polite">${mmss(showSec)}</p>
+      <p class="timer ${st.kind==='rest'?'big':''}" id="t" aria-live="off">${mmss(showSec)}</p>
       <h2 class="movename" id="movename">${esc(st.n)}</h2>
       <p class="cue" id="cue">${esc(st.c)}</p>
       ${st.kind==='work'&&tips.lines.length?`<div class="demotip" id="demotip"><span class="lab" id="demolab">Standard</span><div class="txt" id="demotxt">${esc(tipLines[0])}</div>
