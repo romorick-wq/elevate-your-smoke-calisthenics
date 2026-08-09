@@ -38,7 +38,7 @@ body{
   width:100%;max-width:430px;min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden;
   display:flex;flex-direction:column;box-shadow:var(--shadow);
 }
-.sheet{padding:0 20px 36px;flex:1;display:flex;flex-direction:column;animation:rise .35s ease both}
+.sheet{padding:0 20px 56px;flex:1;display:flex;flex-direction:column;animation:rise .35s ease both}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .masthead{
   margin:0 -20px 18px;padding:16px 20px 14px;display:flex;justify-content:space-between;align-items:flex-end;
@@ -328,6 +328,42 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
   border-top:1px solid var(--line);
 }
 .appfoot b{color:var(--ink);font-weight:700;letter-spacing:.04em}
+/* Society user ticker — sticky bottom of the phone column */
+.userticker{
+  flex-shrink:0;position:sticky;bottom:0;z-index:25;
+  display:flex;align-items:stretch;min-height:40px;
+  background:linear-gradient(90deg,#243022 0%,var(--olive) 40%,#243022 100%);
+  color:#F4F7EE;border-top:1px solid rgba(244,247,238,.14);
+  padding-bottom:env(safe-area-inset-bottom,0);
+  cursor:pointer;overflow:hidden;
+}
+.userticker:focus-visible{outline:2.5px solid var(--accent);outline-offset:-2px}
+.userticker .ut-lab{
+  flex:0 0 auto;display:flex;align-items:center;gap:6px;
+  padding:0 12px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:700;background:rgba(0,0,0,.22);border-right:1px solid rgba(244,247,238,.12);
+  color:var(--accent);white-space:nowrap;z-index:1;
+}
+.userticker .ut-lab .n{font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:0;color:#F4F7EE;font-variant-numeric:tabular-nums}
+.userticker .ut-viewport{flex:1;min-width:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent)}
+.userticker .ut-track{
+  display:inline-flex;align-items:center;gap:0;white-space:nowrap;
+  width:max-content;padding:10px 0;will-change:transform;
+  animation:ut-scroll 42s linear infinite;
+}
+.userticker .ut-track:hover{animation-play-state:paused}
+.userticker .ut-item{
+  display:inline-flex;align-items:baseline;gap:7px;
+  padding:0 18px;font-size:12.5px;font-weight:600;letter-spacing:.02em;
+}
+.userticker .ut-item .nm{font-family:var(--disp);font-weight:700;font-size:13px}
+.userticker .ut-item .meta{opacity:.72;font-size:11px;font-weight:500}
+.userticker .ut-sep{opacity:.35;padding:0 2px;font-weight:400}
+@keyframes ut-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){
+  .userticker .ut-track{animation:none;flex-wrap:nowrap;overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch}
+}
+body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 </style>
 </head>
 <body>
@@ -350,7 +386,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.1.2',
+  VERSION:'1.1.5',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -1064,7 +1100,102 @@ function render(){
     console.error(err);
     a.innerHTML='<div class="sheet" style="padding:24px"><h2 class="display h-md">Something broke</h2><p class="fine">'+esc(String(err&&err.message||err))+'</p><p style="margin-top:16px"><a class="linkbtn" href="/">Reload app</a> · <a class="linkbtn" href="#board">League boards</a> · <a class="linkbtn" href="/admin">Organizer</a></p></div>';
   }
+  mountUserTicker(a);
   window.scrollTo(0,0);
+}
+/* ---- bottom society ticker (public board names) ---- */
+function tickerLeagueLab(league){
+  if(league==='ladies')return 'Ladies';
+  if(league==='brothers')return 'Brothers';
+  return 'League';
+}
+function tickerItemsFromPeople(people){
+  const list=(people||[]).slice().sort((a,b)=>(Number(b.points)||0)-(Number(a.points)||0)
+    ||(Number(b.sessions)||0)-(Number(a.sessions)||0)
+    ||String(a.name||'').localeCompare(String(b.name||'')));
+  return list.map(p=>{
+    const nm=String(p.name||'').trim()||'Member';
+    const pts=Number(p.points)||0;
+    const sess=Number(p.sessions)||0;
+    const meta=pts+' pts · '+sess+' sess · '+tickerLeagueLab(p.league);
+    return {nm, meta};
+  });
+}
+function paintUserTicker(){
+  const bar=document.getElementById('userticker');
+  if(!bar)return;
+  const countEl=bar.querySelector('.ut-lab .n');
+  const track=bar.querySelector('.ut-track');
+  if(!track)return;
+  let items=tickerItemsFromPeople(S.tickerPeople||S.boardPeople||[]);
+  if(countEl) countEl.textContent=String(items.length||'—');
+  if(!items.length){
+    items=[
+      {nm:'Elevate Your Smoke', meta:'9 minutes · 30 days'},
+      {nm:'Brothers & Ladies', meta:'same standard'},
+      {nm:'Join the card', meta:'start now'},
+      {nm:'The Cigar Society', meta:'kickoff live'}
+    ];
+  }
+  // Pad short lists so the marquee still reads as a ticker
+  while(items.length>0 && items.length<6){
+    items=items.concat(items);
+  }
+  const chunk=items.map(it=>'<span class="ut-item"><span class="nm">'+esc(it.nm)+'</span><span class="meta">'+esc(it.meta)+'</span></span><span class="ut-sep" aria-hidden="true">·</span>').join('');
+  track.innerHTML=chunk+chunk;
+  const dur=Math.max(28, Math.min(90, items.length*7));
+  track.style.animationDuration=dur+'s';
+}
+function mountUserTicker(a){
+  if(!a)return;
+  let bar=a.querySelector('#userticker');
+  if(!bar){
+    bar=el(`<aside id="userticker" class="userticker" role="link" tabindex="0" aria-label="Open league boards — live roster ticker" title="Open league boards">
+      <div class="ut-lab"><span>Live</span><span class="n">—</span></div>
+      <div class="ut-viewport"><div class="ut-track" aria-hidden="true"></div></div>
+    </aside>`);
+    a.appendChild(bar);
+    const goBoard=()=>{
+      history.replaceState(null,'',location.pathname+location.search+'#board');
+      S.back=S.screen==='board'?S.back:(S.profile?'plan':'cover');
+      S.screen='board';
+      render();
+    };
+    bar.addEventListener('click',goBoard);
+    bar.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();goBoard()}
+    });
+  }
+  paintUserTicker();
+  refreshUserTicker();
+}
+async function refreshUserTicker(force){
+  if(!tracking()){ paintUserTicker(); return; }
+  const now=Date.now();
+  if(!force && S._tickerAt && (now-S._tickerAt)<90e3 && (S.tickerPeople||S.boardPeople)){
+    paintUserTicker();
+    return;
+  }
+  if(S._tickerBusy)return;
+  S._tickerBusy=true;
+  try{
+    const u=API()+(API().includes('?')?'&':'?')+'action=leaderboard&challenge='+encodeURIComponent(CONFIG.CHALLENGE);
+    const ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+    const to=ctrl?setTimeout(()=>ctrl.abort(),8000):null;
+    try{
+      const r=await fetch(u,{cache:'no-store',signal:ctrl?ctrl.signal:undefined});
+      const d=await r.json();
+      if(d&&d.ok){
+        S.tickerPeople=d.people||[];
+        S._tickerAt=Date.now();
+        paintUserTicker();
+      }
+    }finally{ if(to)clearTimeout(to); }
+  }catch(e){ /* keep last paint */ }
+  finally{ S._tickerBusy=false; }
+  if(!S._tickerTimer){
+    S._tickerTimer=setInterval(()=>refreshUserTicker(true), 120e3);
+  }
 }
 const LAUNCH_AT=new Date(CONFIG.KICKOFF_ISO).getTime();
 function launchParts(now){
@@ -1324,13 +1455,20 @@ const API=()=>{
 };
 const tracking=()=>!!API();
 
-/* ---- identity: a display name and a random device id, nothing else ---- */
-function setMe(name,league){
+/* ---- identity: callsign (organizer) + optional board display name ---- */
+function setMe(name,league,displayName){
   const prev=S.me||{};
+  const dn=displayName!=null?String(displayName).trim().slice(0,32):(prev.displayName||'');
   S.me={id:prev.id||('p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4)),
         name:name.trim().slice(0,32),joined:prev.joined||Date.now(),
-        league:league||prev.league||''};
+        league:league||prev.league||'',
+        displayName:dn};
   save();return S.me;
+}
+function boardNameOf(me){
+  if(!me)return '';
+  const d=String(me.displayName||'').trim();
+  return d||String(me.name||'').trim();
 }
 /* ---- transport: never blocks the workout; failures go in a queue ---- */
 async function apiPost(body){
@@ -1366,6 +1504,7 @@ function buildReportBody(action, extras){
     sessions:sessionsCount,total:totalSessions,streak:S.profile?streak():0,
     day,perWeek:S.profile?S.profile.days:0,
     league:S.me.league||''};
+  if(S.me.displayName!=null) body.displayName=String(S.me.displayName||'');
   if(action==='log'){
     body.elapsedMs=Math.round((extras&&extras.elapsedMs!=null)?extras.elapsedMs:(S.elapsedActiveMs||0));
     body.idempotencyKey=S.me.id+'::'+CONFIG.CHALLENGE+'::'+day;
@@ -1393,13 +1532,18 @@ function join(a){
       <button type="button" data-league="ladies" aria-pressed="${league==='ladies'?'true':'false'}" class="${league==='ladies'?'on':''}">Ladies of the League<small>Ladies\u2019 board</small></button>
     </div>
     <p class="field errline" id="leagueerr" role="alert"></p>
-    <div class="field"><label for="nm">Callsign</label>
-      <input id="nm" maxlength="32" autocomplete="nickname" autocapitalize="words" placeholder="e.g. Marcus R." aria-describedby="nmhint nmerr">
-      <p class="hint" id="nmhint">2–32 characters. Public on league boards.</p>
+    <div class="field"><label for="nm">Callsign (organizer)</label>
+      <input id="nm" maxlength="32" autocomplete="name" autocapitalize="words" placeholder="e.g. Marcus R." aria-describedby="nmhint nmerr">
+      <p class="hint" id="nmhint">2–32 characters. Organizers see this on the CRM. Public boards use your display name.</p>
       <p class="errline" id="nmerr" role="alert"></p>
     </div>
+    <div class="field"><label for="dn">Display name (public board)</label>
+      <input id="dn" maxlength="32" autocomplete="nickname" autocapitalize="words" placeholder="e.g. Smoke King" aria-describedby="dnhint dnerr">
+      <p class="hint" id="dnhint">Optional nickname on league boards. Leave blank to show your callsign.</p>
+      <p class="errline" id="dnerr" role="alert"></p>
+    </div>
     <div class="privacybox">
-      <label><input type="checkbox" id="ack"> <span>I understand my callsign, league, progress, and weight-loss percent (if logged) appear on public league boards. Raw weights and phone stay private (organizer CRM only if entered). Quiz answers stay on this device. This is not medical advice.</span></label>
+      <label><input type="checkbox" id="ack"> <span>I understand my display name (or callsign if I skip a nickname), league, progress, and weight-loss percent (if logged) appear on public league boards. Callsign stays visible to organizers. Raw weights and phone stay private (organizer CRM only if entered). Quiz answers stay on this device. This is not medical advice.</span></label>
     </div>
     <p class="errline" id="ackerr" role="alert"></p>
     <div class="note">${tracking()
@@ -1410,19 +1554,23 @@ function join(a){
     <div style="text-align:center"><button class="linkbtn" id="back">Back</button></div>
   </div>`));
   const inp=document.getElementById('nm');
+  const din=document.getElementById('dn');
   const go=document.getElementById('go');
   const ack=document.getElementById('ack');
-  if(S.me)inp.value=S.me.name;
+  if(S.me){inp.value=S.me.name; if(din) din.value=S.me.displayName||'';}
   const valid=()=>{
     const v=inp.value.trim();
+    const d=(din&&din.value.trim())||'';
     const okLeague=!!league;
     const okName=v.length>=2&&v.length<=32;
+    const okDisp=!d||(d.length>=2&&d.length<=32);
     const okAck=ack.checked;
-    go.disabled=!(okLeague&&okName&&okAck)||S.joining;
+    go.disabled=!(okLeague&&okName&&okDisp&&okAck)||S.joining;
     document.getElementById('leagueerr').textContent=okLeague?'':'Pick Brothers or Ladies of the League.';
     document.getElementById('nmerr').textContent=inp.value&&!okName?'Callsign must be 2–32 characters.':'';
+    document.getElementById('dnerr').textContent=d&&!okDisp?'Display name must be 2–32 characters (or blank).':'';
     document.getElementById('ackerr').textContent=(!okAck&&(okLeague||okName))?'Confirm the privacy note to continue.':'';
-    return okLeague&&okName&&okAck;
+    return okLeague&&okName&&okDisp&&okAck;
   };
   document.getElementById('leaguepick').onclick=e=>{
     const b=e.target.closest('button[data-league]'); if(!b)return;
@@ -1432,13 +1580,14 @@ function join(a){
     });
     valid();
   };
-  inp.oninput=valid; ack.onchange=valid; valid();
+  inp.oninput=valid; if(din) din.oninput=valid; ack.onchange=valid; valid();
   go.onclick=async()=>{
     if(!valid()||S.joining)return;
     S.joining=true; go.disabled=true; go.textContent='Locking…';
     const v=inp.value.trim();
+    const d=(din&&din.value.trim())||'';
     try{
-      setMe(v,league);
+      setMe(v,league,d);
       report('join');
       S.screen=S.profile?'plan':'quiz';S.qi=0;S.answers={};render();
     }catch(e){
@@ -1447,6 +1596,7 @@ function join(a){
     }
   };
   inp.onkeydown=e=>{if(e.key==='Enter')go.click()};
+  if(din) din.onkeydown=e=>{if(e.key==='Enter')go.click()};
   document.getElementById('back').onclick=()=>{S.screen='cover';render()};
 }
 function renderRoster(body,people){
@@ -1540,7 +1690,7 @@ function board(a){
   a.appendChild(el(`<div class="sheet" id="boardsheet">${head('LEAGUE BOARDS')}
     <p class="eyebrow">The Cigar Society \u00b7 ${esc(CONFIG.CHALLENGE)}</p>
     <h2 class="display h-lg">Brothers.<br>Ladies.</h2>
-    <p class="fine" style="margin:12px 0 0">Two boards. Same standard. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight change (capped at 4 milestones). Hours = sessions × 9 minutes. Ties: points, then hours. Refreshes on open. Public: callsign + progress — not phone or raw weight.</p>
+    <p class="fine" style="margin:12px 0 0">Two boards. Same standard. Points: 10 per session, +50 every 5% of the card done, +100 every 5% bodyweight change (capped at 4 milestones). Hours = sessions × 9 minutes. Ties: points, then hours. Refreshes on open. Public: display name + progress — not phone, raw weight, or organizer callsign when a nickname is set.</p>
     <p class="eyebrow" style="margin-top:16px">League</p>
     <div class="tabs league" id="leagues" role="tablist" aria-label="League">
       <button type="button" role="tab" data-league="brothers" aria-selected="${S.boardLeague==='brothers'?'true':'false'}" class="${S.boardLeague==='brothers'?'on':''}">Brothers</button>
@@ -1637,6 +1787,9 @@ function board(a){
         const r=await fetch(u,{cache:'no-store',redirect:'follow',signal:ctrl?ctrl.signal:undefined});const d=await r.json();
         if(!d.ok){body.innerHTML='<p class="fine" style="color:var(--danger);margin-top:12px">Could not load the board.</p>';return}
         S.boardPeople=d.people||[];
+        S.tickerPeople=S.boardPeople;
+        S._tickerAt=Date.now();
+        paintUserTicker();
         paint();
       }finally{ if(to)clearTimeout(to); }
     }catch(e){
@@ -1668,7 +1821,7 @@ function plan(a){
     <div class="dashhead"><div>
       <span class="daychip">${esc(dayLabel)}</span>
       <h2 class="display h-lg" style="font-size:28px">Your 30-day<br>calisthenics card</h2>
-      <p class="who" style="margin-top:8px">${S.me?`<b>${esc(S.me.name)}</b> · ${esc(leagueLab)}`:'Guest'}${sc.points?` · <b>${sc.points}</b> pts`:''}</p>
+      <p class="who" style="margin-top:8px">${S.me?`<b>${esc(boardNameOf(S.me))}</b> · ${esc(leagueLab)}`:'Guest'}${sc.points?` · <b>${sc.points}</b> pts`:''}</p>
     </div></div>
     <div class="statrow" style="margin-top:14px">
       <div><div class="n">${doneN}</div><div class="l">Done / ${total||'—'}</div></div>
@@ -1701,13 +1854,21 @@ function plan(a){
       <button type="button" class="linkbtn" id="reset">Start a new card</button>
     </div>
   </div>`));
-  document.getElementById('wsave').onclick=()=>{
+  document.getElementById('wsave').onclick=async()=>{
     const start=document.getElementById('wstart').value.trim();
     const cur=document.getElementById('wcur').value.trim();
     const msg=document.getElementById('wmsg');
     const okNum=v=>{if(v==='')return true;const n=Number(v);return Number.isFinite(n)&&n>0&&n<=1000};
     if(!okNum(start)||!okNum(cur)){msg.style.color='var(--danger)';msg.textContent='Enter a valid weight in lbs.';return}
-    S.weights={starting:start,current:cur};save();report('ping');
+    S.weights={starting:start,current:cur};save();
+    if(tracking()&&S.me){
+      try{
+        await fetch('/api/me/update',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,league:S.me.league||'',
+            startingWeight:start===''?'':Number(start),currentWeight:cur===''?'':Number(cur)})});
+      }catch(e){}
+    }
+    report('ping');
     msg.style.color='var(--olive-soft)';msg.textContent='Saved to your roster.';
   };
   const t=document.getElementById('today');
@@ -1776,7 +1937,7 @@ function plan(a){
         if(!d.ok)return;
         const league=S.me.league||'';
         const list=(d.people||[]).filter(x=>(x.league||'')===league).sort((a,b)=>(b.points||0)-(a.points||0));
-        const idx=list.findIndex(x=>(x.name||'').toLowerCase()===(S.me.name||'').toLowerCase());
+        const idx=list.findIndex(x=>(x.name||'').toLowerCase()===boardNameOf(S.me).toLowerCase());
         const who=document.querySelector('.who');
         if(idx>=0&&who) who.innerHTML += ` · Board <b>#${idx+1}</b>`;
       }catch(e){}
@@ -2191,8 +2352,8 @@ function cardScreen(a){
 function privacyScreen(a){
   a.appendChild(el(`<div class="sheet">${head('PRIVACY')}
     <h2 class="display h-lg">What stays<br>visible.</h2>
-    <p class="fine" style="margin:12px 0 0"><b>League boards (public):</b> callsign, league, sessions, streak, points, hours, and weight-loss percent if logged (never raw lbs).</p>
-    <p class="fine"><b>Organizers:</b> callsign, league, progress, phone and raw weights if entered in CRM, last active.</p>
+    <p class="fine" style="margin:12px 0 0"><b>League boards (public):</b> display name (or callsign if none), league, sessions, streak, points, hours, and weight-loss percent if logged (never raw lbs).</p>
+    <p class="fine"><b>Organizers:</b> callsign, display name, league, progress, phone and raw weights if entered in CRM, last active.</p>
     <p class="fine"><b>This device only:</b> mission-brief answers (goal, level, age band, injuries).</p>
     <p class="fine"><b>Bodyweight:</b> optional. Scoring awards loss only (gain = 0). Public metric is loss percent; raw starting/current lbs stay private.</p>
     <p class="fine"><b>Retention:</b> roster data stays for the challenge until organizer or self-delete from Profile.</p>
@@ -2205,9 +2366,13 @@ function privacyScreen(a){
 function settingsScreen(a){
   if(!S.me){S.screen='join';render();return}
   a.appendChild(el(`<div class="sheet">${head('PROFILE')}
-    <h2 class="display h-lg">Callsign<br>& league</h2>
-    <div class="field"><label for="sn">Callsign</label>
-      <input id="sn" maxlength="32" value="${esc(S.me.name||'')}"></div>
+    <h2 class="display h-lg">Callsign<br>& display name</h2>
+    <div class="field"><label for="sn">Callsign (organizer)</label>
+      <input id="sn" maxlength="32" value="${esc(S.me.name||'')}" aria-describedby="snhint">
+      <p class="hint" id="snhint">Organizers see this on the CRM.</p></div>
+    <div class="field"><label for="sdn">Display name (public board)</label>
+      <input id="sdn" maxlength="32" value="${esc(S.me.displayName||'')}" placeholder="Nickname on leaderboards" aria-describedby="sdnhint">
+      <p class="hint" id="sdnhint">Shown on league boards. Leave blank to show your callsign.</p></div>
     <div class="leaguepick" id="lp">
       <button type="button" data-league="brothers" class="${S.me.league==='brothers'?'on':''}">Brothers</button>
       <button type="button" data-league="ladies" class="${S.me.league==='ladies'?'on':''}">Ladies</button>
@@ -2225,17 +2390,19 @@ function settingsScreen(a){
   };
   document.getElementById('savep').onclick=async()=>{
     const name=document.getElementById('sn').value.trim();
+    const displayName=document.getElementById('sdn').value.trim();
     const err=document.getElementById('serr');
     if(name.length<2){err.textContent='Callsign must be at least 2 characters.';return}
+    if(displayName && displayName.length<2){err.textContent='Display name must be 2–32 characters (or blank).';return}
     if(!league){err.textContent='Pick a league.';return}
-    setMe(name,league); report('ping');
+    setMe(name,league,displayName); report('ping');
     if(tracking()){
       try{
         await fetch('/api/me/update',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name,league})});
+          body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name,league,displayName})});
       }catch(e){}
     }
-    err.style.color='var(--olive-soft)'; err.textContent='Saved.';
+    err.style.color='var(--olive-soft)'; err.textContent='Saved. Board shows “'+boardNameOf(S.me)+'”.';
   };
   document.getElementById('leave').onclick=async()=>{
     if(!confirm('Delete your roster entry for this challenge? Local card data on this device will also clear.'))return;
