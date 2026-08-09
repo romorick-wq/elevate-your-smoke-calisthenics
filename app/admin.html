@@ -12,7 +12,7 @@
 <style>
 :root{
   --bg:#ECEAE4; --surface2:#FFFFFF; --ink:#101412;
-  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#E85D04; --accent-ink:#1A0F08;
+  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#E85D04; --accent-text:#A03E02; --accent-ink:#1A0F08;
   --olive:#2F3B2A; --olive-soft:#3F4F38; --danger:#C43C2C; --shadow:0 18px 50px rgba(16,20,18,.18);
   --disp:'Syne',system-ui,sans-serif; --body:'Outfit',system-ui,-apple-system,sans-serif;
   --radius-sm:12px;
@@ -38,7 +38,7 @@ body{
 .masthead .sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;margin-top:5px;display:block;font-weight:500}
 .masthead .logout{
   flex:0 0 auto;border:1.5px solid rgba(244,247,238,.35);background:transparent;color:#F4F7EE;
-  border-radius:999px;padding:8px 14px;font-family:var(--disp);font-weight:700;font-size:11px;
+  border-radius:999px;padding:12px 16px;min-height:44px;font-family:var(--disp);font-weight:700;font-size:11px;
   letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
 }
 .masthead .logout:hover{border-color:#F4F7EE;background:rgba(244,247,238,.1)}
@@ -51,23 +51,25 @@ body{
 .btn{
   display:block;width:100%;border:0;background:var(--ink);color:#F7F6F2;border-radius:999px;
   font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.04em;
-  padding:15px 18px;cursor:pointer;
+  padding:15px 18px;cursor:pointer;min-height:48px;
 }
 .btn:active{transform:scale(.98)}
-.btn.sm{font-size:14px;padding:12px 16px}
+.btn:disabled,.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.btn.sm{font-size:14px;padding:12px 16px;min-height:44px}
 .btn.accent{background:var(--accent);color:var(--accent-ink)}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
-.linkbtn{background:none;border:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
-  cursor:pointer;padding:8px 0;font-weight:600;text-decoration:none}
-.linkbtn:hover{color:var(--ink)}
+.linkbtn{background:none;border:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--olive-soft);
+  cursor:pointer;padding:12px 8px;min-height:44px;font-weight:700;text-decoration:underline;text-underline-offset:3px;
+  display:inline-flex;align-items:center;justify-content:center}
+.linkbtn:hover,.linkbtn:focus-visible{color:var(--accent-text)}
 .statrow{display:flex;gap:8px;flex-wrap:wrap}
 .statrow div{flex:1;min-width:72px;padding:14px 10px;text-align:center;background:var(--surface2);border-radius:var(--radius-sm)}
 .statrow .n{font-family:var(--disp);font-weight:800;font-size:24px;line-height:1}
 .statrow .l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;font-weight:600}
-.tabs{display:flex;gap:6px;margin:14px 0 4px}
+.tabs{display:flex;gap:6px;margin:14px 0 4px;flex-wrap:wrap}
 .tabs button{
-  flex:1;border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:10px 8px;
-  font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted);
+  flex:1;min-width:0;min-height:44px;border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:10px 8px;
+  font-family:var(--disp);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted);
 }
 .tabs button.on{background:var(--ink);color:#F7F6F2;border-color:var(--ink)}
 .field{margin:14px 0 6px}
@@ -75,6 +77,7 @@ body{
 .field input,.field select{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
   font-family:var(--disp);font-weight:700;font-size:26px;letter-spacing:-.02em;color:var(--ink);
   padding:4px 2px;-webkit-appearance:none;appearance:none}
+.field input::placeholder,.find input::placeholder,.smsbox textarea::placeholder{color:var(--muted);opacity:1}
 .field select{font-size:18px;cursor:pointer}
 .person{border-bottom:1px solid var(--line);padding:14px 0}
 .person.cold{opacity:.7}
@@ -88,11 +91,11 @@ body{
 .metrics .v{font-family:var(--disp);font-weight:800;font-size:16px;line-height:1}
 .metrics .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:600}
 .metrics div.hi{background:rgba(232,93,4,.16);outline:1.5px solid var(--accent)}
-.rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent);flex:0 0 28px}
+.rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent-text);flex:0 0 28px}
 .note{border-left:3px solid var(--accent);padding:8px 0 8px 12px;margin:16px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
-.err{color:var(--danger);margin-top:12px}
+.err{color:var(--danger);margin-top:12px;font-weight:600}
 .okmsg{color:var(--olive-soft);margin-top:8px;font-size:12px;font-weight:600}
-.trash{flex:0 0 auto;width:34px;height:34px;border:0;background:transparent;color:var(--danger);cursor:pointer;border-radius:8px;display:grid;place-items:center;padding:0}
+.trash{flex:0 0 auto;width:44px;height:44px;border:0;background:transparent;color:var(--danger);cursor:pointer;border-radius:8px;display:grid;place-items:center;padding:0}
 .trash:hover{background:rgba(196,60,44,.1)}
 .trash svg{width:18px;height:18px;display:block}
 .pnwrap{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
@@ -105,6 +108,7 @@ body{
   border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface2);
 }
 .meta .field input:focus,.meta .field select:focus{outline:none;border-color:var(--accent)}
+.meta .field input:focus-visible,.meta .field select:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 .meta .field select{cursor:pointer}
 .save-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
 .save-row .btn{width:auto;flex:1;margin:0;min-width:88px}
@@ -114,12 +118,14 @@ body{
 .find{display:flex;gap:8px;align-items:stretch;margin:14px 0 4px}
 .find input{
   flex:1;font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:0;
-  border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface2);color:var(--ink);min-height:44px;
 }
 .find input:focus{outline:none;border-color:var(--accent)}
+.find input:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 .find .btn{width:auto;margin:0;flex:0 0 auto;padding:12px 18px}
-.find-clear{background:none;border:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;font-weight:600;padding:4px 0}
-.find-clear:hover{color:var(--ink)}
+.find-clear{background:none;border:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;font-weight:600;
+  padding:10px 8px;min-height:44px;display:inline-flex;align-items:center}
+.find-clear:hover,.find-clear:focus-visible{color:var(--accent-text)}
 .appfoot{
   margin-top:28px;padding:18px 0 8px;text-align:center;
   font-size:11px;letter-spacing:.06em;color:var(--muted);font-weight:600;
@@ -133,18 +139,24 @@ body{
   line-height:1.45;
 }
 .smsbox textarea:focus{outline:none;border-color:var(--accent)}
+.smsbox textarea:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 .smsmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
 .smsmeta .chars{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.04em}
 .sms-actions{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .sms-actions .btn{margin:0;text-align:center;text-decoration:none;box-sizing:border-box}
 a.btn{display:block;cursor:pointer}
-a.btn[aria-disabled="true"]{opacity:.45}
+a.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed;pointer-events:none}
 .sms-result{margin-top:12px;font-size:13px;line-height:1.45;color:var(--muted)}
 .sms-result.ok{color:var(--olive-soft);font-weight:600}
 .sms-result.bad{color:var(--danger);font-weight:600}
 .btn.textme{background:transparent;color:var(--ink);border:1.5px solid var(--line);flex:1}
 .btn.textme:disabled{opacity:.45;cursor:not-allowed}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+@media (min-width:900px){
+  #app{max-width:720px}
+  .sheet{padding-left:28px;padding-right:28px}
+}
 </style>
 </head>
 <body>
@@ -240,7 +252,7 @@ function render(){
       <a class="linkbtn" href="/app">Back to the workout</a>
       <button type="button" class="linkbtn" id="logout2" hidden>Log out</button>
     </div>
-    <p class="appfoot" style="margin-top:18px;border:0;padding-top:0">Made by <b>Cigar Society Dev. Team</b> · v1.1.0</p>
+    <p class="appfoot" style="margin-top:18px;border:0;padding-top:0">Made by <b>Cigar Society Dev. Team</b> · v1.1.6</p>
   </div>`));
 
   document.getElementById('logout').onclick=logout;
@@ -257,18 +269,25 @@ function render(){
     <div class="field"><label for="pin">Organizer code</label>
       <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" autofocus></div>
     <button class="btn accent" id="load" style="margin-top:14px">Log in</button>
-    <p class="fine err" id="err" hidden></p>
+    <p class="fine err" id="err" hidden role="alert"></p>
   </div>`));
 
   const pin=document.getElementById('pin');
   const err=document.getElementById('err');
+  const loadBtn=document.getElementById('load');
   try{const saved=sessionStorage.getItem(PIN_KEY);if(saved)pin.value=saved}catch(e){}
+
+  const setLoadBusy=(busy)=>{
+    loadBtn.disabled=!!busy;
+    loadBtn.textContent=busy?'Logging in…':'Log in';
+  };
 
   const load=async()=>{
     const code=pin.value.trim();
     err.hidden=true;
     if(!code){err.textContent='Enter your organizer code.';err.hidden=false;pin.focus();return}
-    body.innerHTML='<p class="fine" style="margin-top:16px">Loading\u2026</p>';
+    setLoadBusy(true);
+    body.innerHTML='<p class="fine" style="margin-top:16px" role="status">Loading roster\u2026</p>';
     try{
       const u=API()+(API().includes('?')?'&':'?')+'action=roster&challenge='+
         encodeURIComponent(CONFIG.CHALLENGE)+'&pin='+encodeURIComponent(code);
@@ -277,8 +296,10 @@ function render(){
       if(!d.ok){
         body.innerHTML='';
         setLoggedInChrome(false);
+        setLoadBusy(false);
         err.textContent=d.error==='bad pin'?'That code did not match.':'Could not read the roster.';
         err.hidden=false;
+        pin.focus();
         return;
       }
       try{sessionStorage.setItem(PIN_KEY,code)}catch(e){}
@@ -293,6 +314,7 @@ function render(){
         body.innerHTML='';
         setLoggedInChrome(false);
         document.getElementById('logout2').hidden=true;
+        setLoadBusy(false);
         err.textContent='Roster loaded but the admin screen failed to render. Refresh and try again.';
         err.hidden=false;
       }
@@ -301,13 +323,15 @@ function render(){
       body.innerHTML='';
       setLoggedInChrome(false);
       document.getElementById('logout2').hidden=true;
+      setLoadBusy(false);
       err.textContent='Could not reach the roster. Try again in a moment.';
       err.hidden=false;
+      pin.focus();
     }
   };
 
-  document.getElementById('load').onclick=load;
-  pin.onkeydown=e=>{if(e.key==='Enter')load()};
+  loadBtn.onclick=load;
+  pin.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();load()}};
   if(pin.value)load();
 }
 
@@ -372,13 +396,14 @@ function renderDashboard(body){
   </div>`));
 
   body.appendChild(el(`<div class="findwrap">
-    <p class="eyebrow" style="margin-top:18px">Find participant</p>
+    <p class="eyebrow" style="margin-top:18px" id="findlabel">Find participant</p>
     <div class="find">
-      <input id="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="Name or phone…" value="${esc(QUERY)}">
+      <label class="sr-only" for="q">Find by callsign, display name, or phone</label>
+      <input id="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="Name or phone…" value="${esc(QUERY)}" aria-labelledby="findlabel">
       <button type="button" class="btn accent sm" id="find">Find</button>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:20px">
-      <p class="fine" id="findmeta" style="margin:0"></p>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px">
+      <p class="fine" id="findmeta" style="margin:0" role="status"></p>
       <button type="button" class="find-clear" id="clearq" ${QUERY?'':'hidden'}>Clear</button>
     </div>
   </div>`));
@@ -417,19 +442,19 @@ function renderDashboard(body){
     : '';
 
   body.appendChild(el(`<div>
-    <p class="eyebrow" style="margin-top:16px">League</p>
-    <div class="tabs" id="leagues">
-      <button type="button" data-league="all" class="${LEAGUE==='all'?'on':''}">All</button>
-      <button type="button" data-league="brothers" class="${LEAGUE==='brothers'?'on':''}">Brothers</button>
-      <button type="button" data-league="ladies" class="${LEAGUE==='ladies'?'on':''}">Ladies</button>
+    <p class="eyebrow" style="margin-top:16px" id="leaguelabel">League</p>
+    <div class="tabs" id="leagues" role="tablist" aria-labelledby="leaguelabel">
+      <button type="button" role="tab" data-league="all" aria-selected="${LEAGUE==='all'?'true':'false'}" class="${LEAGUE==='all'?'on':''}">All</button>
+      <button type="button" role="tab" data-league="brothers" aria-selected="${LEAGUE==='brothers'?'true':'false'}" class="${LEAGUE==='brothers'?'on':''}">Brothers</button>
+      <button type="button" role="tab" data-league="ladies" aria-selected="${LEAGUE==='ladies'?'true':'false'}" class="${LEAGUE==='ladies'?'on':''}">Ladies</button>
     </div>
-    <p class="eyebrow" style="margin-top:14px">Sort / view</p>
-    <div class="tabs" id="tabs">
-      <button type="button" data-tab="crm" class="${TAB==='crm'?'on':''}">CRM</button>
-      <button type="button" data-tab="text" class="${TAB==='text'?'on':''}">Text</button>
-      <button type="button" data-tab="points" class="${TAB==='points'?'on':''}">Points</button>
-      <button type="button" data-tab="hours" class="${TAB==='hours'?'on':''}">Hours</button>
-      <button type="button" data-tab="weight" class="${TAB==='weight'?'on':''}">Weight</button>
+    <p class="eyebrow" style="margin-top:14px" id="viewlabel">Sort / view</p>
+    <div class="tabs" id="tabs" role="tablist" aria-labelledby="viewlabel">
+      <button type="button" role="tab" data-tab="crm" aria-selected="${TAB==='crm'?'true':'false'}" class="${TAB==='crm'?'on':''}">CRM</button>
+      <button type="button" role="tab" data-tab="text" aria-selected="${TAB==='text'?'true':'false'}" class="${TAB==='text'?'on':''}">Text</button>
+      <button type="button" role="tab" data-tab="points" aria-selected="${TAB==='points'?'true':'false'}" class="${TAB==='points'?'on':''}">Points</button>
+      <button type="button" role="tab" data-tab="hours" aria-selected="${TAB==='hours'?'true':'false'}" class="${TAB==='hours'?'on':''}">Hours</button>
+      <button type="button" role="tab" data-tab="weight" aria-selected="${TAB==='weight'?'true':'false'}" class="${TAB==='weight'?'on':''}">Weight</button>
     </div>
   </div>`));
   body.querySelectorAll('#leagues button').forEach(b=>{
