@@ -186,13 +186,6 @@ a.linkbtn{color:var(--olive-soft)}
 }
 .demobtn .t{font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:-.02em;display:block}
 .demobtn .s{font-size:12px;color:var(--muted);margin-top:2px;display:block}
-.leagues{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
-.leaguecard{
-  border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:12px 10px;background:var(--surface2);
-}
-.leaguecard .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);font-weight:700;display:block}
-.leaguecard .n{font-family:var(--disp);font-weight:800;font-size:16px;letter-spacing:-.02em;margin-top:4px;display:block;line-height:1.15}
-.leaguecard .s{font-size:12px;color:var(--muted);margin-top:6px;display:block;line-height:1.35}
 .leaguepick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
 .leaguepick button{
   border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:14px 10px;background:var(--surface2);
@@ -241,7 +234,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 }
 .wtrow .btn{width:auto;padding:12px 16px;margin:0}
 .prow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.pn{font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:-.02em}
+.pn{font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .pd,.pm{font-size:11px;letter-spacing:.04em;color:var(--muted);font-weight:500}
 .pbar{height:6px;border:0;margin:8px 0 5px;background:rgba(16,20,18,.08);border-radius:99px;overflow:hidden}
 .pbar i{display:block;height:100%;background:var(--olive-soft);border-radius:99px}
@@ -292,11 +285,6 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 }
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.cardsec{margin:22px 0 0;padding:16px 0 0;border-top:1px solid var(--line)}
-.cardsec h3{font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:-.03em;margin:0 0 8px;line-height:1.05}
-.timeline{margin:12px 0 0;padding:0;list-style:none}
-.timeline li{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
-.timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent-text)}
 .phases{display:grid;gap:10px;margin:12px 0 0}
 .phases .ph{background:var(--surface2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .phases .ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);font-weight:700;display:block;line-height:1.3;word-break:break-word}
@@ -305,21 +293,19 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 @media (min-width:900px){
   #app{max-width:720px}
   .sheet{padding-left:28px;padding-right:28px}
-  .cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
-  .cover-grid .span2{grid-column:1 / -1}
   .player{max-width:480px;margin:0 auto}
 }
 .dashhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.dashhead .who{font-size:12px;color:var(--muted);font-weight:600}
+.dashhead .who{font-size:12px;color:var(--muted);font-weight:600;overflow-wrap:anywhere}
 .dashhead .who b{color:var(--ink)}
 .fold{border:1px solid var(--line);background:var(--surface2);border-radius:var(--radius-sm);margin:12px 0 0;padding:0}
-.fold>summary{list-style:none;cursor:pointer;padding:14px;font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.02em;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
+.fold>summary{list-style:none;cursor:pointer;padding:14px;font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.02em;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;flex-wrap:wrap}
 .fold>summary::-webkit-details-marker{display:none}
-.fold>summary::after{content:'+';font-family:var(--disp);font-weight:800;color:var(--accent-text);font-size:18px;line-height:1}
+.fold>summary::after{content:'+';font-family:var(--disp);font-weight:800;color:var(--accent-text);font-size:18px;line-height:1;flex:0 0 auto}
 .fold[open]>summary::after{content:'\2212'}
 .fold>summary:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:var(--radius-sm)}
 .fold .foldbody{padding:0 14px 14px}
-.fold .foldhint{font-size:12.5px;color:var(--muted);font-weight:500;font-family:var(--body)}
+.fold .foldhint{font-size:12.5px;color:var(--muted);font-weight:500;font-family:var(--body);margin-right:auto}
 .daychip{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent-text);margin-bottom:6px}
 .cell.miss{background:rgba(196,60,44,.12);color:var(--danger)}
 .cell.today{outline:2px solid var(--accent);outline-offset:1px}
@@ -333,7 +319,6 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .pbot .btn{min-height:48px}
 @media (max-width:360px){
   .h-xl{font-size:34px!important}
-  .leagues{grid-template-columns:1fr}
   .cd{grid-template-columns:repeat(2,1fr)}
 }
 .appfoot{
@@ -400,7 +385,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.1.9',
+  VERSION:'1.2.0',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -1752,6 +1737,10 @@ function board(a){
     body.innerHTML='<p class="fine" style="margin-top:12px">Leaderboard needs the live roster API (open the Railway URL).</p>';
     return;
   }
+  if(typeof navigator!=='undefined'&&navigator.onLine===false){
+    body.innerHTML='<p class="fine" style="margin-top:12px">You appear offline. Reconnect to load league ranks.</p>';
+    return;
+  }
   (async()=>{
     try{
       const u=API()+(API().includes('?')?'&':'?')+'action=leaderboard&challenge='+encodeURIComponent(CONFIG.CHALLENGE);
@@ -1852,18 +1841,30 @@ function plan(a){
     const start=document.getElementById('wstart').value.trim();
     const cur=document.getElementById('wcur').value.trim();
     const msg=document.getElementById('wmsg');
+    const btn=document.getElementById('wsave');
     const okNum=v=>{if(v==='')return true;const n=Number(v);return Number.isFinite(n)&&n>0&&n<=1000};
     if(!okNum(start)||!okNum(cur)){msg.style.color='var(--danger)';msg.textContent='Enter a valid weight in lbs.';return}
     S.weights={starting:start,current:cur};save();
+    btn.disabled=true; btn.textContent='Saving…';
+    let synced=false;
     if(tracking()&&S.me){
+      if(typeof navigator!=='undefined'&&navigator.onLine===false){
+        msg.style.color='var(--olive-soft)';msg.textContent='Saved on this device. Sync when you are back online.';
+        btn.disabled=false; btn.textContent='Save'; return;
+      }
       try{
-        await fetch('/api/me/update',{method:'POST',headers:{'Content-Type':'application/json'},
+        const r=await fetch('/api/me/update',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,league:S.me.league||'',
             startingWeight:start===''?'':Number(start),currentWeight:cur===''?'':Number(cur)})});
-      }catch(e){}
+        synced=!!(r&&r.ok);
+      }catch(e){ synced=false; }
     }
-    report('ping');
-    msg.style.color='var(--olive-soft)';msg.textContent='Saved to your roster.';
+    try{ report('ping'); }catch(e){}
+    msg.style.color=synced||!(tracking()&&S.me)?'var(--olive-soft)':'var(--danger)';
+    msg.textContent=!(tracking()&&S.me)
+      ?'Saved on this device.'
+      :synced?'Saved to your roster.':'Saved on this device. Roster sync failed — try again.';
+    btn.disabled=false; btn.textContent='Save';
   };
   const t=document.getElementById('today');
   if(canResume && sess){
@@ -2151,7 +2152,7 @@ function paintStep(){
     <div class="bar"><i id="barfill" style="transform:scaleX(${1-remainingMsNow()/((st.sec||1)*1000)})"></i></div>
     <div class="pmid">
       <div class="figslot" id="figslot"></div>
-      <p class="timer ${st.kind==='rest'?'big':''}" id="t" aria-live="off">${mmss(showSec)}</p>
+      <p class="timer ${st.kind==='rest'?'big':''}" id="t" aria-live="polite">${mmss(showSec)}</p>
       <h2 class="movename" id="movename">${esc(st.n)}</h2>
       <p class="cue" id="cue">${esc(st.c)}</p>
       ${st.kind==='work'&&tips.lines.length?`<div class="demotip" id="demotip"><span class="lab" id="demolab">Standard</span><div class="txt" id="demotxt">${esc(tipLines[0])}</div>
