@@ -137,10 +137,12 @@ async function handleSms(req, res) {
     const pin = String(body.pin || '');
     if (!requireOrganizer(req, res, pin)) return;
     if (!sms.smsConfigured()) {
+      const status = sms.smsStatus();
       return res.json({
         ok: false,
         error: 'sms not configured',
-        hint: 'Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_FROM_NUMBER on Railway.',
+        hint: 'Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_FROM_NUMBER (or TWILIO_MESSAGING_SERVICE_SID) on Railway.',
+        missing: status.missing,
       });
     }
     const challenge = String(body.challenge || '');
@@ -206,12 +208,14 @@ let dbReady = false;
 let dbError = null;
 
 app.get('/api/health', (_req, res) => {
+  const smsInfo = sms.smsStatus();
   res.json({
     ok: true,
     alive: true,
     dbReady,
     dbError: dbError ? String(dbError.message || dbError) : null,
-    sms: sms.smsConfigured(),
+    sms: smsInfo.configured,
+    smsStatus: smsInfo,
     scoring: scoringExplain(),
   });
 });
@@ -244,16 +248,34 @@ app.get(['/admin', '/admin/'], (_req, res) => {
   res.sendFile(path.join(APP_DIR, 'admin.html'));
 });
 
-app.get(['/leaderboard', '/board', '/manual', '/card', '/privacy', '/progress'], (req, res) => {
+/** Public marketing website */
+app.get(['/', '/home', '/welcome'], (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(APP_DIR, 'website.html'));
+});
+
+/** Workout SPA at /app (non-strict routing treats /app/ the same) */
+app.get('/app', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(APP_DIR, 'index.html'));
+});
+app.get('/app/*', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(APP_DIR, 'index.html'));
+});
+
+app.get(['/leaderboard', '/board'], (_req, res) => {
+  res.redirect(302, '/#boards');
+});
+
+app.get(['/manual', '/card', '/privacy', '/progress'], (req, res) => {
   const map = {
-    '/leaderboard': 'board',
-    '/board': 'board',
     '/manual': 'manual',
     '/card': 'card',
     '/privacy': 'privacy',
     '/progress': 'progress',
   };
-  res.redirect(302, '/#' + (map[req.path] || 'board'));
+  res.redirect(302, '/app#' + (map[req.path] || 'manual'));
 });
 
 app.get('/manifest.webmanifest', (_req, res) => {
@@ -264,6 +286,7 @@ app.get('/manifest.webmanifest', (_req, res) => {
 app.use(
   express.static(APP_DIR, {
     extensions: ['html'],
+    index: false,
     setHeaders(res, filePath) {
       if (filePath.endsWith('.html')) {
         res.setHeader('Cache-Control', 'no-cache');
@@ -280,11 +303,13 @@ app.get('*', (req, res) => {
   if (
     req.path.startsWith('/api') ||
     req.path.startsWith('/exercises/') ||
-    /\.(jpg|jpeg|png|mp4|webm|vtt|webp|svg|ico)$/i.test(req.path)
+    req.path.startsWith('/audio/') ||
+    /\.(jpg|jpeg|png|mp3|mp4|webm|vtt|webp|svg|ico)$/i.test(req.path)
   ) {
     return res.status(404).type('text/plain').send('Not found');
   }
-  res.sendFile(path.join(APP_DIR, 'index.html'));
+  // Unknown paths → marketing site (workout lives at /app)
+  res.sendFile(path.join(APP_DIR, 'website.html'));
 });
 
 async function start() {

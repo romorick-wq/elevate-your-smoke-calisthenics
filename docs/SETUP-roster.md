@@ -84,23 +84,19 @@ Public leaderboard (no pin): `GET /api/leaderboard?challenge=smoke-30`.
 **sessions** — one row every time somebody finishes a nine-minute session
 (attendance log).
 
-## Group text (SMS)
+## Group text (SMS) — free by default
 
 Admin **Text** tab + per-person **Text** on CRM cards.
 
-**Works now (no Twilio):** opens the organizer’s Messages app with recipients
-and the message filled in — tap Send. Best on iPhone or Mac. Large blasts
-open in batches of 12.
+**Free (recommended):** opens the organizer’s **Messages** app with recipients and
+the draft filled in — you tap Send. Uses your normal phone/carrier plan.
+Best on iPhone or Mac. Large blasts open in batches of 12.
+**Copy numbers + message** works on desktop if Messages does not open.
 
-**Optional Twilio (server sends for you):** Railway variables
+No Twilio account and no Railway SMS variables are required.
 
-- `TWILIO_ACCOUNT_SID`
-- `TWILIO_AUTH_TOKEN`
-- `TWILIO_FROM_NUMBER` — E.164, e.g. `+15551234567`
-
-Save phones on each CRM card. US 10-digit numbers are normalized to `+1…`.
-
-`GET /api/health` returns `"sms": true` when Twilio is configured.
+**Optional paid Twilio** (only if you later want the server to send for you):
+`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`. Skip this for free messaging.
 
 ## What does not leave the phone
 

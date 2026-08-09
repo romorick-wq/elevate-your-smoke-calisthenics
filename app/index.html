@@ -350,7 +350,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.1.1',
+  VERSION:'1.1.2',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -840,18 +840,90 @@ async function requestWakeLock(){
   try{ if(S.wakeLock)return; if(navigator.wakeLock&&navigator.wakeLock.request){ S.wakeLock=await navigator.wakeLock.request('screen'); S.wakeLock.addEventListener('release',()=>{S.wakeLock=null}); } }catch(e){}
 }
 function releaseWakeLock(){ try{if(S.wakeLock){S.wakeLock.release();S.wakeLock=null}}catch(e){} }
+/* Motivational coach voice — pre-recorded neural clips (audio/coach), Speech Synthesis fallback */
+const COACH_BASE='audio/coach/';
+function coachStop(){
+  try{ if(S._coachAudio){ S._coachAudio.pause(); S._coachAudio.src=''; S._coachAudio=null; } }catch(e){}
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  if(S._coachDelay){ clearTimeout(S._coachDelay); S._coachDelay=null; }
+}
+function coachSpeakFallback(text){
+  if(S.muted||!text||!window.speechSynthesis)return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(text));
+    u.rate=1.06; u.pitch=0.92; u.volume=1; u.lang='en-US';
+    const voices=speechSynthesis.getVoices()||[];
+    const prefer=[/guy neural/i,/andrew/i,/christopher/i,/daniel/i,/premium/i,/enhanced/i,/natural/i,/google us english/i,/samantha/i,/aaron/i,/aria/i];
+    let pick=null;
+    for(const re of prefer){ pick=voices.find(v=>re.test(v.name||'')&&/^en/i.test(v.lang||'')); if(pick)break; }
+    if(!pick) pick=voices.find(v=>/^en(-|_)US/i.test(v.lang||''))||voices.find(v=>/^en/i.test(v.lang||''));
+    if(pick) u.voice=pick;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function coachPlayFile(file, fallbackText){
+  if(S.muted||!file)return;
+  try{
+    coachStop();
+    const a=new Audio(COACH_BASE+file);
+    a.preload='auto';
+    S._coachAudio=a;
+    const fail=()=>{ if(fallbackText) coachSpeakFallback(fallbackText); };
+    a.addEventListener('error', fail, {once:true});
+    const p=a.play();
+    if(p&&p.catch) p.catch(fail);
+  }catch(e){ if(fallbackText) coachSpeakFallback(fallbackText); }
+}
+function coachCue(key, fallbackText){
+  if(fallbackText) announce(fallbackText);
+  else announce(key);
+  if(S.muted)return;
+  coachPlayFile(key+'.mp3', fallbackText||key);
+}
+function coachExercise(name){
+  const label=String(name||'Movement');
+  announce(label);
+  if(S.muted)return;
+  coachPlayFile('ex-'+exerciseSlug(name)+'.mp3', label+'. Let\'s go.');
+}
+function coachPhase(phase){
+  const p=String(phase||'').toLowerCase();
+  if(/warm/.test(p)) return coachCue('warm','Warm-up. Loosen up. Elevate.');
+  if(/circuit|work block|main/.test(p)) return coachCue('circuit','Circuit. Stay locked in.');
+  if(/finish/.test(p)) return coachCue('finisher','Finisher. Empty the tank.');
+  if(/cool/.test(p)) return coachCue('cool','Cool-down. Recover with control.');
+  return false;
+}
+function coachStep(st){
+  if(!st)return;
+  if(st.kind==='rest'){ coachCue('rest','Rest. Breathe. Stay sharp.'); return; }
+  const phase=String(st.phase||'');
+  if(phase && phase!==S._coachPhase){
+    S._coachPhase=phase;
+    coachPhase(phase);
+    // Let the phase line land, then the movement
+    S._coachDelay=setTimeout(()=>{ S._coachDelay=null; if(!S.muted&&!S.paused) coachExercise(st.n); }, 1600);
+    return;
+  }
+  coachExercise(st.n);
+}
+/** Soft tick only when coach audio is muted — never the primary cue. */
 function beep(kind){
   if(S.muted)return;
+  // Voice is primary; skip oscillator chirps so cues feel live, not synthetic.
+  if(S._coachAudio || (window.speechSynthesis&&speechSynthesis.speaking)) return;
   try{
     const Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx)return;
     if(!S._ac)S._ac=new Ctx();
     const ac=S._ac; if(ac.state==='suspended')ac.resume();
     const o=ac.createOscillator(),g=ac.createGain();
+    o.type='triangle';
     o.connect(g);g.connect(ac.destination);
-    o.frequency.value=kind==='end'?880:(kind==='warn'?660:520);
-    g.gain.value=0.04; o.start();
-    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.18);
-    o.stop(ac.currentTime+0.2);
+    o.frequency.value=kind==='end'?740:(kind==='warn'?620:480);
+    g.gain.value=0.02; o.start();
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.12);
+    o.stop(ac.currentTime+0.14);
   }catch(e){}
 }
 function vibe(ms){try{if(navigator.vibrate)navigator.vibrate(ms||40)}catch(e){}}
@@ -1006,11 +1078,17 @@ function launchParts(now){
     s:sec%60
   };
 }
+function primaryCtaLabel(){ return launchParts().done ? 'Go to active' : 'Start now'; }
+function syncPrimaryCta(){
+  const b=document.getElementById('go');
+  if(b && (S.screen==='cover' || !S.screen)) b.textContent=primaryCtaLabel();
+}
 function paintCountdown(){
   const eld=document.getElementById('cd-d'); if(!eld)return;
   const p=launchParts();
   const live=document.getElementById('cd-live');
   const digits=document.getElementById('cd-digits');
+  syncPrimaryCta();
   if(p.done){
     eld.textContent='0';
     ['cd-h','cd-m','cd-s'].forEach(id=>{const n=document.getElementById(id);if(n)n.textContent='00'});
@@ -1076,7 +1154,7 @@ function showPromoDemo(){
   v.muted=true;
   v.addEventListener('timeupdate',syncCap);
   v.addEventListener('play',()=>{go.textContent='Playing…';go.disabled=true; setTimeout(()=>{go.disabled=false;go.textContent='Join the challenge'},800)});
-  v.addEventListener('ended',()=>{showEnd();announce('Demo finished')});
+  v.addEventListener('ended',()=>{showEnd();coachCue('demo-done','Demo finished')});
   try{ if(v.textTracks&&v.textTracks[0])v.textTracks[0].mode='showing'; }catch(e){}
   const close=()=>{try{v.pause()}catch(e){} ov.remove(); if(prevFocus&&prevFocus.focus)prevFocus.focus()};
   ov.querySelector('#promoclose').onclick=close;
@@ -1165,9 +1243,10 @@ function cover(a){
     </div><!--cover-grid-end-->
     <div class="note">Pain is a stop signal. Effort is not. Verify doors, tables, chairs, and boxes before rows or step-ups.</div>
     <div style="flex:1;min-height:22px"></div>
-    <button class="btn accent" id="go" type="button">Join the Society card</button>
+    <button class="btn accent" id="go" type="button">Start now</button>
     <button class="btn ghost" id="seecard" type="button" style="margin-top:8px">See the 9-minute card</button>
     <div style="text-align:center;margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
+      <a class="linkbtn" href="/">Society site</a>
       <a class="linkbtn" href="#manual">Movement manual</a>
       <a class="linkbtn" href="#board">League boards</a>
       <a class="linkbtn" href="#privacy">Privacy</a>
@@ -1184,6 +1263,7 @@ function cover(a){
   }catch(e){}
   hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>The Cigar Society</span></div>`));
   paintCountdown();
+  syncPrimaryCta();
   if(S.countdown) clearInterval(S.countdown);
   if(!live) S.countdown=setInterval(paintCountdown,1000);
   document.getElementById('demo').onclick=()=>showPromoDemo();
@@ -1791,9 +1871,11 @@ function paintTimerUI(st){
   if(b&&st&&st.sec) b.style.width=(100*(1-rem/(st.sec*1000)))+'%';
   const secLeft=S.timeLeft;
   if(!S.paused && (secLeft===3||secLeft===2||secLeft===1) && S.lastWarnSec!==secLeft){
-    S.lastWarnSec=secLeft; beep('warn'); vibe(30); announce(secLeft+' seconds');
+    S.lastWarnSec=secLeft; vibe(30);
+    const map={3:'three',2:'two',1:'one'};
+    coachCue(map[secLeft], secLeft===1?'One. Go.':String(secLeft));
   }
-  if(secLeft===0 && S.lastWarnSec!==0){ S.lastWarnSec=0; beep('end'); vibe([40,40,40]); }
+  if(secLeft===0 && S.lastWarnSec!==0){ S.lastWarnSec=0; vibe([40,40,40]); }
 }
 function applyAdvancedState(adv){
   if(!adv)return;
@@ -1821,10 +1903,7 @@ function catchUpRunning(){
   applyAdvancedState(adv);
   S.lastTickAt=now;
   if(adv.done) return {changed:true,done:true};
-  if(changed){
-    const st=S.session.steps[prevSi];
-    announce((st&&st.phase?st.phase:'Interval')+' complete');
-  }
+  // Next step's coach voice carries the handoff — no "complete" chirp that gets cut off.
   return {changed, done:false};
 }
 function advanceRunningClock(){
@@ -1835,7 +1914,7 @@ function advanceRunningClock(){
 }
 function startSession(fromResume){
   if(!fromResume){
-    S.si=0; S.paused=false; S.elapsedActiveMs=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastWarnSec=null;
+    S.si=0; S.paused=false; S.elapsedActiveMs=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastWarnSec=null; S._coachPhase=null;
   }
   document.querySelectorAll('.player').forEach(n=>n.remove());
   document.body.appendChild(el('<div class="player" id="player" role="dialog" aria-label="Nine minute workout"></div>'));
@@ -1929,11 +2008,11 @@ function paintStep(){
       <button class="btn sm" id="skip" style="flex:1.6">${st.kind==='rest'?'Skip rest':'Done \u2192'}</button>
     </div>
     <div style="text-align:center;padding-bottom:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
-      <button class="linkbtn" id="mute" type="button">${S.muted?'Unmute cues':'Mute cues'}</button>
+      <button class="linkbtn" id="mute" type="button">${S.muted?'Unmute coach':'Mute coach'}</button>
       <button class="linkbtn" id="restart" type="button">Restart</button>
       <button class="linkbtn" id="quit" type="button">End session</button>
     </div>`;
-  announce(st.phase+': '+st.n+', '+showSec+' seconds');
+  coachStep(st);
   if(st.kind==='work'&&EX[st.n]){
     p.querySelector('#figslot').appendChild(exerciseImg(st.n,'hero'));
   }
@@ -1955,12 +2034,12 @@ function paintStep(){
     if(S.paused){
       S.paused=false;
       syncDeadlineFromRemaining();
-      announce('Resumed');
+      coachCue('resumed','Resumed. Back at it.');
     } else {
       S.timeLeftMs=remainingMsNow();
       S.paused=true;
       S.deadlineAt=null;
-      announce('Paused');
+      coachCue('paused','Paused.');
     }
     persistResume();
     p.querySelector('#pause').textContent=S.paused?'Resume':'Pause';
@@ -1975,19 +2054,27 @@ function paintStep(){
   const muteBtn=p.querySelector('#mute');
   if(muteBtn) muteBtn.onclick=()=>{
     S.muted=!S.muted;
-    if(!S.muted){ try{ if(!S._ac){const Ctx=window.AudioContext||window.webkitAudioContext;S._ac=new Ctx()} S._ac.resume(); beep('warn'); }catch(e){} }
-    muteBtn.textContent=S.muted?'Unmute cues':'Mute cues';
+    if(S.muted){
+      coachStop();
+    }else{
+      try{ if(window.speechSynthesis) speechSynthesis.getVoices(); }catch(e){}
+      try{ if(!S._ac){const Ctx=window.AudioContext||window.webkitAudioContext; if(Ctx){S._ac=new Ctx(); S._ac.resume();}} }catch(e){}
+      coachCue('cues-on',"Cues on. Let's elevate.");
+    }
+    muteBtn.textContent=S.muted?'Unmute coach':'Mute coach';
   };
   const restartBtn=p.querySelector('#restart');
   if(restartBtn) restartBtn.onclick=()=>{
     if(!confirm('Restart this 9-minute workout from the warm-up?'))return;
     clearPlayerTimers();
-    S.si=0;S.paused=false;S.elapsedActiveMs=0;S.timeLeftMs=0;S.deadlineAt=null;S.lastWarnSec=null;
+    coachStop();
+    S.si=0;S.paused=false;S.elapsedActiveMs=0;S.timeLeftMs=0;S.deadlineAt=null;S.lastWarnSec=null;S._coachPhase=null;
     beginStep(false);
   };
   p.querySelector('#quit').onclick=()=>{
     if(confirm('End here? This discards the active workout and will not credit a completed session.')){
       clearPlayerTimers();
+      coachStop();
       clearRafs();releaseWakeLock();
       clearResume();
       p.remove();
@@ -2008,7 +2095,7 @@ async function endSession(){
     S.partialInfo={elapsedMs:elapsed,minMs:MIN_COMPLETE_MS};
     S.screen='partial';
     render();
-    announce('Partial session — not credited');
+    coachCue('session-partial','Session ended early. Not credited.');
     return;
   }
   if(S.completing)return;
@@ -2021,6 +2108,7 @@ async function endSession(){
         S.partialInfo={elapsedMs:elapsed,minMs:MIN_COMPLETE_MS};
         S.screen='partial';
         render();
+        coachCue('session-partial','Session ended early. Not credited.');
         return;
       }
       // duplicate or success — credit once locally
@@ -2029,14 +2117,15 @@ async function endSession(){
       save();
       S.screen='done';
       render();
-      announce(res&&res.duplicate?'Already logged':'Session logged');
+      coachCue(res&&res.duplicate?'session-logged':'session-done',
+        res&&res.duplicate?'Already logged. Keep elevating.':'Session complete. You elevated.');
     } else {
       S.log[pendingKey]={at:Date.now(),elapsedMs:elapsed};
       clearResume();
       save();
       S.screen='done';
       render();
-      announce('Session logged');
+      coachCue('session-done','Session complete. You elevated.');
     }
   }catch(e){
     // Network failed — queue already filled by report(); keep resume until verified
@@ -2045,7 +2134,7 @@ async function endSession(){
     save();
     S.screen='done';
     render();
-    announce('Session saved locally — syncing when online');
+    coachCue('session-logged','Session saved locally. Syncing when online.');
   }finally{
     S.completing=false;
   }
@@ -2092,10 +2181,11 @@ function cardScreen(a){
     </div>
     <div class="note" style="margin-top:16px">Stop for sharp pain, chest pain, faintness, severe shortness of breath, or loss of coordination. Not medical advice.</div>
     <div style="flex:1;min-height:20px"></div>
-    <button class="btn accent" id="go" type="button">Join the Society card</button>
+    <button class="btn accent" id="go" type="button">Start now</button>
     <button class="btn ghost" id="back" type="button" style="margin-top:8px">Back</button>
   </div>`));
-  document.getElementById('go').onclick=()=>{clearHash();S.screen='join';render()};
+  const go=document.getElementById('go');
+  if(go){ go.textContent=primaryCtaLabel(); go.onclick=()=>{clearHash();S.screen='join';render()}; }
   document.getElementById('back').onclick=()=>{clearHash();S.screen=S.back||'cover';render()};
 }
 function privacyScreen(a){

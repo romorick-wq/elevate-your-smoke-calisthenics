@@ -16,9 +16,11 @@ Also follow the personal skill **app-production-hardening** for cross-app produc
 ## Canonical layout
 
 ```
-app/index.html              live workout UI (keep app/elevate-your-smoke.html in sync)
+app/website.html            public marketing site at /
+app/index.html              workout SPA at /app (keep elevate-your-smoke.html in sync)
 app/admin.html              organizer admin (/admin)
 app/exercises/*.mp4         looping photo demos (start↔finish stills); frames/ + *.jpg posters
+app/audio/coach/*.mp3       motivational coach cues (edge-tts GuyNeural); regenerate via script
 app/sw.js                   cache key must bump on HTML/asset ships (eys-static-vX.Y.Z)
 backend/server.js           Express static + /api (listen before DB init; media 404 ≠ SPA)
 backend/db.js               Postgres participants/sessions + idempotent log
@@ -27,6 +29,8 @@ backend/workout.js          540s totals, MIN_COMPLETE_MS, resume advance helpers
 docs/SETUP-roster.md        Railway setup + QA cleanup
 scripts/cleanup-qa-test-0808.js   exact callsign cleanup (needs ORGANIZER_CODE)
 ```
+
+Public `/` shows live boards + Start now / Go to active → `/app`. CRM stays at `/admin`.
 
 ## URLs & secrets
 
@@ -94,7 +98,8 @@ Or `/admin` → Trash. Note: device localStorage `ping` can recreate a deleted c
 1. Update `EX[name].how` / `watch` and matching `M.*.c`.
 2. Frames → `node scripts/generate-exercise-videos.js`.
 3. Slug via `exerciseSlug()` must match `app/exercises/<slug>.jpg|.mp4` (`Child’s pose` → `child-s-pose`).
-4. Sync twin HTML; bump SW cache if needed; deploy.
+4. New/renamed moves → add line in `scripts/generate-coach-audio.py`, then `python3 scripts/generate-coach-audio.py`.
+5. Sync twin HTML; bump SW cache if needed; deploy.
 
 ## Gotchas
 

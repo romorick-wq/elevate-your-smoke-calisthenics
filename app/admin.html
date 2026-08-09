@@ -133,11 +133,14 @@ body{
 .smsmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
 .smsmeta .chars{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.04em}
 .sms-actions{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.sms-actions .btn{margin:0}
+.sms-actions .btn{margin:0;text-align:center;text-decoration:none;box-sizing:border-box}
+a.btn{display:block;cursor:pointer}
+a.btn[aria-disabled="true"]{opacity:.45}
 .sms-result{margin-top:12px;font-size:13px;line-height:1.45;color:var(--muted)}
 .sms-result.ok{color:var(--olive-soft);font-weight:600}
 .sms-result.bad{color:var(--danger);font-weight:600}
 .btn.textme{background:transparent;color:var(--ink);border:1.5px solid var(--line);flex:1}
+.btn.textme:disabled{opacity:.45;cursor:not-allowed}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -153,6 +156,7 @@ let QUERY='';
 let SMS_TARGET=null; // null = blast, or {name, phone} for one person
 let SMS_DRAFT='';
 let SMS_TWILIO=false; // true when Railway has Twilio env
+let SMS_MISSING=[];
 
 const el=h=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -230,7 +234,7 @@ function render(){
     <div id="body"></div>
     <div style="flex:1;min-height:24px"></div>
     <div style="text-align:center;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px">
-      <a class="linkbtn" href="/">Back to the workout</a>
+      <a class="linkbtn" href="/app">Back to the workout</a>
       <button type="button" class="linkbtn" id="logout2" hidden>Log out</button>
     </div>
     <p class="appfoot" style="margin-top:18px;border:0;padding-top:0">Made by <b>Cigar Society Dev. Team</b> · v1.1.0</p>
@@ -464,8 +468,8 @@ function normalizePhoneClient(raw){
   if(String(raw||'').trim().startsWith('+')&&digits.length>=10&&digits.length<=15)return '+'+digits;
   return '';
 }
-/** Build a Messages deep-link that works on iPhone / Mac / Android. */
-function buildSmsUri(phones, body){
+/** Normalize a list of raw phones to E.164-ish numbers. */
+function normalizePhoneList(phones){
   const nums=[];
   const seen=new Set();
   (phones||[]).forEach(raw=>{
@@ -474,24 +478,69 @@ function buildSmsUri(phones, body){
     seen.add(n);
     nums.push(n);
   });
+  return nums;
+}
+/** Build a Messages deep-link that works on iPhone / Mac / Android. */
+function buildSmsUri(phones, body){
+  const nums=normalizePhoneList(phones);
   if(!nums.length)return '';
   const enc=encodeURIComponent(String(body||''));
   const ua=navigator.userAgent||'';
   const apple=/iPhone|iPad|Macintosh|Mac OS X/i.test(ua);
-  // Digits without + for address lists (Apple Messages prefers this)
-  const addrs=nums.map(n=>n.replace(/^\+/,'')).join(',');
-  if(apple){
-    return 'sms:/open?addresses='+addrs+'&body='+enc;
+  const android=/Android/i.test(ua);
+  if(nums.length===1){
+    // Single recipient — most reliable across platforms
+    if(android) return 'sms:'+nums[0]+'?body='+enc;
+    // iOS / Mac Messages: sms:number&body= works; sms:number?body= also ok on newer iOS
+    return 'sms:'+nums[0]+'&body='+enc;
   }
-  if(nums.length===1) return 'sms:'+nums[0]+'?body='+enc;
+  const addrs=nums.map(n=>n.replace(/^\+/,'')).join(',');
+  if(apple) return 'sms:/open?addresses='+addrs+'&body='+enc;
+  if(android) return 'sms:'+addrs+'?body='+enc;
   return 'sms:'+addrs+'?body='+enc;
 }
+/** Open Messages. Prefer sync navigation from a real click (no confirm() beforehand). */
 function openDeviceSms(phones, body){
   const uri=buildSmsUri(phones, body);
   if(!uri)return false;
-  // Prefer location assign so iOS handles sms: reliably
-  window.location.href=uri;
-  return true;
+  try{
+    // location.assign keeps user-activation better than a programmatic <a>.click()
+    window.location.assign(uri);
+    return true;
+  }catch(e){
+    try{
+      const a=document.createElement('a');
+      a.href=uri;
+      a.rel='noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return true;
+    }catch(e2){ return false; }
+  }
+}
+async function copySmsBundle(phones, body){
+  const nums=[];
+  const seen=new Set();
+  (phones||[]).forEach(raw=>{
+    const n=normalizePhoneClient(raw);
+    if(!n||seen.has(n))return;
+    seen.add(n);
+    nums.push(n);
+  });
+  const text='To: '+nums.join(', ')+'\n\n'+String(body||'').trim();
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  }catch(e){}
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text; document.body.appendChild(ta); ta.select();
+    const ok=document.execCommand('copy'); ta.remove();
+    return ok;
+  }catch(e){ return false; }
 }
 
 async function refreshSmsMode(){
@@ -499,7 +548,8 @@ async function refreshSmsMode(){
     const r=await fetch('/api/health',{cache:'no-store'});
     const d=await r.json();
     SMS_TWILIO=!!(d&&d.sms);
-  }catch(e){SMS_TWILIO=false}
+    SMS_MISSING=(d&&d.smsStatus&&d.smsStatus.missing)||[];
+  }catch(e){SMS_TWILIO=false;SMS_MISSING=[]}
 }
 
 async function postSms(payload){
@@ -525,11 +575,12 @@ function renderText(list, people){
       :'Full roster');
   const targetN=solo?1:withPhone;
   const modeLab=SMS_TWILIO
-    ? 'Twilio is live — texts send from the server.'
-    : 'Opens your Messages app with everyone loaded. Tap Send there. (Add Twilio on Railway for one-tap server blasts.)';
-  const primaryLab=SMS_TWILIO
-    ? (solo?'Send text':'Send to '+targetN)
-    : (solo?'Open Messages':'Open Messages · '+targetN);
+    ? 'Free path: Open Messages on your phone/Mac. Optional Twilio server send is also enabled on this deploy.'
+    : 'Free messaging — opens your phone or Mac Messages app. You review the thread, then tap Send. No Twilio needed.';
+  if(!String(SMS_DRAFT||'').trim()){
+    SMS_DRAFT='Elevate Your Smoke — reminder from The Cigar Society.';
+  }
+  const CHUNK=12;
 
   list.appendChild(el(`<div class="smsbox">
     <p class="eyebrow" style="margin-top:12px">Group text \u00b7 SMS</p>
@@ -545,27 +596,26 @@ function renderText(list, people){
     <textarea id="smsmsg" maxlength="1500" placeholder="Society update — kickoff reminder, schedule change, keep elevating…">${esc(SMS_DRAFT)}</textarea>
     <div class="smsmeta">
       <span class="chars" id="smschars">${(SMS_DRAFT||'').length} / 1500</span>
-      <span class="fine" style="margin:0">${solo?'1 recipient':targetN+' recipients'}</span>
+      <span class="fine" style="margin:0" id="smsreclabel">${solo?'1 recipient':targetN+' recipients'}</span>
     </div>
     <div class="sms-actions">
-      <button type="button" class="btn accent" id="smssend">${esc(primaryLab)}</button>
-      ${!solo?`<button type="button" class="btn ghost sm" id="smsall">${SMS_TWILIO?'Send to all roster phones ('+allPhone+')':'Open Messages · all roster ('+allPhone+')'}</button>`:''}
+      <a class="btn accent" id="smssend" href="#">${solo?'Open Messages (free)':'Open Messages · '+targetN+' (free)'}</a>
+      <button type="button" class="btn ghost sm" id="smscopy">Copy numbers + message</button>
+      ${SMS_TWILIO?`<button type="button" class="btn ghost sm" id="smstwilio">${solo?'Send via Twilio':'Send via Twilio · '+targetN}</button>`:''}
+      ${!solo?`<a class="btn ghost sm" id="smsall" href="#">Open Messages · all roster (${allPhone})</a>`:''}
+      <button type="button" class="btn ghost sm" id="smsnext" hidden>Open next batch</button>
     </div>
     <p class="sms-result" id="smsresult" hidden></p>
-    <p class="fine" style="margin-top:12px">Skip anyone without a usable phone. Best on iPhone or Mac with Messages. For unattended server sends, set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER on Railway.</p>
+    <p class="fine" style="margin-top:12px">Save phones on CRM cards first. Best on <b>iPhone or Mac</b>. Groups open in batches of ${CHUNK}. On desktop without Messages, use Copy.</p>
   </div>`));
 
   const ta=document.getElementById('smsmsg');
   const chars=document.getElementById('smschars');
   const result=document.getElementById('smsresult');
-  const syncChars=()=>{
-    SMS_DRAFT=ta.value;
-    chars.textContent=ta.value.length+' / 1500';
-  };
-  ta.oninput=syncChars;
-
-  const clearT=document.getElementById('cleartarget');
-  if(clearT) clearT.onclick=()=>{SMS_TARGET=null;renderText(list, people)};
+  const sendA=document.getElementById('smssend');
+  const allA=document.getElementById('smsall');
+  const nextBtn=document.getElementById('smsnext');
+  let batchState=null; // {phones, message, i}
 
   const showResult=(ok, text)=>{
     result.hidden=false;
@@ -579,40 +629,113 @@ function renderText(list, people){
     return people.filter(hasPhone).map(p=>({name:p.name,phone:p.phone}));
   };
 
-  const runDevice=(mode)=>{
+  const syncLink=(anchor, mode)=>{
+    if(!anchor)return;
     const message=ta.value.trim();
-    if(!message){showResult(false,'Type a message first.');ta.focus();return}
-    const rec=recipientsFor(mode);
-    const phones=rec.map(r=>r.phone);
-    if(!phones.length){showResult(false,'Nobody in that set has a phone yet.');return}
-    const label=solo?solo.name:(mode==='all'?'all roster phones':scopeLab);
-    if(!confirm('Open Messages for '+phones.length+' number'+(phones.length===1?'':'s')+' ('+label+')? Review the thread, then tap Send.'))return;
-    // Chunk large groups — iOS can choke past ~10–15 addresses
-    const CHUNK=12;
-    if(phones.length>CHUNK){
-      let i=0;
-      const next=()=>{
-        const slice=phones.slice(i,i+CHUNK);
-        if(!slice.length)return;
-        openDeviceSms(slice, message);
-        i+=CHUNK;
-        if(i<phones.length){
-          setTimeout(()=>{
-            if(confirm('Opened batch '+(Math.ceil(i/CHUNK))+' of '+Math.ceil(phones.length/CHUNK)+'. Open the next batch?')) next();
-            else showResult(true,'Opened Messages for '+i+' of '+phones.length+'. Tap Send in each thread.');
-          },600);
-        }else{
-          showResult(true,'Opened Messages for all '+phones.length+'. Tap Send in each thread.');
-        }
-      };
-      next();
+    const phones=recipientsFor(mode).map(r=>r.phone);
+    const uri=(message&&phones.length)?buildSmsUri(phones.slice(0,CHUNK), message):'';
+    if(uri){
+      anchor.href=uri;
+      anchor.removeAttribute('aria-disabled');
+    }else{
+      anchor.href='#';
+      anchor.setAttribute('aria-disabled','true');
+    }
+  };
+
+  const syncAll=()=>{
+    SMS_DRAFT=ta.value;
+    chars.textContent=ta.value.length+' / 1500';
+    syncLink(sendA, solo?'one':'filter');
+    syncLink(allA, 'all');
+  };
+  ta.oninput=syncAll;
+  syncAll();
+
+  const clearT=document.getElementById('cleartarget');
+  if(clearT) clearT.onclick=()=>{SMS_TARGET=null;renderText(list, people)};
+
+  const onOpenClick=(e, mode)=>{
+    const message=ta.value.trim();
+    if(!message){
+      e.preventDefault();
+      showResult(false,'Type a message first.');
+      ta.focus();
       return;
     }
-    if(openDeviceSms(phones, message)){
-      showResult(true,'Messages opened with '+phones.length+' recipient'+(phones.length===1?'':'s')+'. Tap Send.');
-    }else{
-      showResult(false,'Could not build an SMS link for those numbers.');
+    const phones=recipientsFor(mode).map(r=>r.phone);
+    if(!phones.length){
+      e.preventDefault();
+      showResult(false,'Nobody in that set has a phone yet. Add phones on CRM cards.');
+      return;
     }
+    const usable=normalizePhoneList(phones);
+    if(!usable.length){
+      e.preventDefault();
+      showResult(false,'Phone numbers look invalid. Use +1 and 10 digits, then Save on CRM.');
+      return;
+    }
+    // Large groups: navigate this click to the first batch, then use "Open next batch"
+    // (window.confirm before sms: breaks the user-gesture on many browsers — button looks dead).
+    if(usable.length>CHUNK){
+      batchState={phones:usable, message, i:0};
+      const slice=usable.slice(0, CHUNK);
+      const uri=buildSmsUri(slice, message);
+      if(!uri){
+        e.preventDefault();
+        showResult(false,'Could not build Messages link. Use Copy instead.');
+        return;
+      }
+      batchState.i=slice.length;
+      e.currentTarget.href=uri;
+      nextBtn.hidden=false;
+      nextBtn.textContent='Open next batch ('+batchState.i+' of '+usable.length+' done)';
+      showResult(true,'Opening first batch · '+batchState.i+' of '+usable.length+'. Tap Send, then Open next batch.');
+      return;
+    }
+    const uri=buildSmsUri(usable, message);
+    if(!uri){
+      e.preventDefault();
+      showResult(false,'Could not open Messages. Use Copy numbers + message instead.');
+      return;
+    }
+    e.currentTarget.href=uri;
+    showResult(true,'Opening Messages with '+usable.length+' recipient'+(usable.length===1?'':'s')+'. Tap Send. If nothing opens, use Copy.');
+  };
+
+  sendA.addEventListener('click', e=>onOpenClick(e, solo?'one':'filter'));
+  if(allA) allA.addEventListener('click', e=>onOpenClick(e, 'all'));
+
+  nextBtn.onclick=e=>{
+    e.preventDefault();
+    if(!batchState){nextBtn.hidden=true;return}
+    const slice=batchState.phones.slice(batchState.i, batchState.i+CHUNK);
+    if(!slice.length){nextBtn.hidden=true;batchState=null;return}
+    if(openDeviceSms(slice, batchState.message)){
+      batchState.i+=slice.length;
+      if(batchState.i>=batchState.phones.length){
+        nextBtn.hidden=true;
+        showResult(true,'Opened Messages for all '+batchState.phones.length+'. Tap Send in each thread.');
+        batchState=null;
+      }else{
+        nextBtn.textContent='Open next batch ('+batchState.i+' of '+batchState.phones.length+' done)';
+        showResult(true,'Opened next batch · '+batchState.i+' of '+batchState.phones.length+'.');
+      }
+    }else{
+      showResult(false,'Could not open Messages. Use Copy numbers + message instead.');
+    }
+  };
+
+  const runCopy=async(mode)=>{
+    const message=ta.value.trim();
+    if(!message){showResult(false,'Type a message first.');ta.focus();return}
+    const phones=recipientsFor(mode).map(r=>r.phone);
+    if(!phones.length){showResult(false,'Nobody in that set has a phone yet.');return}
+    const ok=await copySmsBundle(phones, message);
+    const n=normalizePhoneList(phones).length;
+    showResult(ok, ok
+      ? ('Copied '+n+' number'+(n===1?'':'s')+' and your message. Paste into Messages.')
+      : 'Could not copy. Select the message manually.');
   };
 
   const runTwilio=async(mode)=>{
@@ -622,7 +745,7 @@ function renderText(list, people){
     let confirmMsg='';
     let payload={pin,challenge:CONFIG.CHALLENGE,message};
     if(solo){
-      confirmMsg='Text '+solo.name+' now?';
+      confirmMsg='Text '+solo.name+' via Twilio now?';
       payload.people=[{name:solo.name,phone:solo.phone}];
     }else if(mode==='all'){
       if(!allPhone){showResult(false,'Nobody on the full roster has a phone yet.');return}
@@ -633,16 +756,15 @@ function renderText(list, people){
       payload.people=people.filter(hasPhone).map(p=>({name:p.name,phone:p.phone}));
     }
     if(!confirm(confirmMsg))return;
-    const btn=document.getElementById('smssend');
-    const btnAll=document.getElementById('smsall');
+    const btn=document.getElementById('smstwilio');
     if(btn){btn.disabled=true;btn.textContent='Sending…'}
-    if(btnAll)btnAll.disabled=true;
     result.hidden=true;
     try{
       const d=await postSms(payload);
       if(d.error==='sms not configured'){
         SMS_TWILIO=false;
-        showResult(false,'Twilio dropped offline — use Messages instead.');
+        SMS_MISSING=d.missing||[];
+        showResult(false,'Twilio not configured'+(SMS_MISSING.length?': missing '+SMS_MISSING.join(', '):'')+'. Use Messages or Copy.');
         renderText(list, people);
       }else if(d.error==='bad pin'){
         showResult(false,'Organizer code rejected. Log out and back in.');
@@ -661,15 +783,12 @@ function renderText(list, people){
     }catch(e){
       showResult(false,'Could not reach the SMS API.');
     }
-    if(btn){btn.disabled=false;btn.textContent=solo?'Send text':'Send to '+targetN}
-    if(btnAll)btnAll.disabled=false;
+    if(btn){btn.disabled=false;btn.textContent=solo?'Send via Twilio':'Send via Twilio · '+targetN}
   };
 
-  const runSend=(mode)=> SMS_TWILIO ? runTwilio(mode) : runDevice(mode);
-
-  document.getElementById('smssend').onclick=()=>runSend(solo?'one':'filter');
-  const allBtn=document.getElementById('smsall');
-  if(allBtn) allBtn.onclick=()=>runSend('all');
+  document.getElementById('smscopy').onclick=()=>runCopy(solo?'one':'filter');
+  const tw=document.getElementById('smstwilio');
+  if(tw) tw.onclick=()=>runTwilio(solo?'one':'filter');
 }
 
 function sortBoard(people, mode){
@@ -760,11 +879,23 @@ function renderCrm(list, people){
       </div>
       <div class="save-row">
         <button type="button" class="btn accent sm" data-save>Save</button>
-        <button type="button" class="btn textme sm" data-text ${hasPhone(p)?'':'disabled'} title="${hasPhone(p)?'Text this person':'Add a phone first'}">Text</button>
+        <button type="button" class="btn textme sm" data-text title="Text this person">Text</button>
       </div>
       <p class="okmsg" hidden></p>
       <p class="fine err" hidden></p>
     </div>`);
+
+    const phoneInput=row.querySelector('#'+uid+'-phone');
+    const textBtn=row.querySelector('[data-text]');
+    const syncTextBtn=()=>{
+      const live=phoneInput.value.trim()||p.phone||'';
+      const ok=hasPhone({phone:live});
+      textBtn.disabled=false; // always clickable — guides user if phone missing
+      textBtn.title=ok?'Text this person':'Add a phone number first';
+      textBtn.style.opacity=ok?'':'0.7';
+    };
+    phoneInput.oninput=syncTextBtn;
+    syncTextBtn();
 
     row.querySelector('.trash').onclick=async()=>{
       if(!p.name)return;
@@ -779,9 +910,21 @@ function renderCrm(list, people){
       }catch(e){alert('Could not reach the roster.')}
     };
 
-    row.querySelector('[data-text]').onclick=()=>{
-      if(!hasPhone(p)){alert('Add and save a phone number first.');return}
-      SMS_TARGET={name:p.name,phone:row.querySelector('#'+uid+'-phone').value.trim()||p.phone};
+    textBtn.onclick=()=>{
+      const livePhone=phoneInput.value.trim()||p.phone||'';
+      if(!hasPhone({phone:livePhone})){
+        const bad=row.querySelector('.err');
+        bad.textContent='Add a phone number (10+ digits), then Save — or Text will use what you typed.';
+        bad.hidden=false;
+        phoneInput.focus();
+        return;
+      }
+      // Prefer saved phone once saved; otherwise use the field so Text works before Save
+      const usePhone=hasPhone(p)?(p.phone||livePhone):livePhone;
+      SMS_TARGET={name:p.name,phone:usePhone};
+      if(!String(SMS_DRAFT||'').trim()){
+        SMS_DRAFT='Elevate Your Smoke — reminder from The Cigar Society.';
+      }
       TAB='text';
       renderDashboard(body);
       const ta=document.getElementById('smsmsg');
@@ -793,7 +936,7 @@ function renderCrm(list, people){
       const bad=row.querySelector('.err');
       ok.hidden=true;bad.hidden=true;
       const league=row.querySelector('#'+uid+'-league').value;
-      const phone=row.querySelector('#'+uid+'-phone').value.trim();
+      const phone=phoneInput.value.trim();
       const startingWeight=row.querySelector('#'+uid+'-start').value.trim();
       const currentWeight=row.querySelector('#'+uid+'-cur').value.trim();
       const dateStarted=row.querySelector('#'+uid+'-started').value;
@@ -831,6 +974,7 @@ function renderCrm(list, people){
         p.points=(p.sessions||0)*10+Math.min(4,p.weightMilestones||0)*100+(p.hoursMilestones||0)*50;
         ok.textContent='Saved.';
         ok.hidden=false;
+        syncTextBtn();
         // Update metrics display without full re-render so the save message stays
         const mets=row.querySelectorAll('.metrics .v');
         if(mets[0])mets[0].textContent=String(p.points||0);

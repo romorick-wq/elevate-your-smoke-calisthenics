@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Elevate Your Smoke — The Cigar Society</title>
+<meta name="description" content="The Cigar Society presents Elevate Your Smoke — Brothers of the League and Ladies of the League. Nine-minute daily PT. Thirty-day challenge. Kickoff August 15, 2026.">
+<meta name="theme-color" content="#101412">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"></noscript>
+<style>
+:root{
+  --bg:#ECEAE4; --surface:#F7F6F2; --surface2:#FFFFFF; --ink:#101412;
+  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#E85D04; --accent-ink:#1A0F08;
+  --olive:#2F3B2A; --olive-soft:#3F4F38; --danger:#C43C2C;
+  --disp:'Syne',system-ui,sans-serif; --body:'Outfit',system-ui,-apple-system,sans-serif;
+  --radius:18px; --radius-sm:12px; --max:1080px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--ink);font-family:var(--body);
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(232,93,4,.28), transparent 55%),
+    linear-gradient(165deg,#1a2218 0%, #2a3526 42%, #6d7464 100%);
+  min-height:100vh;
+}
+a{color:inherit}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+.wrap{width:min(100%,var(--max));margin:0 auto;padding:0 20px}
+.site{
+  width:min(100%,var(--max));margin:0 auto;background:var(--bg);
+  box-shadow:0 18px 50px rgba(16,20,18,.18);overflow:hidden;
+}
+.topnav{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:14px 20px;background:linear-gradient(135deg,var(--olive),var(--olive-soft));color:#F4F7EE;
+}
+.topnav .brand{font-family:var(--disp);font-weight:800;font-size:18px;letter-spacing:-.02em;text-decoration:none}
+.topnav .brand span{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.7;font-weight:600;margin-top:3px;font-family:var(--body)}
+.navlinks{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.navlinks a{
+  color:#F4F7EE;text-decoration:none;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;opacity:.85;padding:6px 2px
+}
+.navlinks a:hover{opacity:1;color:var(--accent)}
+.hero{
+  position:relative;min-height:min(72vh,640px);display:flex;align-items:flex-end;
+  background:#1a2218;color:#F7F6F2;overflow:hidden;
+}
+.hero img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(16,20,18,.15) 0%, rgba(16,20,18,.72) 55%, rgba(16,20,18,.92) 100%);
+}
+.hero-inner{position:relative;z-index:1;padding:36px 20px 40px;width:100%;max-width:720px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+.hero .eyebrow{color:rgba(244,247,238,.75)}
+.display{font-family:var(--disp);font-weight:800;letter-spacing:-.03em;line-height:.95;margin:0}
+.h-xl{font-size:clamp(40px,7vw,64px)}.h-lg{font-size:clamp(28px,4vw,40px)}.h-md{font-size:24px}
+.lede{font-size:16px;line-height:1.55;margin:14px 0 0;max-width:36rem;color:#2c322e}
+.hero .lede{color:rgba(247,246,242,.88)}
+.fine{font-size:13px;line-height:1.5;color:var(--muted)}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{
+  display:inline-block;border:0;background:var(--ink);color:#F7F6F2;border-radius:999px;
+  font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.04em;
+  padding:14px 22px;cursor:pointer;text-decoration:none;text-align:center;
+}
+.btn.accent{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:inherit;border:1.5px solid rgba(247,246,242,.35)}
+.hero .btn.ghost{color:#F7F6F2}
+.section{padding:42px 20px;border-top:1px solid var(--line)}
+.section h2{font-family:var(--disp);font-weight:800;font-size:clamp(26px,3.5vw,34px);letter-spacing:-.03em;margin:0 0 10px;line-height:1.05}
+.grid2{display:grid;gap:16px}
+@media (min-width:820px){
+  .grid2{grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  .span2{grid-column:1 / -1}
+}
+.leaguecard,.ph,.person{
+  background:var(--surface2);border-radius:12px;padding:16px;min-width:0
+}
+.leaguecard .k,.ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;display:block;line-height:1.3}
+.leaguecard .n,.ph .n{font-family:var(--disp);font-weight:800;font-size:18px;display:block;margin-top:6px;line-height:1.15}
+.leaguecard .s,.ph .s{font-size:13px;color:var(--muted);display:block;margin-top:8px;line-height:1.45}
+.phases{display:grid;gap:10px;margin-top:14px}
+.timeline{margin:14px 0 0;padding:0;list-style:none}
+.timeline li{display:grid;grid-template-columns:88px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent)}
+.kick{
+  margin:0 20px;padding:18px;border-radius:14px;background:var(--surface2);border:1px solid var(--line);
+  transform:translateY(-28px);position:relative;z-index:2;
+}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.cd > div{background:var(--olive);color:#F4F7EE;border-radius:10px;padding:12px 8px;text-align:center}
+.cd .n{font-family:var(--disp);font-weight:800;font-size:28px;line-height:1}
+.cd .l{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-top:4px}
+.livebanner{
+  background:rgba(63,79,56,.14);border-left:3px solid var(--olive-soft);
+  padding:12px 14px;margin-top:12px;font-size:14px;font-weight:600;color:var(--olive-soft)
+}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.tabs button{
+  border:1.5px solid var(--line);background:var(--surface2);border-radius:999px;
+  font-family:var(--body);font-weight:700;font-size:13px;padding:9px 14px;cursor:pointer;color:var(--ink)
+}
+.tabs button.on{background:var(--ink);color:#F7F6F2;border-color:var(--ink)}
+.boardlist{margin-top:14px;display:grid;gap:10px}
+.person .prow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.rank{font-family:var(--disp);font-weight:800;color:var(--accent);margin-right:8px}
+.pn{font-family:var(--disp);font-weight:700;font-size:17px}
+.sortkey{font-family:var(--disp);font-weight:800;font-size:18px;display:block;text-align:right}
+.sortlab{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;text-align:right}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.metrics > div{background:var(--bg);border-radius:8px;padding:8px;text-align:center}
+.metrics .v{font-family:var(--disp);font-weight:800;font-size:16px}
+.metrics .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.metrics .hi .v{color:var(--accent)}
+.pm{font-size:12px;color:var(--muted)}
+.note{font-size:12.5px;line-height:1.45;color:var(--muted);margin-top:16px;padding:12px;border-left:3px solid var(--accent);background:var(--surface2)}
+.sitefoot{
+  padding:28px 20px;text-align:center;border-top:1px solid var(--line);
+  font-size:12px;color:var(--muted);font-weight:600
+}
+.sitefoot b{color:var(--ink)}
+.sitefoot .row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 14px;margin-bottom:12px}
+.linkbtn{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--olive-soft);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.linkbtn:hover{color:var(--accent)}
+.promo-ov{position:fixed;inset:0;z-index:80;background:rgba(10,12,11,.7);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px)}
+.promo-ov .box{width:min(100%,520px);background:var(--bg);border-radius:18px;padding:16px;max-height:92vh;overflow:auto}
+.promo-ov video{width:100%;border-radius:12px;background:#000;display:block}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="site">
+  <header class="topnav">
+    <a class="brand" href="/">Elevate Your Smoke<span>The Cigar Society</span></a>
+    <nav class="navlinks" aria-label="Primary">
+      <a href="#nine">9-minute card</a>
+      <a href="#boards">Boards</a>
+      <a href="/app">App</a>
+      <a href="/app#manual">Manual</a>
+      <a href="/app#privacy">Privacy</a>
+      <a href="/admin">Organizer</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-label="Elevate Your Smoke">
+    <img src="/exercises/push-up.jpg" alt="" width="1200" height="800" decoding="async" fetchpriority="high">
+    <div class="hero-inner">
+      <p class="eyebrow">The Cigar Society · Elevate Your Smoke</p>
+      <h1 class="display h-xl">Two leagues.<br>One standard.</h1>
+      <p class="lede" id="hero-lede">Brothers of the League and Ladies of the League run the same 9-minute calisthenics card for thirty days. All fitness levels welcome.</p>
+      <div class="ctas">
+        <a class="btn accent" id="primary-cta" href="/app">Start now</a>
+        <button type="button" class="btn ghost" id="demo-btn">Watch demo</button>
+        <a class="btn ghost" href="#nine">See the card</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="kick" id="kickoff">
+    <p class="eyebrow">Society kickoff</p>
+    <p class="fine" style="margin:0;color:var(--ink);font-weight:600" id="kick-label"></p>
+    <div class="cd" id="cd-digits" aria-live="polite">
+      <div><div class="n" id="cd-d">0</div><div class="l">Days</div></div>
+      <div><div class="n" id="cd-h">00</div><div class="l">Hours</div></div>
+      <div><div class="n" id="cd-m">00</div><div class="l">Mins</div></div>
+      <div><div class="n" id="cd-s">00</div><div class="l">Secs</div></div>
+    </div>
+    <div class="livebanner" id="cd-live" hidden>Challenge is live — the 30-day card is open. Lock a callsign and train.</div>
+    <p class="fine" id="cd-note" style="margin:10px 0 0"></p>
+  </div>
+
+  <section class="section" id="leagues">
+    <h2>Two leagues. Same heat.</h2>
+    <p class="fine">Separate boards. Same nine-minute standard. Pick Brothers or Ladies when you lock your callsign.</p>
+    <div class="grid2" style="margin-top:16px">
+      <div class="leaguecard">
+        <span class="k">Men’s board</span>
+        <span class="n">Brothers of the League</span>
+        <span class="s">Points. Hours. Weight lost %. Separate board — same standard.</span>
+      </div>
+      <div class="leaguecard">
+        <span class="k">Ladies’ board</span>
+        <span class="n">Ladies of the League</span>
+        <span class="s">Same heat. Same form. Your own league boards.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="nine">
+    <div class="grid2">
+      <div class="span2">
+        <h2>Your 9-minute card</h2>
+        <p class="fine">Total time <b>9:00</b> exactly — warm-up, three circuit rounds, finisher, cool-down. Level 1: 20s work / 10s rest. Level 2+: 25s / 5s. Beginners scale every move.</p>
+        <div class="phases">
+          <div class="ph"><span class="k">0:00–1:00</span><span class="n">Warm-up</span><span class="s">Two 30-second mobility / activation moves.</span></div>
+          <div class="ph"><span class="k">1:00–7:00</span><span class="n">Main circuit · 3 rounds</span><span class="s">Four movements. Level 1: 20s work / 10s rest. Level 2+: 25s work / 5s rest.</span></div>
+          <div class="ph"><span class="k">7:00–8:00</span><span class="n">Finisher</span><span class="s">Sixty seconds on the pace move — steady cadence.</span></div>
+          <div class="ph"><span class="k">8:00–9:00</span><span class="n">Cool-down</span><span class="s">Two 30-second stretches. Breathe down.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="progression">
+    <div class="grid2">
+      <div>
+        <h2>30-day progression</h2>
+        <p class="fine">Calendar length is thirty days. Scheduled sessions depend on the weekly frequency you choose (3–6 days).</p>
+      </div>
+      <ul class="timeline span2">
+        <li><span class="w">Days 1–7</span><span class="fine">Find your cadence. Rest days are programmed — take them. Miss a day? Resume the next open session.</span></li>
+        <li><span class="w">Days 8–14</span><span class="fine">Same 9:00 structure. Form first.</span></li>
+        <li><span class="w">Days 15–21</span><span class="fine">Consistency beats hero days.</span></li>
+        <li><span class="w">Days 21–30</span><span class="fine">Final ten days step movements up one level automatically. Still nine minutes. Still scalable.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="points">
+    <h2>How points work</h2>
+    <p class="fine" id="points-copy"><b>10 pts</b> per completed session · <b>50 pts</b> every 5% of the card finished · <b>100 pts</b> every 5% <b>bodyweight lost</b> (gain = 0; capped at 4 milestones). Hours = sessions × 9 minutes. Public boards show callsign, league, sessions, streak, points, hours, and weight-loss % only — never raw lbs or phone.</p>
+    <p class="note">Stop for sharp pain, chest pain, faintness, severe shortness of breath, or loss of coordination. Not medical advice.</p>
+  </section>
+
+  <section class="section" id="boards">
+    <h2>Live league boards</h2>
+    <p class="fine">Public rankings refresh when you open this page. Organizers manage the full CRM at <a class="linkbtn" href="/admin">/admin</a>.</p>
+    <p class="eyebrow" style="margin-top:16px">League</p>
+    <div class="tabs" id="leagues-tabs" role="tablist" aria-label="League">
+      <button type="button" role="tab" data-league="brothers" class="on" aria-selected="true">Brothers</button>
+      <button type="button" role="tab" data-league="ladies" aria-selected="false">Ladies</button>
+    </div>
+    <p class="eyebrow" style="margin-top:14px">Sort by</p>
+    <div class="tabs" id="sort-tabs" role="tablist" aria-label="Sort leaderboard">
+      <button type="button" role="tab" data-tab="points" class="on" aria-selected="true">Points</button>
+      <button type="button" role="tab" data-tab="hours" aria-selected="false">Hours</button>
+      <button type="button" role="tab" data-tab="weight" aria-selected="false">Weight</button>
+    </div>
+    <div class="boardlist" id="board-body"><p class="fine">Loading boards…</p></div>
+    <p style="margin-top:16px"><a class="btn accent" id="boards-cta" href="/app">Start now</a></p>
+  </section>
+
+  <footer class="sitefoot">
+    <div class="row">
+      <a class="linkbtn" href="/app">Open app</a>
+      <a class="linkbtn" href="/app#manual">Movement manual</a>
+      <a class="linkbtn" href="/app#privacy">Privacy</a>
+      <a class="linkbtn" href="/admin">Organizer CRM</a>
+    </div>
+    <p>Made by <b>Cigar Society Dev. Team</b> · v<span id="ver">1.1.2</span></p>
+  </footer>
+</div>
+
+<script>
+const CONFIG = {
+  CHALLENGE: 'smoke-30',
+  VERSION: '1.1.2',
+  KICKOFF_ISO: '2026-08-15T09:00:00-05:00',
+  KICKOFF_LABEL: 'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
+  PTS_PER_SESSION: 10,
+  PTS_PER_5PCT_CARD: 50,
+  PTS_PER_5PCT_WEIGHT: 100,
+  MAX_WEIGHT_MILESTONES: 4,
+  APP_URL: '/app',
+};
+const LAUNCH_AT = new Date(CONFIG.KICKOFF_ISO).getTime();
+const WEEK = { 3: 13, 4: 18, 5: 22, 6: 26 };
+let boardPeople = null;
+let boardLeague = 'brothers';
+let boardTab = 'points';
+let countdownTimer = null;
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const el = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstElementChild; };
+const fmtHrs = (h) => (h == null || h === '') ? '—' : (Number(h).toFixed(Number(h) >= 10 ? 1 : 2).replace(/\.?0+$/, '') + 'h');
+const fmtLossPct = (p) => {
+  if (p == null) return '—';
+  const n = Number(p);
+  if (!Number.isFinite(n)) return '—';
+  if (n > 0) return n.toFixed(1) + '% lost';
+  if (n < 0) return Math.abs(n).toFixed(1) + '% gained';
+  return 'No change';
+};
+function sessionsProgressLabel(done, total, perWeek) {
+  const t = Number(total) || 0;
+  const d = Number(done) || 0;
+  if (t > 0) return d + ' of ' + t + ' sessions';
+  const derived = WEEK[Number(perWeek)] || 0;
+  if (derived > 0) return d + ' of ' + derived + ' sessions';
+  return 'Schedule unavailable';
+}
+function launchParts(now) {
+  const ms = Math.max(0, LAUNCH_AT - (now || Date.now()));
+  const sec = Math.floor(ms / 1000);
+  return {
+    done: ms <= 0,
+    d: Math.floor(sec / 86400),
+    h: Math.floor((sec % 86400) / 3600),
+    m: Math.floor((sec % 3600) / 60),
+    s: sec % 60,
+  };
+}
+function isLive() { return launchParts().done; }
+function ctaLabel() { return isLive() ? 'Go to active' : 'Start now'; }
+function syncCtas() {
+  const label = ctaLabel();
+  ['primary-cta', 'boards-cta'].forEach((id) => {
+    const n = document.getElementById(id);
+    if (n) n.textContent = label;
+  });
+}
+function paintCountdown() {
+  const p = launchParts();
+  const live = document.getElementById('cd-live');
+  const digits = document.getElementById('cd-digits');
+  const note = document.getElementById('cd-note');
+  syncCtas();
+  if (p.done) {
+    if (digits) digits.hidden = true;
+    if (live) live.hidden = false;
+    if (note) note.textContent = CONFIG.KICKOFF_LABEL + ' — challenge is live.';
+    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+    return;
+  }
+  if (digits) digits.hidden = false;
+  if (live) live.hidden = true;
+  document.getElementById('cd-d').textContent = String(p.d);
+  document.getElementById('cd-h').textContent = String(p.h).padStart(2, '0');
+  document.getElementById('cd-m').textContent = String(p.m).padStart(2, '0');
+  document.getElementById('cd-s').textContent = String(p.s).padStart(2, '0');
+  if (note) {
+    note.textContent = isLive()
+      ? 'Roster stays open. Pick Brothers or Ladies, lock your callsign, and stack sessions.'
+      : 'Roster is open now. Pick Brothers or Ladies, lock your callsign, and start before the bell.';
+  }
+}
+function sortBoard(people, mode) {
+  const list = people.slice();
+  list.sort((a, b) => {
+    if (mode === 'hours') return (Number(b.hours) || 0) - (Number(a.hours) || 0) || (Number(b.points) || 0) - (Number(a.points) || 0);
+    if (mode === 'weight') {
+      const aw = a.weightLostPct == null ? -1e9 : Number(a.weightLostPct);
+      const bw = b.weightLostPct == null ? -1e9 : Number(b.weightLostPct);
+      return bw - aw || (Number(b.points) || 0) - (Number(a.points) || 0);
+    }
+    return (Number(b.points) || 0) - (Number(a.points) || 0) || (Number(b.hours) || 0) - (Number(a.hours) || 0);
+  });
+  return list;
+}
+function primarySortValue(p, mode) {
+  if (mode === 'hours') return { v: fmtHrs(p.hours), k: 'Hours' };
+  if (mode === 'weight') return { v: p.weightLostPct == null ? '—' : fmtLossPct(p.weightLostPct), k: 'Weight lost' };
+  return { v: String(p.points || 0), k: 'Points' };
+}
+function paintBoard() {
+  const body = document.getElementById('board-body');
+  if (!body) return;
+  if (!boardPeople) {
+    body.innerHTML = '<p class="fine">Loading boards…</p>';
+    return;
+  }
+  const people = boardPeople.filter((p) => (p.league || '') === boardLeague);
+  const leagueLabel = boardLeague === 'ladies' ? 'Ladies of the League' : 'Brothers of the League';
+  if (!people.length) {
+    body.innerHTML = '<p class="fine">No one on the ' + esc(leagueLabel) + ' board yet. Lock a callsign in the app and log a session.</p>';
+    return;
+  }
+  const title = boardTab === 'hours' ? 'Ranked by hours' : boardTab === 'weight' ? 'Ranked by weight lost' : 'Ranked by points';
+  body.innerHTML = '';
+  body.appendChild(el('<p class="eyebrow">' + esc(leagueLabel) + ' · ' + esc(title) + ' · ' + people.length + '</p>'));
+  sortBoard(people, boardTab).forEach((p, i) => {
+    const wLabel = p.weightLostPct == null ? 'No weight' : fmtLossPct(p.weightLostPct);
+    const pri = primarySortValue(p, boardTab);
+    const hiP = boardTab === 'points' ? ' hi' : '';
+    const hiH = boardTab === 'hours' ? ' hi' : '';
+    const hiW = boardTab === 'weight' ? ' hi' : '';
+    body.appendChild(el(`<div class="person">
+      <div class="prow">
+        <span><span class="rank">#${i + 1}</span><span class="pn">${esc(p.name || '—')}</span></span>
+        <span><span class="sortkey">${esc(pri.v)}</span><span class="sortlab">${esc(pri.k)}</span></span>
+      </div>
+      <div class="metrics">
+        <div class="${hiP.trim()}"><div class="v">${p.points || 0}</div><div class="k">Points</div></div>
+        <div class="${hiH.trim()}"><div class="v">${fmtHrs(p.hours)}</div><div class="k">Hours</div></div>
+        <div class="${hiW.trim()}"><div class="v">${esc(wLabel)}</div><div class="k">Weight</div></div>
+      </div>
+      <div class="prow"><span class="pm">${esc(sessionsProgressLabel(p.sessions, p.total, p.perWeek))} · streak ${p.streak || 0}</span>
+        <span class="pm">${p.weightMilestones || 0} wt · ${p.hoursMilestones || 0} hr milestones</span></div>
+    </div>`));
+  });
+}
+function syncTabs() {
+  document.querySelectorAll('#leagues-tabs button').forEach((x) => {
+    const on = x.dataset.league === boardLeague;
+    x.classList.toggle('on', on);
+    x.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('#sort-tabs button').forEach((x) => {
+    const on = x.dataset.tab === boardTab;
+    x.classList.toggle('on', on);
+    x.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+async function loadBoard() {
+  const body = document.getElementById('board-body');
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const to = ctrl ? setTimeout(() => ctrl.abort(), 10000) : null;
+  try {
+    const u = '/api/leaderboard?challenge=' + encodeURIComponent(CONFIG.CHALLENGE);
+    const r = await fetch(u, { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined });
+    const d = await r.json();
+    if (!d.ok) throw new Error('bad');
+    boardPeople = d.people || [];
+    paintBoard();
+  } catch (e) {
+    if (body) body.innerHTML = '<p class="fine" style="color:var(--danger)">Could not load the boards. Try again shortly.</p>';
+  } finally {
+    if (to) clearTimeout(to);
+  }
+}
+function showDemo() {
+  document.querySelectorAll('.promo-ov').forEach((n) => n.remove());
+  const ov = el(`<div class="promo-ov" role="dialog" aria-modal="true" aria-label="Mission demo">
+    <div class="box">
+      <video id="promo" playsinline controls preload="metadata">
+        <source src="/promo-demo.mp4" type="video/mp4">
+        <track kind="captions" src="/promo-demo.vtt" srclang="en" label="English" default>
+      </video>
+      <p class="fine" style="margin:10px 0 0">Nine minutes a day. Thirty-day challenge.</p>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <a class="btn accent" href="/app" id="promocta">${esc(ctaLabel())}</a>
+        <button type="button" class="btn ghost" id="promoclose" style="color:var(--ink);border-color:var(--line)">Close</button>
+      </div>
+    </div>
+  </div>`);
+  document.body.appendChild(ov);
+  ov.querySelector('#promoclose').onclick = () => ov.remove();
+  ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+}
+
+document.getElementById('kick-label').textContent = CONFIG.KICKOFF_LABEL;
+document.getElementById('ver').textContent = CONFIG.VERSION;
+document.getElementById('hero-lede').textContent =
+  'Brothers of the League and Ladies of the League run the same 9-minute calisthenics card for thirty days. All fitness levels welcome — every movement scales. ' +
+  CONFIG.KICKOFF_LABEL.split('·')[0].trim() + ' kickoff.';
+document.getElementById('points-copy').innerHTML =
+  '<b>' + CONFIG.PTS_PER_SESSION + ' pts</b> per completed session · <b>' + CONFIG.PTS_PER_5PCT_CARD +
+  ' pts</b> every 5% of the card finished · <b>' + CONFIG.PTS_PER_5PCT_WEIGHT +
+  ' pts</b> every 5% <b>bodyweight lost</b> (gain = 0; capped at ' + CONFIG.MAX_WEIGHT_MILESTONES +
+  ' milestones). Hours = sessions × 9 minutes. Public boards show callsign, league, sessions, streak, points, hours, and weight-loss % only — never raw lbs or phone.';
+
+paintCountdown();
+if (!isLive()) countdownTimer = setInterval(paintCountdown, 1000);
+syncCtas();
+
+document.getElementById('demo-btn').onclick = showDemo;
+document.getElementById('leagues-tabs').onclick = (e) => {
+  const b = e.target.closest('button[data-league]');
+  if (!b) return;
+  boardLeague = b.dataset.league;
+  syncTabs();
+  paintBoard();
+};
+document.getElementById('sort-tabs').onclick = (e) => {
+  const b = e.target.closest('button[data-tab]');
+  if (!b) return;
+  boardTab = b.dataset.tab;
+  syncTabs();
+  paintBoard();
+};
+loadBoard();
+</script>
+</body>
+</html>
