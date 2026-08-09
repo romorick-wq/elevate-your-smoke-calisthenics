@@ -21,7 +21,7 @@
 <style>
 :root{
   --bg:#ECEAE4; --surface:#F7F6F2; --surface2:#FFFFFF; --ink:#101412;
-  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#E85D04; --accent-ink:#1A0F08;
+  --muted:#5E6660; --line:rgba(16,20,18,.12); --accent:#E85D04; --accent-text:#A03E02; --accent-ink:#1A0F08;
   --olive:#2F3B2A; --olive-soft:#3F4F38; --danger:#C43C2C; --shadow:0 18px 50px rgba(16,20,18,.18);
   --disp:'Syne',system-ui,sans-serif; --body:'Outfit',system-ui,-apple-system,sans-serif; --mono:'Outfit',system-ui,sans-serif;
   --radius:18px; --radius-sm:12px;
@@ -69,14 +69,14 @@ a.btn{color:#F7F6F2}
 a.btn.ghost{color:var(--ink)}
 a.btn.accent{color:var(--accent-ink)}
 .btn:active{transform:scale(.98)}
-.btn[disabled]{opacity:.35;cursor:not-allowed}
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:none;border:1.5px solid var(--line)}
 .btn.ghost:active{transform:scale(.98)}
 .btn.sm{font-size:14px;padding:12px 16px}
 .btn.accent{background:var(--accent);color:var(--accent-ink)}
 .linkbtn{background:none;border:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--olive-soft);
-  cursor:pointer;padding:8px 6px;text-decoration:underline;text-underline-offset:3px;font-weight:700;display:inline-block}
-.linkbtn:hover,.linkbtn:focus-visible{color:var(--accent)}
+  cursor:pointer;padding:12px 8px;min-height:44px;text-decoration:underline;text-underline-offset:3px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center}
+.linkbtn:hover,.linkbtn:focus-visible{color:var(--accent-text)}
 a.linkbtn{color:var(--olive-soft)}
 :focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 .progress{display:flex;gap:5px;margin-bottom:8px}
@@ -159,7 +159,7 @@ a.linkbtn{color:var(--olive-soft)}
 .stamp small{display:block;font-size:11px;letter-spacing:.1em;margin-top:6px;opacity:.7;font-weight:600}
 @keyframes press{from{transform:scale(1.35);opacity:0}to{transform:scale(1);opacity:1}}
 .launch{
-  margin:16px 0 0;padding:14px;border-radius:var(--radius-sm);background:var(--surface2);
+  margin:12px 0 0;padding:12px;border-radius:var(--radius-sm);background:var(--surface2);
   border:1px solid var(--line);
 }
 .launch .eyebrow{margin-bottom:10px}
@@ -179,11 +179,11 @@ a.linkbtn{color:var(--olive-soft)}
 }
 .demobtn .t{font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:-.02em;display:block}
 .demobtn .s{font-size:12px;color:var(--muted);margin-top:2px;display:block}
-.leagues{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 0}
+.leagues{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
 .leaguecard{
   border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:12px 10px;background:var(--surface2);
 }
-.leaguecard .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;display:block}
+.leaguecard .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);font-weight:700;display:block}
 .leaguecard .n{font-family:var(--disp);font-weight:800;font-size:16px;letter-spacing:-.02em;margin-top:4px;display:block;line-height:1.15}
 .leaguecard .s{font-size:12px;color:var(--muted);margin-top:6px;display:block;line-height:1.35}
 .leaguepick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
@@ -209,7 +209,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .field input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;
   font-family:var(--disp);font-weight:700;font-size:26px;letter-spacing:-.02em;color:var(--ink);
   padding:4px 2px;border-radius:0;-webkit-appearance:none}
-.field input::placeholder{color:#B6B8B2}
+.field input::placeholder{color:var(--muted);opacity:1}
 .person{border-bottom:1px solid var(--line);padding:12px 0}
 .person.cold{opacity:.45}
 .tabs{display:flex;gap:6px;margin:14px 0 4px}
@@ -223,7 +223,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .metrics div.hi{background:rgba(232,93,4,.16);outline:1.5px solid var(--accent)}
 .metrics .v{font-family:var(--disp);font-weight:800;font-size:16px;line-height:1}
 .metrics .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:600}
-.rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent);flex:0 0 28px}
+.rank{font-family:var(--disp);font-weight:800;font-size:14px;color:var(--accent-text);flex:0 0 28px}
 .sortkey{font-family:var(--disp);font-weight:800;font-size:18px;color:var(--ink);letter-spacing:-.02em}
 .sortlab{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;display:block;text-align:right}
 .wtrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-top:10px}
@@ -246,8 +246,8 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .eximg.mini{width:72px;height:72px;flex:0 0 72px;border-radius:14px;object-fit:cover}
 .eximg.hero{width:100%;height:min(42vh,320px);max-height:42vh;object-fit:cover;border-radius:0}
 .eximg.card{aspect-ratio:4/3;object-fit:cover;border-radius:var(--radius-sm)}
-.eximg.cover{width:100%;height:42vh;min-height:220px;object-fit:cover;display:block}
-.photoframe{overflow:hidden;border-radius:0 0 28px 28px;margin:0 -20px 18px;position:relative}
+.eximg.cover{width:100%;height:min(34vh,280px);min-height:180px;object-fit:cover;display:block}
+.photoframe{overflow:hidden;border-radius:0 0 28px 28px;margin:0 -20px 14px;position:relative}
 .photoframe::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,20,18,.05),rgba(16,20,18,.55));pointer-events:none}
 .photoframe .brandmark{position:absolute;left:20px;bottom:18px;z-index:1;color:#F7F6F2}
 .photoframe .brandmark h1{font-family:var(--disp);font-weight:800;font-size:34px;margin:0;letter-spacing:-.03em;line-height:.95}
@@ -287,10 +287,10 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .cardsec h3{font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:-.03em;margin:0 0 8px;line-height:1.05}
 .timeline{margin:12px 0 0;padding:0;list-style:none}
 .timeline li{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
-.timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent)}
+.timeline .w{font-family:var(--disp);font-weight:800;font-size:13px;color:var(--accent-text)}
 .phases{display:grid;gap:10px;margin:12px 0 0}
 .phases .ph{background:var(--surface2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
-.phases .ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;display:block;line-height:1.3;word-break:break-word}
+.phases .ph .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);font-weight:700;display:block;line-height:1.3;word-break:break-word}
 .phases .ph .n{font-family:var(--disp);font-weight:800;font-size:16px;display:block;line-height:1.2;word-break:break-word}
 .phases .ph .s{font-size:13px;color:var(--muted);display:block;line-height:1.45;word-break:break-word}
 @media (min-width:900px){
@@ -303,11 +303,11 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
 .dashhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .dashhead .who{font-size:12px;color:var(--muted);font-weight:600}
 .dashhead .who b{color:var(--ink)}
-.daychip{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent);margin-bottom:6px}
+.daychip{display:inline-block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent-text);margin-bottom:6px}
 .cell.miss{background:rgba(196,60,44,.12);color:var(--danger)}
 .cell.today{outline:2px solid var(--accent);outline-offset:1px}
 .cell.rest{opacity:.55}
-.btn:disabled,.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn:disabled,.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
 .field .errline{font-size:12px;color:var(--danger);margin-top:4px;min-height:16px}
 .privacybox{border:1.5px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;background:var(--surface2)}
 .privacybox label{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;cursor:pointer}
@@ -342,7 +342,7 @@ video::cue{background:rgba(16,20,18,.75);color:#F4EDE0;font-family:Outfit,system
   flex:0 0 auto;display:flex;align-items:center;gap:6px;
   padding:0 12px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
   font-weight:700;background:rgba(0,0,0,.22);border-right:1px solid rgba(244,247,238,.12);
-  color:var(--accent);white-space:nowrap;z-index:1;
+  color:#F0A060;white-space:nowrap;z-index:1;
 }
 .userticker .ut-lab .n{font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:0;color:#F4F7EE;font-variant-numeric:tabular-nums}
 .userticker .ut-viewport{flex:1;min-width:0;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent)}
@@ -386,7 +386,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.1.5',
+  VERSION:'1.1.6',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -788,10 +788,13 @@ function levelFor(p,block){
   if(block>=2)l=Math.min(4,l+1);
   return l;
 }
+function profileReady(p){
+  return !!(p && WEEK[p.days] && p.level>=1 && p.goal && p.gear && p.limit && p.age);
+}
 function schedule(p){
-  const days=WEEK[p.days],out=[];let n=0;
+  const days=WEEK[p&&p.days],out=[];let n=0;
   for(let i=0;i<DAYS;i++){
-    const train=days.includes(i%7);
+    const train=!!(days&&days.includes(i%7));
     out.push({i,block:Math.floor(i/10),train,type:train?['A','B','C'][n++%3]:null});
   }
   return out;
@@ -1211,8 +1214,9 @@ function launchParts(now){
 }
 function primaryCtaLabel(){ return launchParts().done ? 'Go to active' : 'Start now'; }
 function syncPrimaryCta(){
-  const b=document.getElementById('go');
-  if(b && (S.screen==='cover' || !S.screen)) b.textContent=primaryCtaLabel();
+  if(!(S.screen==='cover' || !S.screen)) return;
+  const label=primaryCtaLabel();
+  ['go','go2'].forEach(id=>{ const b=document.getElementById(id); if(b) b.textContent=label; });
 }
 function paintCountdown(){
   const eld=document.getElementById('cd-d'); if(!eld)return;
@@ -1309,6 +1313,7 @@ function cover(a){
     <div class="photoframe" id="hero"></div>
     <p class="eyebrow">The Cigar Society \u00b7 Elevate Your Smoke</p>
     <h2 class="display h-xl">Two leagues.<br>One standard.</h2>
+    <button class="btn accent" id="go" type="button" style="margin-top:16px">${esc(primaryCtaLabel())}</button>
     <p class="quote">Brothers of the League and Ladies of the League run the same 9-minute calisthenics card for thirty days. All fitness levels welcome — every movement scales. ${esc(CONFIG.KICKOFF_LABEL.split('·')[0].trim())} kickoff.</p>
     <div class="leagues">
       <div class="leaguecard">
@@ -1341,6 +1346,7 @@ function cover(a){
       <span><span class="t">Watch the demo — 9-minute card · 30-day challenge</span>
       <span class="s">Voice-over + captions · see the Society standard</span></span>
     </button>
+    <button class="btn ghost" id="seecard" type="button" style="margin-top:8px">See the 9-minute card</button>
     <p class="lede">Elevate Your Smoke is The Cigar Society\u2019s bodyweight calisthenics card: timed PT, exact form demos, dual league boards, and bragging rights that stick. No gym. No fluff. No subscription.</p>
 
     <div class="cover-grid">
@@ -1374,8 +1380,8 @@ function cover(a){
     </div><!--cover-grid-end-->
     <div class="note">Pain is a stop signal. Effort is not. Verify doors, tables, chairs, and boxes before rows or step-ups.</div>
     <div style="flex:1;min-height:22px"></div>
-    <button class="btn accent" id="go" type="button">Start now</button>
-    <button class="btn ghost" id="seecard" type="button" style="margin-top:8px">See the 9-minute card</button>
+    <button class="btn accent" id="go2" type="button">${esc(primaryCtaLabel())}</button>
+    <button class="btn ghost" id="seecard2" type="button" style="margin-top:8px">See the 9-minute card</button>
     <div style="text-align:center;margin-top:8px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px">
       <a class="linkbtn" href="/">Society site</a>
       <a class="linkbtn" href="#manual">Movement manual</a>
@@ -1398,8 +1404,12 @@ function cover(a){
   if(S.countdown) clearInterval(S.countdown);
   if(!live) S.countdown=setInterval(paintCountdown,1000);
   document.getElementById('demo').onclick=()=>showPromoDemo();
-  document.getElementById('go').onclick=()=>{clearHash();S.screen=S.me?(S.profile?'plan':'quiz'):'join';S.qi=0;S.answers={};render()};
-  document.getElementById('seecard').onclick=()=>{history.replaceState(null,'',location.pathname+'#card');S.screen='card';S.back='cover';render()};
+  const start=()=>{clearHash();S.screen=S.me?(S.profile?'plan':'quiz'):'join';S.qi=0;S.answers={};render()};
+  const openCard=()=>{history.replaceState(null,'',location.pathname+'#card');S.screen='card';S.back='cover';render()};
+  document.getElementById('go').onclick=start;
+  document.getElementById('go2').onclick=start;
+  document.getElementById('seecard').onclick=openCard;
+  document.getElementById('seecard2').onclick=openCard;
 }
 function quiz(a){
   const q=Q[S.qi];
@@ -1807,7 +1817,19 @@ function streak(){
 function plan(a){
   ensureWeights();
   const w=S.weights;
-  const p=S.profile,sl=schedule(p),next=nextSlot();
+  const p=S.profile;
+  if(!profileReady(p)){
+    a.appendChild(el(`<div class="sheet">${head('DASHBOARD')}
+      <h2 class="display h-lg">Finish your mission check</h2>
+      <p class="lede">Your 30-day card is incomplete on this device. Answer the brief again to rebuild the schedule — progress already logged stays put.</p>
+      <button type="button" class="btn accent" id="rebrief" style="margin-top:18px">Continue mission check</button>
+      <div style="text-align:center;margin-top:10px"><button type="button" class="linkbtn" id="backcover">Back to cover</button></div>
+    </div>`));
+    document.getElementById('rebrief').onclick=()=>{S.qi=0;S.answers={...(p||{})};S.screen='quiz';render()};
+    document.getElementById('backcover').onclick=()=>{S.screen='cover';render()};
+    return;
+  }
+  const sl=schedule(p),next=nextSlot();
   let total=sl.filter(s=>s.train).length; if(!total) total=expectedSessions(p.days)||0;
   const doneN=Object.keys(S.log).length;
   const sc=clientScore();

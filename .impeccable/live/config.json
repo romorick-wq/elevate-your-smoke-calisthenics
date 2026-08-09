@@ -1,0 +1,12 @@
+{
+  "files": [
+    "app/index.html",
+    "app/elevate-your-smoke.html",
+    "app/website.html",
+    "app/admin.html",
+    "app/groundwork.html"
+  ],
+  "insertBefore": "</body>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}

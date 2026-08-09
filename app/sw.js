@@ -1,5 +1,5 @@
 /* Elevate Your Smoke — cache static workout assets only. Never cache /api or /admin. */
-const CACHE = 'eys-static-v1.1.5';
+const CACHE = 'eys-static-v1.1.6';
 const PRECACHE = ['/', '/website.html', '/app', '/icon.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
