@@ -4,33 +4,47 @@ const cors = require('cors');
 const db = require('./db');
 const sms = require('./sms');
 const { scoringExplain } = require('./score');
+const {
+  clientIp,
+  safeEqual,
+  pinAllowed,
+  visitIncrementAllowed,
+  securityHeaders,
+  corsOriginAllowed,
+  apiWriteGuard,
+} = require('./security');
 
 const PORT = process.env.PORT || 3000;
-const ORGANIZER_CODE = process.env.ORGANIZER_CODE || '1234';
+const ORGANIZER_CODE = process.env.ORGANIZER_CODE || '';
+const IS_PROD = !!(process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production');
+if (IS_PROD && !ORGANIZER_CODE) {
+  console.error('FATAL: ORGANIZER_CODE must be set in production.');
+  process.exit(1);
+}
+if (!ORGANIZER_CODE) {
+  console.warn('WARNING: ORGANIZER_CODE is empty — admin routes will reject all pins. Set it for local admin use.');
+}
+
 const APP_DIR = path.join(__dirname, '..', 'app');
 
 const app = express();
-app.use(cors());
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+app.use(securityHeaders);
+app.use(
+  cors({
+    origin(origin, cb) {
+      if (corsOriginAllowed(origin)) return cb(null, true);
+      return cb(null, false);
+    },
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+    maxAge: 600,
+  })
+);
 app.use(express.json({ type: ['application/json', 'text/plain'], limit: '64kb' }));
-app.use(express.text({ type: 'text/plain' }));
-
-/** Simple in-memory pin attempt limiter (per IP). */
-const pinAttempts = new Map();
-function pinAllowed(ip) {
-  const now = Date.now();
-  let row = pinAttempts.get(ip);
-  if (!row || now > row.resetAt) {
-    row = { count: 0, resetAt: now + 15 * 60 * 1000 };
-    pinAttempts.set(ip, row);
-  }
-  row.count += 1;
-  return row.count <= 30;
-}
-function clientIp(req) {
-  return String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown')
-    .split(',')[0]
-    .trim();
-}
+app.use(express.text({ type: 'text/plain', limit: '64kb' }));
+app.use(apiWriteGuard);
 
 function parseBody(req) {
   if (req.body && typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
@@ -52,7 +66,7 @@ function requireOrganizer(req, res, pin) {
     res.status(429).json({ ok: false, error: 'too many attempts' });
     return false;
   }
-  if (String(pin || '') !== String(ORGANIZER_CODE)) {
+  if (!ORGANIZER_CODE || !safeEqual(pin, ORGANIZER_CODE)) {
     res.json({ ok: false, error: 'bad pin' });
     return false;
   }
@@ -112,7 +126,23 @@ async function handleUpdate(req, res) {
       currentWeight: body.currentWeight,
       dateStarted: body.dateStarted,
       league: body.league,
+      displayName: body.displayName,
     });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: 'server error' });
+  }
+}
+
+async function handleReset(req, res) {
+  try {
+    const body = parseBody(req) || {};
+    const pin = String(body.pin || req.query.pin || '');
+    if (!requireOrganizer(req, res, pin)) return;
+    const challenge = String(body.challenge || req.query.challenge || '');
+    const name = String(body.name || req.query.name || '');
+    const result = await db.resetParticipantProgress(challenge, name);
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -196,11 +226,39 @@ async function handleMeUpdate(req, res) {
       league: body.league,
       startingWeight: body.startingWeight,
       currentWeight: body.currentWeight,
+      displayName: body.displayName,
     });
     res.json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, error: 'server error' });
+  }
+}
+
+async function handleVisitsGet(req, res) {
+  try {
+    if (!dbReady) return res.json({ ok: true, visits: 0, pending: true });
+    const visits = await db.getVisitCount();
+    res.json({ ok: true, visits });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: 'server error', visits: 0 });
+  }
+}
+
+async function handleVisitsPost(req, res) {
+  try {
+    if (!dbReady) return res.json({ ok: true, visits: 0, counted: false, pending: true });
+    const ip = clientIp(req);
+    if (!visitIncrementAllowed(ip)) {
+      const visits = await db.getVisitCount();
+      return res.json({ ok: true, visits, counted: false });
+    }
+    const visits = await db.recordVisit();
+    res.json({ ok: true, visits, counted: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: 'server error', visits: 0, counted: false });
   }
 }
 
@@ -238,10 +296,13 @@ app.get('/api/roster', handleRoster);
 app.delete('/api/roster', handleDelete);
 app.post('/api/roster/delete', handleDelete);
 app.post('/api/roster/update', handleUpdate);
+app.post('/api/roster/reset', handleReset);
 app.post('/api/roster/sms', handleSms);
 app.get('/api/leaderboard', handleLeaderboard);
 app.post('/api/me/delete', handleMeDelete);
 app.post('/api/me/update', handleMeUpdate);
+app.get('/api/visits', handleVisitsGet);
+app.post('/api/visits', handleVisitsPost);
 
 app.get(['/admin', '/admin/'], (_req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store');

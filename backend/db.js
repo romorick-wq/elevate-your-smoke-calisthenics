@@ -49,6 +49,7 @@ async function init() {
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS current_weight REAL`);
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS date_started DATE`);
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS league TEXT NOT NULL DEFAULT ''`);
+  await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS display_name TEXT NOT NULL DEFAULT ''`);
   await db.query(`
     CREATE TABLE IF NOT EXISTS sessions (
       id BIGSERIAL PRIMARY KEY,
@@ -79,6 +80,15 @@ async function init() {
   await db.query(`
     CREATE INDEX IF NOT EXISTS participants_challenge_idx ON participants (challenge, last_active DESC);
   `);
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS site_stats (
+      key TEXT PRIMARY KEY,
+      value BIGINT NOT NULL DEFAULT 0
+    );
+  `);
+  await db.query(
+    `INSERT INTO site_stats (key, value) VALUES ('visits', 0) ON CONFLICT (key) DO NOTHING`
+  );
 }
 
 function parseWeight(v) {
@@ -108,6 +118,23 @@ function parseLeague(v) {
   return '';
 }
 
+/** Public board nickname — 2–32 chars, or empty to fall back to callsign. */
+function sanitizeDisplayName(v) {
+  const s = String(v == null ? '' : v)
+    .trim()
+    .replace(/\s+/g, ' ')
+    .slice(0, 32);
+  if (!s) return '';
+  if (s.length < 2) return undefined; // invalid when non-empty but too short
+  return s;
+}
+
+function publicBoardName(p) {
+  const d = String((p && p.displayName) || '').trim();
+  if (d) return d;
+  return String((p && p.name) || '').trim() || '—';
+}
+
 async function upsertParticipant(body) {
   const db = getPool();
   const id = String(body.id || '').slice(0, 64);
@@ -123,6 +150,13 @@ async function upsertParticipant(body) {
     return { ok: false, error: 'bad weight' };
   }
   const leagueIn = parseLeague(body.league);
+  let displayIn = null;
+  let setDisplay = false;
+  if (body.displayName !== undefined) {
+    setDisplay = true;
+    displayIn = sanitizeDisplayName(body.displayName);
+    if (displayIn === undefined) return { ok: false, error: 'bad display name' };
+  }
   const isLog = body.action === 'log';
   const day = n(body.day);
   const elapsedMs = n(body.elapsedMs);
@@ -171,13 +205,13 @@ async function upsertParticipant(body) {
     await client.query(
       `INSERT INTO participants
          (id, challenge, name, joined, last_active, sessions, total, streak, day, per_week,
-          starting_weight, current_weight, league)
-       VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10, $11)
+          starting_weight, current_weight, league, display_name)
+       VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10, $11, $13)
        ON CONFLICT (id, challenge) DO UPDATE SET
          name = EXCLUDED.name,
          last_active = NOW(),
          sessions = CASE
-           WHEN $12 THEN GREATEST(participants.sessions, EXCLUDED.sessions)
+           WHEN $12 THEN participants.sessions + 1
            ELSE participants.sessions
          END,
          total = CASE
@@ -193,11 +227,13 @@ async function upsertParticipant(body) {
            WHEN EXCLUDED.per_week > 0 THEN EXCLUDED.per_week
            ELSE participants.per_week
          END,
-         starting_weight = COALESCE(EXCLUDED.starting_weight, participants.starting_weight),
-         current_weight = COALESCE(EXCLUDED.current_weight, participants.current_weight),
          league = CASE
            WHEN EXCLUDED.league <> '' THEN EXCLUDED.league
            ELSE participants.league
+         END,
+         display_name = CASE
+           WHEN $14 THEN EXCLUDED.display_name
+           ELSE participants.display_name
          END`,
       [
         id,
@@ -212,6 +248,8 @@ async function upsertParticipant(body) {
         curIn,
         leagueIn,
         isLog,
+        setDisplay ? displayIn || '' : '',
+        setDisplay,
       ]
     );
 
@@ -220,8 +258,12 @@ async function upsertParticipant(body) {
       try {
         await client.query(
           `INSERT INTO sessions (participant_id, name, challenge, day, sessions_after, idempotency_key, elapsed_ms, credit)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, 'full')`,
-          [id, name, challenge, day, sessionsIn, idem, elapsedMs]
+           VALUES (
+             $1, $2, $3, $4,
+             (SELECT sessions FROM participants WHERE id = $1 AND challenge = $3),
+             $5, $6, 'full'
+           )`,
+          [id, name, challenge, day, idem, elapsedMs]
         );
         logged = true;
       } catch (err) {
@@ -256,6 +298,7 @@ function rowToPerson(r) {
   const started = dateOnly(r.date_started) || dateOnly(r.joined) || new Date(r.joined).toISOString().slice(0, 10);
   return {
     name: r.name,
+    displayName: String(r.display_name || '').trim(),
     joined: new Date(r.joined).getTime(),
     lastActive: new Date(r.last_active).getTime(),
     sessions: n(r.sessions),
@@ -275,7 +318,7 @@ async function loadPeople(challenge) {
   const db = getPool();
   const { rows } = await db.query(
     `SELECT id, name, challenge, joined, last_active, sessions, total, streak, day, per_week,
-            phone, starting_weight, current_weight, date_started, league
+            phone, starting_weight, current_weight, date_started, league, display_name
      FROM participants
      WHERE ($1 = '' OR challenge = $1)
      ORDER BY last_active DESC`,
@@ -299,6 +342,7 @@ async function loadPeople(challenge) {
         name: prev.joined <= person.joined ? prev.name : person.name,
         joined: Math.min(prev.joined, person.joined),
         phone: base.phone || other.phone || '',
+        displayName: base.displayName || other.displayName || '',
         startingWeight: base.startingWeight !== '' ? base.startingWeight : other.startingWeight,
         currentWeight: base.currentWeight !== '' ? base.currentWeight : other.currentWeight,
         dateStarted: base.dateStarted || other.dateStarted,
@@ -314,10 +358,10 @@ async function getRoster(challenge) {
   return { ok: true, people: await loadPeople(challenge) };
 }
 
-/** Public board — no PII beyond callsign + progress. */
+/** Public board — display nickname + progress. Real callsign stays CRM-only. */
 async function getLeaderboard(challenge) {
   const people = (await loadPeople(challenge)).map((p) => ({
-    name: p.name,
+    name: publicBoardName(p),
     league: p.league || '',
     sessions: p.sessions,
     total: p.total,
@@ -350,6 +394,8 @@ async function updateParticipantDetails(challenge, name, details) {
     return { ok: false, error: 'bad weight' };
   }
   const league = parseLeague(details.league);
+  const displayName = sanitizeDisplayName(details.displayName);
+  if (displayName === undefined) return { ok: false, error: 'bad display name' };
 
   let dateStarted = null;
   if (details.dateStarted) {
@@ -366,9 +412,10 @@ async function updateParticipantDetails(challenge, name, details) {
          starting_weight = $4,
          current_weight = $5,
          date_started = COALESCE($6::date, date_started, joined::date),
-         league = $7
+         league = $7,
+         display_name = $8
      WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
-    [c, personName, phone, startingWeight, currentWeight, dateStarted, league]
+    [c, personName, phone, startingWeight, currentWeight, dateStarted, league, displayName]
   );
   if (!rowCount) return { ok: false, error: 'not found' };
   return { ok: true, updated: rowCount };
@@ -393,6 +440,63 @@ async function deleteParticipant(challenge, name) {
   return { ok: true, deleted: rowCount };
 }
 
+/**
+ * Organizer reset — wipe workout progress but keep the person on the roster.
+ * Clears sessions / streak / day / date_started and deletes logged session rows.
+ * Keeps callsign, league, phone, weights, schedule total, and device id.
+ */
+async function resetParticipantProgress(challenge, name) {
+  const db = getPool();
+  const c = String(challenge || '').slice(0, 64);
+  const personName = String(name || '').trim().slice(0, 64);
+  if (!c || !personName) return { ok: false, error: 'bad request' };
+
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+    const { rows } = await client.query(
+      `SELECT id FROM participants
+       WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))
+       FOR UPDATE`,
+      [c, personName]
+    );
+    if (!rows.length) {
+      await client.query('ROLLBACK');
+      return { ok: false, error: 'not found' };
+    }
+    const ids = rows.map((r) => r.id);
+    const { rowCount } = await client.query(
+      `UPDATE participants
+       SET sessions = 0,
+           streak = 0,
+           day = 0,
+           date_started = NULL,
+           starting_weight = NULL,
+           current_weight = NULL,
+           last_active = NOW()
+       WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))`,
+      [c, personName]
+    );
+    await client.query(
+      `DELETE FROM sessions
+       WHERE challenge = $1
+         AND (
+           lower(trim(name)) = lower(trim($2))
+           OR participant_id = ANY($3::text[])
+         )`,
+      [c, personName, ids]
+    );
+    await client.query('COMMIT');
+    return { ok: true, reset: rowCount, devices: ids.length };
+  } catch (err) {
+    try {
+      await client.query('ROLLBACK');
+    } catch (_) {}
+    throw err;
+  } finally {
+    client.release();
+  }
+}
 
 /** Participant self-delete — requires matching id + callsign. */
 async function deleteOwnParticipant(challenge, id, name) {
@@ -429,6 +533,13 @@ async function updateOwnParticipant(challenge, id, details) {
       return { ok: false, error: 'bad weight' };
     }
   }
+  let displayName = null;
+  let setDisplay = false;
+  if (details.displayName !== undefined) {
+    setDisplay = true;
+    displayName = sanitizeDisplayName(details.displayName);
+    if (displayName === undefined) return { ok: false, error: 'bad display name' };
+  }
   const { rows } = await db.query(
     `SELECT id FROM participants WHERE challenge = $1 AND id = $2 LIMIT 1`,
     [c, pid]
@@ -440,11 +551,31 @@ async function updateOwnParticipant(challenge, id, details) {
        league = CASE WHEN $4 <> '' THEN $4 ELSE league END,
        starting_weight = COALESCE($5, starting_weight),
        current_weight = COALESCE($6, current_weight),
+       display_name = CASE WHEN $7 THEN $8 ELSE display_name END,
        last_active = NOW()
      WHERE challenge = $1 AND id = $2`,
-    [c, pid, newName, league, startIn ?? null, curIn ?? null]
+    [c, pid, newName, league, startIn ?? null, curIn ?? null, setDisplay, displayName || '']
   );
   return { ok: true };
+}
+
+async function getVisitCount() {
+  const db = getPool();
+  const { rows } = await db.query(
+    `SELECT value FROM site_stats WHERE key = 'visits' LIMIT 1`
+  );
+  return rows.length ? Number(rows[0].value) || 0 : 0;
+}
+
+/** Atomically increment and return the new visit total. */
+async function recordVisit() {
+  const db = getPool();
+  const { rows } = await db.query(
+    `INSERT INTO site_stats (key, value) VALUES ('visits', 1)
+     ON CONFLICT (key) DO UPDATE SET value = site_stats.value + 1
+     RETURNING value`
+  );
+  return Number(rows[0].value) || 0;
 }
 
 module.exports = {
@@ -454,8 +585,11 @@ module.exports = {
   getLeaderboard,
   updateParticipantDetails,
   deleteParticipant,
+  resetParticipantProgress,
   deleteOwnParticipant,
   updateOwnParticipant,
+  getVisitCount,
+  recordVisit,
   SESSION_MINUTES,
   scoringExplain,
   scorePerson,

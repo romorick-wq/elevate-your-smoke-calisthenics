@@ -18,8 +18,15 @@ everyone.
 4. Open the web service → **Variables**.
    - Link `DATABASE_URL` from the Postgres service (Railway’s variable
      reference / “Add variable” → reference the Postgres `DATABASE_URL`).
-   - Add `ORGANIZER_CODE` = a code only you know (unlocks the in-app roster).
+   - Add `ORGANIZER_CODE` = a strong code only you know (unlocks the organizer CRM). Required in production — never commit it, never put it in HTML.
+   - Optional: `PUBLIC_ORIGIN` = your exact site URL if you use a custom domain (comma-separated allowed CORS origins).
    - Optional: `PGSSL=false` only if you run Postgres locally without SSL.
+
+## Security (what is / is not protected)
+
+- **Protected:** organizer pin (server-only), Postgres data, Twilio secrets, admin reset/delete/SMS, rate limits, browser security headers.
+- **Not hideable:** the public HTML/CSS/JS app files. Browsers must download them to run the site — that is normal. Do not put secrets in those files.
+- Use a long random `ORGANIZER_CODE`. After failed pin attempts, wait before retrying (the API rate-limits by IP).
 
 ## 2. Deploy this folder
 
@@ -84,19 +91,24 @@ Public leaderboard (no pin): `GET /api/leaderboard?challenge=smoke-30`.
 **sessions** — one row every time somebody finishes a nine-minute session
 (attendance log).
 
-## Group text (SMS) — free by default
+## Group text (SMS + WhatsApp) — free by default
 
-Admin **Text** tab + per-person **Text** on CRM cards.
+Admin **Text** tab + per-person **Text** / **WhatsApp** on CRM cards.
 
-**Free (recommended):** opens the organizer’s **Messages** app with recipients and
+**Free Messages:** opens the organizer’s **Messages** app with recipients and
 the draft filled in — you tap Send. Uses your normal phone/carrier plan.
 Best on iPhone or Mac. Large blasts open in batches of 12.
-**Copy numbers + message** works on desktop if Messages does not open.
 
-No Twilio account and no Railway SMS variables are required.
+**Free WhatsApp:** opens [wa.me](https://wa.me) click-to-chat with the draft
+filled in — one person per chat (WhatsApp does not support multi-recipient
+compose links). Use **Open next** to walk the roster. Same phone numbers as CRM.
 
-**Optional paid Twilio** (only if you later want the server to send for you):
-`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`. Skip this for free messaging.
+**Copy numbers + message** works on desktop if neither app opens.
+
+No Twilio / Meta Business API required for free messaging.
+
+**Optional paid Twilio SMS** (server send): `TWILIO_ACCOUNT_SID`,
+`TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`. Skip this for free messaging.
 
 ## What does not leave the phone
 

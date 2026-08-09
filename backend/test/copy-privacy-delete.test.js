@@ -51,6 +51,9 @@ assert.ok(site.includes('Go to active'));
 assert.ok(site.includes('id="boards"'));
 assert.ok(site.includes('/admin'));
 assert.ok(site.includes('/api/leaderboard'));
+assert.ok(site.includes('/api/visits'));
+assert.ok(site.includes('id="visit-count"'));
+assert.ok(site.includes('trackVisit'));
 
 // Phase cards use stacked flex (no absolute overlap layout)
 assert.ok(indexHtml.includes('.phases .ph{background:var(--surface2)'));
@@ -59,5 +62,27 @@ assert.ok(indexHtml.includes('flex-direction:column'));
 // Desktop widening
 assert.ok(indexHtml.includes('@media (min-width:900px)'));
 assert.ok(indexHtml.includes('max-width:720px'));
+
+// Organizer reset progress (keep on roster)
+const adminHtml = fs.readFileSync(path.join(__dirname, '../../app/admin.html'), 'utf8');
+assert.ok(adminHtml.includes('/api/roster/reset'));
+assert.ok(adminHtml.includes('data-reset'));
+const serverJs = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+assert.ok(serverJs.includes("'/api/roster/reset'"));
+assert.ok(serverJs.includes('handleReset'));
+assert.ok(serverJs.includes("'/api/visits'"));
+const dbJs = fs.readFileSync(path.join(__dirname, '../db.js'), 'utf8');
+assert.ok(dbJs.includes('resetParticipantProgress'));
+assert.ok(dbJs.includes('participants.sessions + 1'));
+assert.ok(dbJs.includes('recordVisit'));
+assert.ok(dbJs.includes('site_stats'));
+assert.ok(dbJs.includes('display_name'));
+assert.ok(dbJs.includes('publicBoardName'));
+assert.ok(adminHtml.includes('Display name (public board)'));
+assert.ok(indexHtml.includes('Display name (public board)'));
+assert.ok(indexHtml.includes('boardNameOf'));
+assert.ok(indexHtml.includes('id="userticker"'));
+assert.ok(indexHtml.includes('mountUserTicker'));
+assert.ok(indexHtml.includes('refreshUserTicker'));
 
 console.log('copy-privacy-delete.test.js OK');

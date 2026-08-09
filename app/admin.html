@@ -106,8 +106,11 @@ body{
 }
 .meta .field input:focus,.meta .field select:focus{outline:none;border-color:var(--accent)}
 .meta .field select{cursor:pointer}
-.save-row{display:flex;align-items:center;gap:10px;margin-top:10px}
-.save-row .btn{width:auto;flex:1;margin:0}
+.save-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.save-row .btn{width:auto;flex:1;margin:0;min-width:88px}
+.btn.reset{background:transparent;color:var(--danger);border:1.5px solid rgba(196,60,44,.45)}
+.btn.reset:hover{background:rgba(196,60,44,.08)}
+.btn.wa{background:#128C7E;color:#fff;border:0}
 .find{display:flex;gap:8px;align-items:stretch;margin:14px 0 4px}
 .find input{
   flex:1;font-family:var(--body);font-weight:600;font-size:15px;letter-spacing:0;
@@ -315,7 +318,7 @@ function leagueLabel(v){
 }
 function matchPerson(p, q){
   if(!q)return true;
-  const hay=[p.name,p.phone,p.dateStarted,p.league,leagueLabel(p.league),String(p.startingWeight??''),String(p.currentWeight??'')]
+  const hay=[p.name,p.displayName,p.phone,p.dateStarted,p.league,leagueLabel(p.league),String(p.startingWeight??''),String(p.currentWeight??'')]
     .join(' ').toLowerCase();
   return q.split(/\s+/).filter(Boolean).every(tok=>hay.includes(tok));
 }
@@ -451,7 +454,7 @@ function renderDashboard(body){
   }else if(TAB==='crm') renderCrm(list, people);
   else renderBoard(list, people, TAB);
 
-  body.appendChild(el('<p class="fine" style="margin-top:14px">Filter by Brothers / Ladies, then Find by callsign or phone. Text tab blasts or singles out anyone with a phone on file. CRM edits league, phone, and weights.</p>'));
+  body.appendChild(el('<p class="fine" style="margin-top:14px">Filter by Brothers / Ladies, then Find by callsign, display name, or phone. Text tab blasts or singles out anyone with a phone on file. CRM shows the real callsign; set a Display name for what appears on public boards. <b>Reset</b> clears sessions, BW change, and start date but keeps them on the roster. Trash removes them entirely.</p>'));
 }
 
 function hasPhone(p){
@@ -499,6 +502,14 @@ function buildSmsUri(phones, body){
   if(android) return 'sms:'+addrs+'?body='+enc;
   return 'sms:'+addrs+'?body='+enc;
 }
+/** WhatsApp click-to-chat (one person per link). Digits only, no +. */
+function buildWhatsAppUri(phone, body){
+  const n=normalizePhoneClient(phone);
+  if(!n)return '';
+  const digits=n.replace(/\D/g,'');
+  if(digits.length<10)return '';
+  return 'https://wa.me/'+digits+'?text='+encodeURIComponent(String(body||''));
+}
 /** Open Messages. Prefer sync navigation from a real click (no confirm() beforehand). */
 function openDeviceSms(phones, body){
   const uri=buildSmsUri(phones, body);
@@ -517,6 +528,21 @@ function openDeviceSms(phones, body){
       a.remove();
       return true;
     }catch(e2){ return false; }
+  }
+}
+/** Open WhatsApp for one number (new tab / app). */
+function openWhatsApp(phone, body){
+  const uri=buildWhatsAppUri(phone, body);
+  if(!uri)return false;
+  try{
+    const w=window.open(uri,'_blank','noopener');
+    if(!w){
+      // Popup blocked — navigate this tab
+      window.location.assign(uri);
+    }
+    return true;
+  }catch(e){
+    try{ window.location.assign(uri); return true; }catch(e2){ return false; }
   }
 }
 async function copySmsBundle(phones, body){
@@ -575,15 +601,15 @@ function renderText(list, people){
       :'Full roster');
   const targetN=solo?1:withPhone;
   const modeLab=SMS_TWILIO
-    ? 'Free path: Open Messages on your phone/Mac. Optional Twilio server send is also enabled on this deploy.'
-    : 'Free messaging — opens your phone or Mac Messages app. You review the thread, then tap Send. No Twilio needed.';
+    ? 'Free path: Messages or WhatsApp on your phone. Optional Twilio SMS send is also enabled on this deploy.'
+    : 'Free messaging — Messages or WhatsApp. You review the chat, then tap Send. No paid API required.';
   if(!String(SMS_DRAFT||'').trim()){
     SMS_DRAFT='Elevate Your Smoke — reminder from The Cigar Society.';
   }
   const CHUNK=12;
 
   list.appendChild(el(`<div class="smsbox">
-    <p class="eyebrow" style="margin-top:12px">Group text \u00b7 SMS</p>
+    <p class="eyebrow" style="margin-top:12px">Group text \u00b7 SMS & WhatsApp</p>
     <p class="fine" style="margin:0 0 10px">${solo
       ? 'Individual message. Clear the target below to blast the filtered roster instead.'
       : 'Message goes to everyone in <b>'+esc(scopeLab)+'</b> who has a phone on file ('+withPhone+' of '+(people.length||0)+' shown'+(LEAGUE!=='all'||QUERY.trim()?' · '+allPhone+' on full roster':'')+').'}</p>
@@ -600,22 +626,26 @@ function renderText(list, people){
     </div>
     <div class="sms-actions">
       <a class="btn accent" id="smssend" href="#">${solo?'Open Messages (free)':'Open Messages · '+targetN+' (free)'}</a>
+      <a class="btn accent" id="wasend" href="#" style="background:#128C7E;color:#fff">${solo?'Open WhatsApp (free)':'Open WhatsApp · '+targetN+' (free)'}</a>
       <button type="button" class="btn ghost sm" id="smscopy">Copy numbers + message</button>
-      ${SMS_TWILIO?`<button type="button" class="btn ghost sm" id="smstwilio">${solo?'Send via Twilio':'Send via Twilio · '+targetN}</button>`:''}
+      ${SMS_TWILIO?`<button type="button" class="btn ghost sm" id="smstwilio">${solo?'Send via Twilio SMS':'Send via Twilio SMS · '+targetN}</button>`:''}
       ${!solo?`<a class="btn ghost sm" id="smsall" href="#">Open Messages · all roster (${allPhone})</a>`:''}
-      <button type="button" class="btn ghost sm" id="smsnext" hidden>Open next batch</button>
+      ${!solo?`<a class="btn ghost sm" id="waall" href="#">Open WhatsApp · all roster (${allPhone})</a>`:''}
+      <button type="button" class="btn ghost sm" id="smsnext" hidden>Open next</button>
     </div>
     <p class="sms-result" id="smsresult" hidden></p>
-    <p class="fine" style="margin-top:12px">Save phones on CRM cards first. Best on <b>iPhone or Mac</b>. Groups open in batches of ${CHUNK}. On desktop without Messages, use Copy.</p>
+    <p class="fine" style="margin-top:12px">Save phones on CRM cards first (WhatsApp needs the same mobile number). <b>Messages</b> can group; <b>WhatsApp</b> opens one chat at a time — use Open next for the rest. No Meta Business API required.</p>
   </div>`));
 
   const ta=document.getElementById('smsmsg');
   const chars=document.getElementById('smschars');
   const result=document.getElementById('smsresult');
   const sendA=document.getElementById('smssend');
+  const waA=document.getElementById('wasend');
   const allA=document.getElementById('smsall');
+  const waAllA=document.getElementById('waall');
   const nextBtn=document.getElementById('smsnext');
-  let batchState=null; // {phones, message, i}
+  let batchState=null; // {channel:'sms'|'wa', phones, message, i, chunk}
 
   const showResult=(ok, text)=>{
     result.hidden=false;
@@ -629,7 +659,7 @@ function renderText(list, people){
     return people.filter(hasPhone).map(p=>({name:p.name,phone:p.phone}));
   };
 
-  const syncLink=(anchor, mode)=>{
+  const syncSmsLink=(anchor, mode)=>{
     if(!anchor)return;
     const message=ta.value.trim();
     const phones=recipientsFor(mode).map(r=>r.phone);
@@ -642,12 +672,30 @@ function renderText(list, people){
       anchor.setAttribute('aria-disabled','true');
     }
   };
+  const syncWaLink=(anchor, mode)=>{
+    if(!anchor)return;
+    const message=ta.value.trim();
+    const phones=normalizePhoneList(recipientsFor(mode).map(r=>r.phone));
+    const uri=(message&&phones.length)?buildWhatsAppUri(phones[0], message):'';
+    if(uri){
+      anchor.href=uri;
+      anchor.target='_blank';
+      anchor.rel='noopener';
+      anchor.removeAttribute('aria-disabled');
+    }else{
+      anchor.href='#';
+      anchor.removeAttribute('target');
+      anchor.setAttribute('aria-disabled','true');
+    }
+  };
 
   const syncAll=()=>{
     SMS_DRAFT=ta.value;
     chars.textContent=ta.value.length+' / 1500';
-    syncLink(sendA, solo?'one':'filter');
-    syncLink(allA, 'all');
+    syncSmsLink(sendA, solo?'one':'filter');
+    syncSmsLink(allA, 'all');
+    syncWaLink(waA, solo?'one':'filter');
+    syncWaLink(waAllA, 'all');
   };
   ta.oninput=syncAll;
   syncAll();
@@ -655,7 +703,7 @@ function renderText(list, people){
   const clearT=document.getElementById('cleartarget');
   if(clearT) clearT.onclick=()=>{SMS_TARGET=null;renderText(list, people)};
 
-  const onOpenClick=(e, mode)=>{
+  const onOpenSms=(e, mode)=>{
     const message=ta.value.trim();
     if(!message){
       e.preventDefault();
@@ -675,10 +723,8 @@ function renderText(list, people){
       showResult(false,'Phone numbers look invalid. Use +1 and 10 digits, then Save on CRM.');
       return;
     }
-    // Large groups: navigate this click to the first batch, then use "Open next batch"
-    // (window.confirm before sms: breaks the user-gesture on many browsers — button looks dead).
     if(usable.length>CHUNK){
-      batchState={phones:usable, message, i:0};
+      batchState={channel:'sms', phones:usable, message, i:0, chunk:CHUNK};
       const slice=usable.slice(0, CHUNK);
       const uri=buildSmsUri(slice, message);
       if(!uri){
@@ -689,8 +735,8 @@ function renderText(list, people){
       batchState.i=slice.length;
       e.currentTarget.href=uri;
       nextBtn.hidden=false;
-      nextBtn.textContent='Open next batch ('+batchState.i+' of '+usable.length+' done)';
-      showResult(true,'Opening first batch · '+batchState.i+' of '+usable.length+'. Tap Send, then Open next batch.');
+      nextBtn.textContent='Open next Messages batch ('+batchState.i+' of '+usable.length+' done)';
+      showResult(true,'Opening first Messages batch · '+batchState.i+' of '+usable.length+'. Tap Send, then Open next.');
       return;
     }
     const uri=buildSmsUri(usable, message);
@@ -700,16 +746,79 @@ function renderText(list, people){
       return;
     }
     e.currentTarget.href=uri;
-    showResult(true,'Opening Messages with '+usable.length+' recipient'+(usable.length===1?'':'s')+'. Tap Send. If nothing opens, use Copy.');
+    showResult(true,'Opening Messages with '+usable.length+' recipient'+(usable.length===1?'':'s')+'. Tap Send. If nothing opens, use Copy or WhatsApp.');
   };
 
-  sendA.addEventListener('click', e=>onOpenClick(e, solo?'one':'filter'));
-  if(allA) allA.addEventListener('click', e=>onOpenClick(e, 'all'));
+  const onOpenWa=(e, mode)=>{
+    const message=ta.value.trim();
+    if(!message){
+      e.preventDefault();
+      showResult(false,'Type a message first.');
+      ta.focus();
+      return;
+    }
+    const phones=recipientsFor(mode).map(r=>r.phone);
+    if(!phones.length){
+      e.preventDefault();
+      showResult(false,'Nobody in that set has a phone yet. Add phones on CRM cards.');
+      return;
+    }
+    const usable=normalizePhoneList(phones);
+    if(!usable.length){
+      e.preventDefault();
+      showResult(false,'Phone numbers look invalid. Use +1 and 10 digits, then Save on CRM.');
+      return;
+    }
+    // WhatsApp: one chat per click
+    batchState={channel:'wa', phones:usable, message, i:0, chunk:1};
+    const uri=buildWhatsAppUri(usable[0], message);
+    if(!uri){
+      e.preventDefault();
+      showResult(false,'Could not build WhatsApp link. Check the number format.');
+      return;
+    }
+    batchState.i=1;
+    e.currentTarget.href=uri;
+    e.currentTarget.target='_blank';
+    e.currentTarget.rel='noopener';
+    if(usable.length>1){
+      nextBtn.hidden=false;
+      nextBtn.textContent='Open next WhatsApp ('+batchState.i+' of '+usable.length+' done)';
+      showResult(true,'Opening WhatsApp for the first number · '+batchState.i+' of '+usable.length+'. Send, then Open next.');
+    }else{
+      nextBtn.hidden=true;
+      batchState=null;
+      showResult(true,'Opening WhatsApp. Review the chat, then tap Send.');
+    }
+  };
+
+  sendA.addEventListener('click', e=>onOpenSms(e, solo?'one':'filter'));
+  if(allA) allA.addEventListener('click', e=>onOpenSms(e, 'all'));
+  waA.addEventListener('click', e=>onOpenWa(e, solo?'one':'filter'));
+  if(waAllA) waAllA.addEventListener('click', e=>onOpenWa(e, 'all'));
 
   nextBtn.onclick=e=>{
     e.preventDefault();
     if(!batchState){nextBtn.hidden=true;return}
-    const slice=batchState.phones.slice(batchState.i, batchState.i+CHUNK);
+    if(batchState.channel==='wa'){
+      const phone=batchState.phones[batchState.i];
+      if(!phone){nextBtn.hidden=true;batchState=null;return}
+      if(openWhatsApp(phone, batchState.message)){
+        batchState.i+=1;
+        if(batchState.i>=batchState.phones.length){
+          nextBtn.hidden=true;
+          showResult(true,'Opened WhatsApp for all '+batchState.phones.length+'. Tap Send in each chat.');
+          batchState=null;
+        }else{
+          nextBtn.textContent='Open next WhatsApp ('+batchState.i+' of '+batchState.phones.length+' done)';
+          showResult(true,'Opened next WhatsApp · '+batchState.i+' of '+batchState.phones.length+'.');
+        }
+      }else{
+        showResult(false,'Could not open WhatsApp. Allow pop-ups, or use Copy.');
+      }
+      return;
+    }
+    const slice=batchState.phones.slice(batchState.i, batchState.i+batchState.chunk);
     if(!slice.length){nextBtn.hidden=true;batchState=null;return}
     if(openDeviceSms(slice, batchState.message)){
       batchState.i+=slice.length;
@@ -718,11 +827,11 @@ function renderText(list, people){
         showResult(true,'Opened Messages for all '+batchState.phones.length+'. Tap Send in each thread.');
         batchState=null;
       }else{
-        nextBtn.textContent='Open next batch ('+batchState.i+' of '+batchState.phones.length+' done)';
-        showResult(true,'Opened next batch · '+batchState.i+' of '+batchState.phones.length+'.');
+        nextBtn.textContent='Open next Messages batch ('+batchState.i+' of '+batchState.phones.length+' done)';
+        showResult(true,'Opened next Messages batch · '+batchState.i+' of '+batchState.phones.length+'.');
       }
     }else{
-      showResult(false,'Could not open Messages. Use Copy numbers + message instead.');
+      showResult(false,'Could not open Messages. Use Copy or WhatsApp instead.');
     }
   };
 
@@ -734,7 +843,7 @@ function renderText(list, people){
     const ok=await copySmsBundle(phones, message);
     const n=normalizePhoneList(phones).length;
     showResult(ok, ok
-      ? ('Copied '+n+' number'+(n===1?'':'s')+' and your message. Paste into Messages.')
+      ? ('Copied '+n+' number'+(n===1?'':'s')+' and your message. Paste into Messages or WhatsApp.')
       : 'Could not copy. Select the message manually.');
   };
 
@@ -745,14 +854,14 @@ function renderText(list, people){
     let confirmMsg='';
     let payload={pin,challenge:CONFIG.CHALLENGE,message};
     if(solo){
-      confirmMsg='Text '+solo.name+' via Twilio now?';
+      confirmMsg='Text '+solo.name+' via Twilio SMS now?';
       payload.people=[{name:solo.name,phone:solo.phone}];
     }else if(mode==='all'){
       if(!allPhone){showResult(false,'Nobody on the full roster has a phone yet.');return}
-      confirmMsg='Text all '+allPhone+' roster phones via Twilio?';
+      confirmMsg='Text all '+allPhone+' roster phones via Twilio SMS?';
     }else{
       if(!withPhone){showResult(false,'Nobody in this filter has a phone yet.');return}
-      confirmMsg='Text '+withPhone+' people in '+scopeLab+' via Twilio?';
+      confirmMsg='Text '+withPhone+' people in '+scopeLab+' via Twilio SMS?';
       payload.people=people.filter(hasPhone).map(p=>({name:p.name,phone:p.phone}));
     }
     if(!confirm(confirmMsg))return;
@@ -764,7 +873,7 @@ function renderText(list, people){
       if(d.error==='sms not configured'){
         SMS_TWILIO=false;
         SMS_MISSING=d.missing||[];
-        showResult(false,'Twilio not configured'+(SMS_MISSING.length?': missing '+SMS_MISSING.join(', '):'')+'. Use Messages or Copy.');
+        showResult(false,'Twilio not configured'+(SMS_MISSING.length?': missing '+SMS_MISSING.join(', '):'')+'. Use Messages, WhatsApp, or Copy.');
         renderText(list, people);
       }else if(d.error==='bad pin'){
         showResult(false,'Organizer code rejected. Log out and back in.');
@@ -783,7 +892,7 @@ function renderText(list, people){
     }catch(e){
       showResult(false,'Could not reach the SMS API.');
     }
-    if(btn){btn.disabled=false;btn.textContent=solo?'Send via Twilio':'Send via Twilio · '+targetN}
+    if(btn){btn.disabled=false;btn.textContent=solo?'Send via Twilio SMS':'Send via Twilio SMS · '+targetN}
   };
 
   document.getElementById('smscopy').onclick=()=>runCopy(solo?'one':'filter');
@@ -846,13 +955,16 @@ function renderCrm(list, people){
     const curVal=p.currentWeight===''||p.currentWeight==null?'':p.currentWeight;
     const startedVal=p.dateStarted||'';
     const phoneVal=p.phone||'';
+    const displayVal=p.displayName||'';
     const leagueVal=p.league==='ladies'?'ladies':p.league==='brothers'?'brothers':'';
     const uid='p'+idx;
     const wLabel=p.weightLostPct==null?'—':fmtLossPct(p.weightLostPct);
+    const boardShows=displayVal||p.name||'—';
     const row=el(`<div class="person${cold?' cold':''}">
       <div class="prow"><span class="pnwrap"><span class="pn">${esc(p.name||'\u2014')}</span>
         <button type="button" class="trash" title="Remove from roster" aria-label="Remove ${esc(p.name||'participant')}">${trashIcon}</button></span>
         <span class="pd">${esc(leagueLabel(p.league))} · ${esc(ago(p.lastActive))}</span></div>
+      <p class="fine" style="margin:6px 0 0">Board shows: <b style="color:var(--ink)">${esc(boardShows)}</b>${displayVal?'':' · using callsign'}</p>
       <div class="pbar"><i style="width:${pct}%"></i></div>
       <div class="metrics">
         <div><div class="v">${p.points||0}</div><div class="k">Points</div></div>
@@ -868,6 +980,8 @@ function renderCrm(list, people){
             <option value="brothers" ${leagueVal==='brothers'?'selected':''}>Brothers of the League</option>
             <option value="ladies" ${leagueVal==='ladies'?'selected':''}>Ladies of the League</option>
           </select></div>
+        <div class="field full"><label for="${uid}-display">Display name (public board)</label>
+          <input id="${uid}-display" type="text" maxlength="32" autocomplete="off" placeholder="Nickname on leaderboards" value="${esc(displayVal)}"></div>
         <div class="field full"><label for="${uid}-phone">Phone number</label>
           <input id="${uid}-phone" type="tel" inputmode="tel" autocomplete="off" placeholder="555-0100" value="${esc(phoneVal)}"></div>
         <div class="field"><label for="${uid}-start">Starting weight</label>
@@ -880,6 +994,8 @@ function renderCrm(list, people){
       <div class="save-row">
         <button type="button" class="btn accent sm" data-save>Save</button>
         <button type="button" class="btn textme sm" data-text title="Text this person">Text</button>
+        <button type="button" class="btn wa sm" data-wa title="WhatsApp this person">WhatsApp</button>
+        <button type="button" class="btn reset sm" data-reset title="Clear sessions, BW change, and start date — keep on roster">Reset</button>
       </div>
       <p class="okmsg" hidden></p>
       <p class="fine err" hidden></p>
@@ -887,12 +1003,17 @@ function renderCrm(list, people){
 
     const phoneInput=row.querySelector('#'+uid+'-phone');
     const textBtn=row.querySelector('[data-text]');
+    const waBtn=row.querySelector('[data-wa]');
+    const resetBtn=row.querySelector('[data-reset]');
     const syncTextBtn=()=>{
       const live=phoneInput.value.trim()||p.phone||'';
       const ok=hasPhone({phone:live});
-      textBtn.disabled=false; // always clickable — guides user if phone missing
+      textBtn.disabled=false;
+      waBtn.disabled=false;
       textBtn.title=ok?'Text this person':'Add a phone number first';
+      waBtn.title=ok?'WhatsApp this person':'Add a phone number first';
       textBtn.style.opacity=ok?'':'0.7';
+      waBtn.style.opacity=ok?'':'0.7';
     };
     phoneInput.oninput=syncTextBtn;
     syncTextBtn();
@@ -910,6 +1031,60 @@ function renderCrm(list, people){
       }catch(e){alert('Could not reach the roster.')}
     };
 
+    resetBtn.onclick=async()=>{
+      if(!p.name)return;
+      if(!confirm('Reset '+p.name+'?\n\nClears sessions, streak, day, start date, weights / BW change, and logged workouts.\nKeeps callsign, league, and phone.\n\nIf their phone still has old weights saved, ask them to clear site data (or clear weight fields and Save) so it does not look ahead locally.'))return;
+      const ok=row.querySelector('.okmsg');
+      const bad=row.querySelector('.err');
+      ok.hidden=true;bad.hidden=true;
+      resetBtn.disabled=true;
+      try{
+        const r=await fetch('/api/roster/reset',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name})});
+        const d=await r.json();
+        if(!d.ok){
+          bad.textContent=d.error==='bad pin'?'Organizer code rejected.':
+            d.error==='not found'?'That person was not found.':'Could not reset.';
+          bad.hidden=false;
+          return;
+        }
+        p.sessions=0;
+        p.streak=0;
+        p.day=0;
+        p.hours=0;
+        p.points=0;
+        p.hoursMilestones=0;
+        p.weightMilestones=0;
+        p.weightLostPct=null;
+        p.weightDelta=null;
+        p.startingWeight='';
+        p.currentWeight='';
+        p.dateStarted='';
+        const startInput=row.querySelector('#'+uid+'-start');
+        const curInput=row.querySelector('#'+uid+'-cur');
+        const startedInput=row.querySelector('#'+uid+'-started');
+        if(startInput) startInput.value='';
+        if(curInput) curInput.value='';
+        if(startedInput) startedInput.value='';
+        const pm=row.querySelectorAll('.prow .pm');
+        if(pm[0]) pm[0].textContent=sessionsProgressLabel(0,p.total,p.perWeek)+' · day 1';
+        if(pm[1]) pm[1].textContent='0 streak';
+        const mets=row.querySelectorAll('.metrics .v');
+        if(mets[0]) mets[0].textContent='0';
+        if(mets[1]) mets[1].textContent=fmtHrs(0);
+        if(mets[2]) mets[2].textContent='—';
+        const bar=row.querySelector('.pbar i');
+        if(bar) bar.style.width='0%';
+        ok.textContent='Progress and BW change reset. They are still on the roster.';
+        ok.hidden=false;
+      }catch(e){
+        bad.textContent='Could not reach the roster.';
+        bad.hidden=false;
+      }finally{
+        resetBtn.disabled=false;
+      }
+    };
+
     textBtn.onclick=()=>{
       const livePhone=phoneInput.value.trim()||p.phone||'';
       if(!hasPhone({phone:livePhone})){
@@ -919,7 +1094,6 @@ function renderCrm(list, people){
         phoneInput.focus();
         return;
       }
-      // Prefer saved phone once saved; otherwise use the field so Text works before Save
       const usePhone=hasPhone(p)?(p.phone||livePhone):livePhone;
       SMS_TARGET={name:p.name,phone:usePhone};
       if(!String(SMS_DRAFT||'').trim()){
@@ -931,34 +1105,70 @@ function renderCrm(list, people){
       if(ta)ta.focus();
     };
 
+    waBtn.onclick=()=>{
+      const livePhone=phoneInput.value.trim()||p.phone||'';
+      if(!hasPhone({phone:livePhone})){
+        const bad=row.querySelector('.err');
+        bad.textContent='Add a WhatsApp-capable mobile number (10+ digits), then Save.';
+        bad.hidden=false;
+        phoneInput.focus();
+        return;
+      }
+      const usePhone=hasPhone(p)?(p.phone||livePhone):livePhone;
+      if(!String(SMS_DRAFT||'').trim()){
+        SMS_DRAFT='Elevate Your Smoke — reminder from The Cigar Society.';
+      }
+      if(openWhatsApp(usePhone, SMS_DRAFT)){
+        const ok=row.querySelector('.okmsg');
+        ok.textContent='Opening WhatsApp. Review the chat, then tap Send.';
+        ok.hidden=false;
+      }else{
+        const bad=row.querySelector('.err');
+        bad.textContent='Could not open WhatsApp. Use the Text tab instead.';
+        bad.hidden=false;
+      }
+    };
+
     row.querySelector('[data-save]').onclick=async()=>{
       const ok=row.querySelector('.okmsg');
       const bad=row.querySelector('.err');
       ok.hidden=true;bad.hidden=true;
       const league=row.querySelector('#'+uid+'-league').value;
+      const displayName=row.querySelector('#'+uid+'-display').value.trim();
+      if(displayName && displayName.length<2){
+        bad.textContent='Display name must be at least 2 characters (or leave blank).';
+        bad.hidden=false;
+        return;
+      }
       const phone=phoneInput.value.trim();
       const startingWeight=row.querySelector('#'+uid+'-start').value.trim();
       const currentWeight=row.querySelector('#'+uid+'-cur').value.trim();
       const dateStarted=row.querySelector('#'+uid+'-started').value;
       try{
         const r=await fetch('/api/roster/update',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name,phone,startingWeight,currentWeight,dateStarted,league})});
+          body:JSON.stringify({pin,challenge:CONFIG.CHALLENGE,name:p.name,phone,startingWeight,currentWeight,dateStarted,league,displayName})});
         const d=await r.json();
         if(!d.ok){
           bad.textContent=d.error==='bad pin'?'Organizer code rejected.':
             d.error==='bad weight'?'Enter a valid weight.':
             d.error==='bad date'?'Enter a valid start date.':
+            d.error==='bad display name'?'Display name must be 2–32 characters (or blank).':
             d.error==='not found'?'That person was not found.':'Could not save.';
           bad.hidden=false;
           return;
         }
         p.league=league;
         p.phone=phone;
+        p.displayName=displayName;
         p.startingWeight=startingWeight===''?'':Number(startingWeight);
         p.currentWeight=currentWeight===''?'':Number(currentWeight);
         p.dateStarted=dateStarted;
         const pd=row.querySelector('.pd');
         if(pd)pd.textContent=leagueLabel(p.league)+' · '+ago(p.lastActive);
+        const boardLine=row.querySelector('.fine');
+        if(boardLine && boardLine.textContent.indexOf('Board shows')===0){
+          boardLine.innerHTML='Board shows: <b style="color:var(--ink)">'+esc(displayName||p.name||'—')+'</b>'+(displayName?'':' · using callsign');
+        }
         // Refresh derived scores locally
         const startW=p.startingWeight===''?null:Number(p.startingWeight);
         const curW=p.currentWeight===''?null:Number(p.currentWeight);

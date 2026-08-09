@@ -36,7 +36,9 @@ Public `/` shows live boards + Start now / Go to active → `/app`. CRM stays at
 
 - App: `https://elevate-your-smoke.up.railway.app`
 - Admin: `/admin`
-- Organizer pin: Railway env `ORGANIZER_CODE` (never print/commit)
+- Organizer pin: Railway env `ORGANIZER_CODE` (never print/commit; required in production)
+- Optional CORS allowlist: `PUBLIC_ORIGIN` (custom domain)
+- Security: `backend/security.js` headers + rate limits + timing-safe pin compare
 - Challenge id: `CONFIG.CHALLENGE` = `smoke-30`
 - Project: Railway `elevate-your-smoke`, service `app`, env `production`
 
@@ -69,10 +71,12 @@ Optional Railway setting: health check path `/api/health`.
 - **Resume**: `RESUME_VERSION`, deadline/remainingMs/elapsedActiveMs/paused; no auto-pause on hide; Resume restores ±1s.
 - **Completion**: server requires `elapsedMs >= MIN_COMPLETE_MS` (~85% of 540s); idempotency key + unique (participant, challenge, day).
 - **Points**: 10/session + 50 every 5% card + 100 every 5% **bodyweight lost** (cap 4). Gain = 0 weight pts. Display “X% lost”.
-- **Privacy public**: callsign, league, sessions, streak, points, hours, weightLostPct. Private: phone, raw weights, id, quiz answers.
+- **Privacy public**: board display name (or callsign), league, sessions, streak, points, hours, weightLostPct. Private/organizer: callsign, phone, raw weights, id, quiz answers.
 - **Inclusive onboarding**: no male-only age copy; preserve named league labels only.
 - **Kickoff**: `CONFIG.KICKOFF_ISO` / `CONFIG.KICKOFF_LABEL`.
 - **Self-service**: `POST /api/me/update`, `POST /api/me/delete`.
+- **Messaging (free)**: Admin Text tab + CRM **Text** / **WhatsApp**. Messages uses `sms:` (group); WhatsApp uses `wa.me` (one chat at a time + Open next). Same CRM phones. Twilio optional paid SMS only.
+- **User ticker**: Sticky bottom marquee on `/app` (`#userticker`) — public board names/pts from `/api/leaderboard`; tap opens `#board`. Hidden under workout player.
 
 ## Tests
 

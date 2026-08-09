@@ -63,7 +63,8 @@ function scoringExplain() {
     ties: 'Higher points win; then hours; then recent activity on the board.',
     refresh: 'Live on each board load. No fake delay.',
     publicFields: ['name', 'league', 'sessions', 'streak', 'points', 'hours', 'weightLostPct'],
-    privateFields: ['phone', 'startingWeight', 'currentWeight', 'id'],
+    privateFields: ['phone', 'startingWeight', 'currentWeight', 'id', 'callsign'],
+    nameNote: 'Public boards show display nickname when set; otherwise callsign.',
   };
 }
 
