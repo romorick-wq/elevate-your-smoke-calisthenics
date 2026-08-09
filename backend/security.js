@@ -52,6 +52,9 @@ function securityHeaders(_req, res, next) {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   res.setHeader('Cross-Origin-Resource-Policy', 'same-site');
+  // Dev-only: Impeccable live picker (localhost:8400). Never ships when NODE_ENV=production.
+  const liveDev =
+    process.env.NODE_ENV !== 'production' ? ' http://localhost:8400 http://127.0.0.1:8400' : '';
   // Moderate CSP — inline scripts/styles are required by the HTML app architecture
   res.setHeader(
     'Content-Security-Policy',
@@ -61,12 +64,12 @@ function securityHeaders(_req, res, next) {
       "form-action 'self'",
       "frame-ancestors 'none'",
       "object-src 'none'",
-      "script-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline'${liveDev}`,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: blob:",
       "media-src 'self' blob:",
-      "connect-src 'self'",
+      `connect-src 'self'${liveDev}`,
       "worker-src 'self'",
       "manifest-src 'self'",
     ].join('; ')

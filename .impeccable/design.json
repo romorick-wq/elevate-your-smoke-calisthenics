@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-09T22:30:00.000Z",
+  "title": "Design System: Elevate Your Smoke",
+  "extensions": {
+    "colorMeta": {
+      "society-orange": {
+        "role": "primary",
+        "displayName": "Society Orange",
+        "canonical": "#E85D04",
+        "tonalRamp": ["#3A1804", "#5C2806", "#7A3708", "#A03E02", "#E85D04", "#F08A3D", "#F5B07A", "#FBE3CF"]
+      },
+      "accent-text": {
+        "role": "primary",
+        "displayName": "Accent Text",
+        "canonical": "#A03E02",
+        "tonalRamp": ["#3A1804", "#5C2806", "#7A3708", "#A03E02", "#C44E04", "#E85D04", "#F08A3D", "#F5B07A"]
+      },
+      "field-olive": {
+        "role": "secondary",
+        "displayName": "Field Olive",
+        "canonical": "#2F3B2A",
+        "tonalRamp": ["#121610", "#1A2218", "#243022", "#2F3B2A", "#3F4F38", "#5A6A52", "#8A9580", "#C5CBBE"]
+      },
+      "cream-bg": {
+        "role": "neutral",
+        "displayName": "Cream BG",
+        "canonical": "#ECEAE4",
+        "tonalRamp": ["#101412", "#2C322E", "#5E6660", "#9A9E96", "#C8C9C2", "#ECEAE4", "#F7F6F2", "#FFFFFF"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#101412",
+        "tonalRamp": ["#0A0C0B", "#101412", "#2C322E", "#5E6660", "#9A9E96", "#C8C9C2", "#ECEAE4", "#F7F6F2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero and screen titles in Syne." },
+      "body": { "displayName": "Body", "purpose": "Readable Outfit copy on cream." },
+      "label": { "displayName": "Label", "purpose": "Uppercase tracked meta / eyebrows." }
+    },
+    "shadows": [
+      {
+        "name": "phone-lift",
+        "value": "0 18px 50px rgba(16,20,18,.18)",
+        "purpose": "Lift the phone column off the olive field only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "rise",
+        "value": "0.35s ease",
+        "purpose": "Sheet entrance translateY + fade."
+      },
+      {
+        "name": "press",
+        "value": "0.45s cubic-bezier(.2,1.2,.5,1)",
+        "purpose": "Session-complete stamp pop."
+      }
+    ],
+    "breakpoints": [
+      { "name": "narrow", "value": "360px" },
+      { "name": "phone", "value": "400px" },
+      { "name": "wide-column", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Full-width Society Orange pill that stamps the next action.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Start now</button>",
+      "css": ".ds-btn-primary{display:block;width:100%;border:0;background:#E85D04;color:#1A0F08;border-radius:999px;font-family:Syne,system-ui,sans-serif;font-weight:700;font-size:16px;letter-spacing:.04em;padding:15px 18px;min-height:48px;cursor:pointer;transition:transform .12s ease,opacity .12s ease}.ds-btn-primary:active{transform:scale(.98)}.ds-btn-primary:focus-visible{outline:2.5px solid #E85D04;outline-offset:2px}.ds-btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Outlined secondary action on cream.",
+      "html": "<button class=\"ds-btn-ghost\" type=\"button\">See the 9-minute card</button>",
+      "css": ".ds-btn-ghost{display:block;width:100%;background:transparent;color:#101412;border:1.5px solid rgba(16,20,18,.12);border-radius:999px;font-family:Syne,system-ui,sans-serif;font-weight:700;font-size:16px;padding:15px 18px;min-height:48px;cursor:pointer}.ds-btn-ghost:focus-visible{outline:2.5px solid #E85D04;outline-offset:2px}"
+    },
+    {
+      "name": "Paper Block",
+      "kind": "card",
+      "refersTo": "block-card",
+      "description": "Flat white container with hairline border.",
+      "html": "<div class=\"ds-block\"><p class=\"ds-label\">Society kickoff</p><p class=\"ds-body\">Roster is open. Lock your callsign.</p></div>",
+      "css": ".ds-block{border:1px solid rgba(16,20,18,.12);background:#FFFFFF;padding:14px;border-radius:12px}.ds-label{font-family:Outfit,system-ui,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#5E6660;font-weight:600;margin:0 0 8px}.ds-body{font-family:Outfit,system-ui,sans-serif;font-size:13px;line-height:1.5;color:#5E6660;margin:0}"
+    },
+    {
+      "name": "Masthead",
+      "kind": "nav",
+      "refersTo": "masthead",
+      "description": "Olive field header with Society brand.",
+      "html": "<header class=\"ds-mast\"><div><h1>Elevate Your Smoke</h1><span>The Cigar Society</span></div></header>",
+      "css": ".ds-mast{background:linear-gradient(135deg,#2F3B2A,#3F4F38);color:#F4F7EE;padding:16px 20px 14px}.ds-mast h1{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:21px;letter-spacing:-.02em;margin:0;line-height:1}.ds-mast span{display:block;margin-top:5px;font-family:Outfit,system-ui,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.7;font-weight:500}"
+    },
+    {
+      "name": "Underline Field",
+      "kind": "input",
+      "refersTo": "field-underline",
+      "description": "Large Syne value on ink underline.",
+      "html": "<label class=\"ds-field\"><span>Callsign</span><input value=\"Marcus R.\" /></label>",
+      "css": ".ds-field{display:block}.ds-field span{display:block;font-family:Outfit,system-ui,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5E6660;margin-bottom:6px;font-weight:600}.ds-field input{width:100%;border:0;border-bottom:2px solid #101412;background:transparent;font-family:Syne,system-ui,sans-serif;font-weight:700;font-size:26px;letter-spacing:-.02em;color:#101412;padding:4px 2px}.ds-field input:focus-visible{outline:2.5px solid #E85D04;outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Field Card",
+    "overview": "Elevate Your Smoke reads as a military PT card issued on a dark olive field. The product lives in a cream phone column — paper-like, dense with purpose — while the viewport beyond is a soft field gradient with an ember glow. Society orange seals actions; it never paints the whole surface.\n\nPersonality is direct and Society-proud: heavy Syne headlines, tight uppercase labels, Outfit body that stays readable on a phone. Density is high but ordered — sheets stack with clear rhythm, not dashboards of competing cards. Visual rejections already confirmed by the incumbent: no purple AI defaults, no glassmorphism costume, no multi-layer card nests as page structure.",
+    "keyCharacteristics": [
+      "Phone-column composition (max ~430px; ~720px on wide) centered on an olive field",
+      "Cream paper interiors with olive mastheads and dark workout player",
+      "Ember orange for primary action and rare text accents (accent-text on light)",
+      "Syne display + Outfit body; pill CTAs that stamp the next move",
+      "Flat tonal surfaces; one soft phone shadow for lift of the whole device, not every block"
+    ],
+    "rules": [
+      { "name": "The Ember Rarity Rule", "body": "Society Orange is the seal, not the paint. Prefer cream + olive + ink; orange marks the next action or a scarce status.", "section": "colors" },
+      { "name": "The Readable Ember Rule", "body": "On cream/paper, orange text uses Accent Text (#A03E02). Fill orange (#E85D04) is for buttons, bars, and marks on dark or as a large fill.", "section": "colors" },
+      { "name": "The Brief Headline Rule", "body": "Display lines stay short and punchy; put explanation in Outfit body, not in Syne paragraphs.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces stay flat at rest. Do not add per-card drop shadows to invent hierarchy.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the cream phone on the olive field as the primary composition.",
+      "Do use Society Orange for primary CTAs and Accent Text for orange-on-cream type.",
+      "Do preserve Brothers / Ladies naming and dual-league parity visually.",
+      "Do prioritize session clarity (timer, cues, resume) over decorative chrome.",
+      "Do keep app/index.html and app/elevate-your-smoke.html visually identical."
+    ],
+    "donts": [
+      "Don't paint large cream regions with raw #E85D04 text.",
+      "Don't introduce purple gradients, glass stacks, or dashboard card grids as the page structure.",
+      "Don't invent a second accent that competes with Society Orange.",
+      "Don't shrink primary controls below ~44px touch height.",
+      "Don't expose private fields (phone, raw weight) in public board chrome."
+    ]
+  }
+}
