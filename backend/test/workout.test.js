@@ -38,6 +38,12 @@ assert.strictEqual(expectedSessionsFromPerWeek(6), 26);
 assert.strictEqual(expectedSessionsFromPerWeek(0), 0);
 assert.strictEqual(resolveScheduleTotal(0, 3), 13);
 assert.strictEqual(resolveScheduleTotal(18, 3), 18);
+
+const { challengeIsLive, KICKOFF_AT, KICKOFF_ISO } = require('../workout');
+assert.ok(KICKOFF_ISO.includes('2026-08-15'));
+assert.strictEqual(challengeIsLive(KICKOFF_AT - 1), false);
+assert.strictEqual(challengeIsLive(KICKOFF_AT), true);
+assert.strictEqual(challengeIsLive(KICKOFF_AT + 1000), true);
 assert.strictEqual(resolveScheduleTotal(0, 0), 0);
 
 assert.strictEqual(idempotencyKey('p1', 'c', 5), 'p1::c::5');

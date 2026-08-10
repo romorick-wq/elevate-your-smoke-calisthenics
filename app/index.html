@@ -385,7 +385,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.2.0',
+  VERSION:'1.2.1',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -1211,7 +1211,12 @@ function launchParts(now){
     s:sec%60
   };
 }
-function primaryCtaLabel(){ return launchParts().done ? 'Go to active' : 'Start now'; }
+/** Workouts (Start / Resume / clock) only after kickoff. Signup + card setup stay open. */
+function challengeLive(now){ return launchParts(now).done; }
+function kickoffWaitCopy(){
+  return 'Workouts open '+CONFIG.KICKOFF_LABEL+'. Sign up and build your card now — the 9-minute sessions unlock at kickoff.';
+}
+function primaryCtaLabel(){ return challengeLive() ? 'Go to active' : 'Lock callsign'; }
 function syncPrimaryCta(){
   if(!(S.screen==='cover' || !S.screen)) return;
   const label=primaryCtaLabel();
@@ -1867,7 +1872,18 @@ function plan(a){
     btn.disabled=false; btn.textContent='Save';
   };
   const t=document.getElementById('today');
-  if(canResume && sess){
+  const live=challengeLive();
+  if(!live){
+    t.appendChild(el(`<div class="block" style="margin-top:12px;border-top:2px solid var(--accent);padding-top:12px">
+      <p class="eyebrow">Pre-kickoff</p>
+      <h3 class="display h-md" style="margin:2px 0 0">Sign up only</h3>
+      <p class="fine" style="margin:10px 0 0">${esc(kickoffWaitCopy())}</p>
+      ${!S.me?'<button type="button" class="btn accent" id="prekjoin" style="margin-top:12px">Lock callsign</button>':''}
+    </div>`));
+    const pj=document.getElementById('prekjoin');
+    if(pj) pj.onclick=()=>{clearHash();S.screen='join';render()};
+  }
+  if(canResume && sess && live){
     t.appendChild(el(`<div class="block" style="margin-top:12px;border-top:2px solid var(--accent);padding-top:12px">
       <p class="eyebrow">Interrupted session</p>
       <p class="fine">Resume your 9-minute workout or discard it.</p>
@@ -1875,6 +1891,7 @@ function plan(a){
       <button type="button" class="btn ghost sm" id="discard" style="margin-top:8px">Discard</button>
     </div>`));
     document.getElementById('resume').onclick=()=>{
+      if(!challengeLive()){ render(); return; }
       S.session=sess;S.slot=next;
       const adv=advanceResumeAcrossGap(S.resume, sess.steps, Date.now());
       if(!adv){ clearResume(); render(); return; }
@@ -1888,6 +1905,13 @@ function plan(a){
       startSession(true);
     };
     document.getElementById('discard').onclick=()=>{clearResume();render()};
+  }else if(canResume && sess && !live){
+    t.appendChild(el(`<div class="block" style="margin-top:12px">
+      <p class="eyebrow">Saved session on this device</p>
+      <p class="fine">A workout draft is stored, but the clock stays locked until kickoff.</p>
+      <button type="button" class="btn ghost sm" id="discard" style="margin-top:8px">Discard draft</button>
+    </div>`));
+    document.getElementById('discard').onclick=()=>{clearResume();render()};
   }
   if(sess){
     t.appendChild(el(`<div class="block invert" style="margin-top:12px">
@@ -1895,9 +1919,16 @@ function plan(a){
       <h3 class="display h-md" style="margin:2px 0 0">${FOCUS[sess.type]}</h3>
       <p style="font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;margin:9px 0 0;opacity:.85">
         9:00 · ${sess.rounds} ROUNDS · ${sess.work}S ON / ${sess.rest}S OFF</p></div>`));
-    const b=el('<button class="btn accent" id="start" type="button" style="margin-top:12px">Start today\u2019s 9-minute workout</button>');
-    t.appendChild(b);
-    b.onclick=()=>{clearHash();clearResume();S.session=sess;S.slot=next;S.screen='brief';render()};
+    if(live){
+      const b=el('<button class="btn accent" id="start" type="button" style="margin-top:12px">Start today\u2019s 9-minute workout</button>');
+      t.appendChild(b);
+      b.onclick=()=>{
+        if(!challengeLive()){ render(); return; }
+        clearHash();clearResume();S.session=sess;S.slot=next;S.screen='brief';render();
+      };
+    }else{
+      t.appendChild(el(`<button class="btn" id="start" type="button" disabled style="margin-top:12px" aria-disabled="true">Workout locked until kickoff</button>`));
+    }
     const list=el('<div class="block" style="margin-top:12px"><p class="eyebrow">Today\u2019s main movements</p><ul class="movelist"></ul></div>');
     const ul=list.querySelector('ul');
     sess.main.forEach((m,i)=>ul.appendChild(moveRow(['Push','Legs','Core','Pace'][i],m.n,sess.work+'s')));
@@ -1973,7 +2004,11 @@ function manual(a){
 }
 /* ---------- brief ---------- */
 function brief(a){
+  if(!challengeLive()){
+    S.session=null;S.slot=null;S.screen='plan';render();return;
+  }
   const s=S.session;
+  if(!s){ S.screen='plan'; render(); return; }
   a.appendChild(el(`<div class="sheet">${head('SESSION BRIEF')}
     <p class="eyebrow">Day ${s.day+1} of 30 \u00b7 ${FOCUS[s.type]}</p>
     <h2 class="display h-lg">Nine minutes.<br>${s.rounds} rounds.</h2>
@@ -2001,7 +2036,7 @@ function brief(a){
   });
   const ml=document.getElementById('ml');
   s.main.forEach((m,i)=>ml.appendChild(moveRow(labels[i],m.n,s.work+'s')));
-  document.getElementById('go').onclick=()=>startSession();
+  document.getElementById('go').onclick=()=>{ if(!challengeLive()){ S.screen='plan'; render(); return; } startSession(); };
   document.getElementById('back').onclick=()=>{S.screen='plan';render()};
 }
 /* ---------- player ---------- */
@@ -2069,6 +2104,12 @@ function advanceRunningClock(){
   return !!r.changed;
 }
 function startSession(fromResume){
+  if(!challengeLive()){
+    clearPlayerTimers(); clearRafs(); releaseWakeLock();
+    document.querySelectorAll('.player').forEach(n=>n.remove());
+    S.session=null; S.slot=null; S.screen='plan'; render();
+    return;
+  }
   if(!fromResume){
     S.si=0; S.paused=false; S.elapsedActiveMs=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastWarnSec=null; S._coachPhase=null;
   }
@@ -2252,6 +2293,14 @@ async function endSession(){
   const elapsed=Math.round(S.elapsedActiveMs||0);
   if(!S.slot){ clearResume(); S.screen='plan'; render(); return; }
   if(S.log[S.slot.i]){ clearResume(); S.screen='done'; render(); return; }
+  if(!challengeLive()){
+    clearResume();
+    S.session=null; S.slot=null;
+    S.screen='plan';
+    render();
+    coachCue('pre-kickoff','Workouts unlock at kickoff. Not credited.');
+    return;
+  }
   if(elapsed < MIN_COMPLETE_MS){
     // Partial — do not credit locally; keep no resume after confirmed end of player
     clearResume();
@@ -2267,6 +2316,14 @@ async function endSession(){
   try{
     if(tracking()&&S.me){
       const res=await report('log',{elapsedMs:elapsed});
+      if(res&&res.error==='pre_kickoff'){
+        clearResume();
+        S.session=null; S.slot=null;
+        S.screen='plan';
+        render();
+        coachCue('pre-kickoff','Workouts unlock at kickoff. Not credited.');
+        return;
+      }
       if(res&&res.error==='incomplete'){
         S.partialInfo={elapsedMs:elapsed,minMs:MIN_COMPLETE_MS};
         S.screen='partial';

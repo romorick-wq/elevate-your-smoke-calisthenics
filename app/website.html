@@ -339,7 +339,7 @@ function launchParts(now) {
   };
 }
 function isLive() { return launchParts().done; }
-function ctaLabel() { return isLive() ? 'Go to active' : 'Start now'; }
+function ctaLabel() { return isLive() ? 'Go to active' : 'Lock callsign'; }
 function syncCtas() {
   const label = ctaLabel();
   ['primary-cta', 'boards-cta'].forEach((id) => {
@@ -369,7 +369,7 @@ function paintCountdown() {
   if (note) {
     note.textContent = isLive()
       ? 'Roster stays open. Pick Brothers or Ladies, lock your callsign, and stack sessions.'
-      : 'Roster is open now. Pick Brothers or Ladies, lock your callsign, and start before the bell.';
+      : 'Roster is open now. Lock a callsign and build your card — 9-minute workouts unlock at kickoff.';
   }
 }
 function sortBoard(people, mode) {
