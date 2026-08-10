@@ -95,10 +95,22 @@ function resolveScheduleTotal(total, perWeek) {
   return expectedSessionsFromPerWeek(perWeek) || 0;
 }
 
+/** Kickoff — workouts credit only after this instant (America/Chicago). Override with KICKOFF_ISO. */
+const KICKOFF_ISO = process.env.KICKOFF_ISO || '2026-08-15T09:00:00-05:00';
+const KICKOFF_AT = new Date(KICKOFF_ISO).getTime();
+
+function challengeIsLive(nowMs) {
+  const t = Number.isFinite(Number(nowMs)) ? Number(nowMs) : Date.now();
+  return Number.isFinite(KICKOFF_AT) && t >= KICKOFF_AT;
+}
+
 module.exports = {
   SESSION_SEC,
   SESSION_MS,
   MIN_COMPLETE_MS,
+  KICKOFF_ISO,
+  KICKOFF_AT,
+  challengeIsLive,
   sessionTotalsForLevel,
   assertNineMinutes,
   isFullCompletion,

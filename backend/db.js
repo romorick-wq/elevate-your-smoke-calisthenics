@@ -9,6 +9,8 @@ const {
   isFullCompletion,
   MIN_COMPLETE_MS,
   resolveScheduleTotal,
+  challengeIsLive,
+  KICKOFF_ISO,
 } = require('./workout');
 
 let pool;
@@ -163,6 +165,16 @@ async function upsertParticipant(body) {
   const idem = String(body.idempotencyKey || `${id}::${challenge}::${day}`).slice(0, 160);
   const sessionsIn = n(body.sessions);
   const totalIn = resolveScheduleTotal(n(body.total), n(body.perWeek)) || n(body.total);
+
+  if (isLog && !challengeIsLive()) {
+    return {
+      ok: false,
+      error: 'pre_kickoff',
+      kickoffIso: KICKOFF_ISO,
+      message:
+        'Workouts are locked until kickoff. Sign up is open — session credit starts when the challenge goes live.',
+    };
+  }
 
   if (isLog && !isFullCompletion(elapsedMs)) {
     return {
