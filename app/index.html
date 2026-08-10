@@ -385,7 +385,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.2.1',
+  VERSION:'1.2.2',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -1416,7 +1416,7 @@ const API=()=>{
 };
 const tracking=()=>!!API();
 
-/* ---- identity: callsign (organizer) + optional board display name ---- */
+/* ---- identity: callsign (participant) + optional board display name ---- */
 function setMe(name,league,displayName){
   const prev=S.me||{};
   const dn=displayName!=null?String(displayName).trim().slice(0,32):(prev.displayName||'');
@@ -1493,7 +1493,7 @@ function join(a){
       <button type="button" data-league="ladies" aria-pressed="${league==='ladies'?'true':'false'}" class="${league==='ladies'?'on':''}">Ladies of the League<small>Ladies\u2019 board</small></button>
     </div>
     <p class="field errline" id="leagueerr" role="alert"></p>
-    <div class="field"><label for="nm">Callsign (organizer)</label>
+    <div class="field"><label for="nm">Callsign (participant)</label>
       <input id="nm" maxlength="32" autocomplete="name" autocapitalize="words" placeholder="e.g. Marcus R." aria-describedby="nmhint nmerr">
       <p class="hint" id="nmhint">Organizers see this. Boards use your display name.</p>
       <p class="errline" id="nmerr" role="alert"></p>
@@ -2427,7 +2427,7 @@ function settingsScreen(a){
   if(!S.me){S.screen='join';render();return}
   a.appendChild(el(`<div class="sheet">${head('PROFILE')}
     <h2 class="display h-lg">Callsign<br>& display name</h2>
-    <div class="field"><label for="sn">Callsign (organizer)</label>
+    <div class="field"><label for="sn">Callsign (participant)</label>
       <input id="sn" maxlength="32" value="${esc(S.me.name||'')}" aria-describedby="snhint">
       <p class="hint" id="snhint">Organizers see this on the CRM.</p></div>
     <div class="field"><label for="sdn">Display name (public board)</label>
