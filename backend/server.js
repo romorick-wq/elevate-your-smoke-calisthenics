@@ -354,6 +354,9 @@ app.use(
       }
       if (filePath.includes(`${path.sep}admin`)) {
         res.setHeader('Cache-Control', 'no-cache, no-store');
+      } else if (/\.(?:jpe?g|png|webp|mp4|mp3|webm|vtt|woff2?)$/i.test(filePath)) {
+        // Media is busted via SW cache key on ship; allow short browser reuse.
+        res.setHeader('Cache-Control', 'public, max-age=86400');
       }
     },
   })
