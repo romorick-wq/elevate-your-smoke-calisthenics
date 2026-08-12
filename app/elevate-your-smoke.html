@@ -385,7 +385,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.2.2',
+  VERSION:'1.2.3',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -714,6 +714,17 @@ function exerciseSlug(name){
 }
 function exerciseImgSrc(name){return 'exercises/'+exerciseSlug(name)+'.jpg'}
 function exerciseVidSrc(name){return 'exercises/'+exerciseSlug(name)+'.mp4'}
+/** Still poster for lists/grids — never autoplay video thumbs (manual/brief). */
+function exercisePoster(name,cls){
+  const img=document.createElement('img');
+  img.className='eximg'+(cls?' '+cls:'');
+  img.src=exerciseImgSrc(name);
+  img.alt=name+' — form demo';
+  img.loading='lazy';img.decoding='async';
+  img.width=860;img.height=573;
+  return img;
+}
+/** Looping form demo — player + detail overlay only (one at a time). */
 function exerciseImg(name,cls){
   const v=document.createElement('video');
   v.className='eximg'+(cls?' '+cls:'');
@@ -722,15 +733,22 @@ function exerciseImg(name,cls){
   v.muted=true;v.defaultMuted=true;v.autoplay=true;v.loop=true;v.playsInline=true;
   v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
   v.setAttribute('aria-label',name+' — form demo');
-  v.preload='metadata';v.setAttribute('loading','lazy');
+  v.preload=cls==='hero'?'auto':'metadata';
+  v.width=860;v.height=573;
   v.addEventListener('error',()=>{
     if(v.dataset.fell)return;v.dataset.fell='1';
-    const img=document.createElement('img');
-    img.className=v.className;img.src=exerciseImgSrc(name);img.alt=name+' — form demo';
-    img.loading='lazy';img.decoding='async';
-    v.replaceWith(img);
+    v.replaceWith(exercisePoster(name,cls));
   },{once:true});
   return v;
+}
+function prefetchExerciseMedia(name){
+  if(!name||!EX[name])return;
+  try{
+    const img=new Image();
+    img.decoding='async';
+    img.src=exerciseImgSrc(name);
+  }catch(e){}
+  // Warm poster only — full MP4 preload stays on the active hero video (cellular-safe).
 }
 /* =========================================================
    QUIZ + PLAN
@@ -1348,7 +1366,7 @@ function cover(a){
     const himg=document.createElement('img');
     himg.src=exerciseImgSrc('push-up'); himg.alt='Elevate Your Smoke form demo';
     himg.className='cover'; himg.loading='eager'; himg.decoding='async';
-    himg.width=860; himg.height=640; himg.style.width='100%'; himg.style.height='auto'; himg.style.display='block';
+    himg.width=860; himg.height=573; himg.fetchPriority='high'; himg.style.width='100%'; himg.style.height='auto'; himg.style.display='block';
     hero.appendChild(himg);
   }catch(e){}
   hero.appendChild(el(`<div class="brandmark"><h1>Elevate Your Smoke</h1><span>The Cigar Society</span></div>`));
@@ -1991,7 +2009,7 @@ function manual(a){
     M[cat].forEach((m,i)=>{
       const card=el(`<button class="mcard" type="button"><span class="figholder"></span>
         <span><span class="nm">${esc(m.n)}</span><span class="sub">${cat==='warm'||cat==='cool'?'\u2014':'Level '+(i+1)}</span></span></button>`);
-      try{card.querySelector('.figholder').replaceWith(exerciseImg(m.n,'mini'))}catch(e){}
+      try{card.querySelector('.figholder').replaceWith(exercisePoster(m.n,'mini'))}catch(e){}
       card.onclick=()=>showMove(m.n);
       C.appendChild(card);
     });
@@ -2027,7 +2045,7 @@ function brief(a){
       <span class="imgholder"></span>
       <span class="cap"><span class="k">${esc(labels[i])}</span><span class="n">${esc(m.n)}</span></span>
     </button>`);
-    const img=exerciseImg(m.n,'card');
+    const img=exercisePoster(m.n,'card');
     img.style.borderRadius='0';
     img.style.aspectRatio='1';
     cell.querySelector('.imgholder').replaceWith(img);
@@ -2056,11 +2074,15 @@ function remainingMsNow(){
 function paintTimerUI(st){
   const rem=remainingMsNow();
   S.timeLeftMs=rem;
-  S.timeLeft=Math.max(0, Math.ceil(rem/1000));
-  const t=document.getElementById('t'); if(t) t.textContent=mmss(S.timeLeft);
+  const secLeft=Math.max(0, Math.ceil(rem/1000));
+  if(secLeft!==S.timeLeft){
+    S.timeLeft=secLeft;
+    const t=document.getElementById('t'); if(t) t.textContent=mmss(secLeft);
+  } else {
+    S.timeLeft=secLeft;
+  }
   const b=document.getElementById('barfill');
   if(b&&st&&st.sec) b.style.transform='scaleX('+(1-rem/(st.sec*1000))+')';
-  const secLeft=S.timeLeft;
   if(!S.paused && (secLeft===3||secLeft===2||secLeft===1) && S.lastWarnSec!==secLeft){
     S.lastWarnSec=secLeft; vibe(30);
     const map={3:'three',2:'two',1:'one'};
@@ -2157,10 +2179,7 @@ function beginStep(keepTime){
   let lastPersist=Date.now();
   S.tick=setInterval(()=>{
     if(!document.getElementById('player')){ clearPlayerTimers(); return; }
-    if(S.paused){
-      paintTimerUI(S.session.steps[S.si]||st);
-      return;
-    }
+    if(S.paused) return;
     const changed=advanceRunningClock();
     if(changed==='done' || !(S.session&&S.session.steps[S.si])){
       clearPlayerTimers(); endSession(); return;
@@ -2216,6 +2235,11 @@ function paintStep(){
   coachStep(st);
   if(st.kind==='work'&&EX[st.n]){
     p.querySelector('#figslot').appendChild(exerciseImg(st.n,'hero'));
+  }
+  // Warm the next work poster while this interval runs.
+  for(let i=S.si+1;i<s.steps.length;i++){
+    const nx=s.steps[i];
+    if(nx&&nx.kind==='work'&&EX[nx.n]){ prefetchExerciseMedia(nx.n); break; }
   }
   if(st.kind==='work'&&tipLines.length>1){
     S.tipTick=setInterval(()=>{
