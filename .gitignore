@@ -8,3 +8,4 @@ node_modules/
 *.zip
 scripts/.video-frames/
 app/exercises/frames/
+.impeccable/questions/
