@@ -385,7 +385,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.2.6',
+  VERSION:'1.2.7',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -1482,18 +1482,40 @@ async function apiPost(body){
   try{
     const r=await fetch(API(),{method:'POST',redirect:'follow',signal:ctrl?ctrl.signal:undefined,
       headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    return await r.json();
+    let d=null;
+    try{ d=await r.json(); }catch(e){ d=null; }
+    if(!d){
+      const err=new Error(r.ok?'bad response':'http '+r.status);
+      err.status=r.status;
+      throw err;
+    }
+    return d;
   }finally{ if(t)clearTimeout(t); }
 }
 function queueAdd(b){try{const q=JSON.parse(localStorage.getItem(QKEY)||'[]');q.push(b);
   localStorage.setItem(QKEY,JSON.stringify(q.slice(-40)))}catch(e){}}
+function shouldRetryReport(d){
+  if(!d || d.ok===true) return false;
+  const e=d.error;
+  return e!=='incomplete' && e!=='pre_kickoff';
+}
 async function flushQueue(){
   if(!tracking())return;
   let q=[];try{q=JSON.parse(localStorage.getItem(QKEY)||'[]')}catch(e){return}
   if(!q.length)return;
   const left=[];
-  for(const b of q){try{await apiPost(b)}catch(e){left.push(b)}}
+  for(const b of q){
+    try{
+      const d=await apiPost(b);
+      if(shouldRetryReport(d)) left.push(b);
+    }catch(e){ left.push(b); }
+  }
   try{localStorage.setItem(QKEY,JSON.stringify(left))}catch(e){}
+}
+function validWeightNum(v){
+  if(v===''||v==null) return null;
+  const n=Number(v);
+  return Number.isFinite(n)&&n>0&&n<=1000?n:null;
 }
 function buildReportBody(action, extras){
   const sl=S.profile?schedule(S.profile):[];
@@ -1508,21 +1530,34 @@ function buildReportBody(action, extras){
     sessions:sessionsCount,total:totalSessions,streak:S.profile?streak():0,
     day,perWeek:S.profile?S.profile.days:0,
     league:S.me.league||''};
-  if(S.me.displayName!=null) body.displayName=String(S.me.displayName||'');
+  const dn=S.me.displayName!=null?String(S.me.displayName||'').trim():'';
+  if(S.me.displayName!=null && (!dn || (dn.length>=2 && dn.length<=32))) body.displayName=dn;
   if(action==='log'){
     body.elapsedMs=Math.round((extras&&extras.elapsedMs!=null)?extras.elapsedMs:(S.elapsedActiveMs||0));
     body.idempotencyKey=S.me.id+'::'+CONFIG.CHALLENGE+'::'+day;
   }
-  if(S.weights&&S.weights.starting!==''&&S.weights.starting!=null)body.startingWeight=Number(S.weights.starting);
-  if(S.weights&&S.weights.current!==''&&S.weights.current!=null)body.currentWeight=Number(S.weights.current);
+  const sw=validWeightNum(S.weights&&S.weights.starting);
+  const cw=validWeightNum(S.weights&&S.weights.current);
+  if(sw!=null) body.startingWeight=sw;
+  if(cw!=null) body.currentWeight=cw;
   if(extras&&extras.pin) body.pin=String(extras.pin);
-  if(S.profile||S.log) body.card={profile:S.profile||null,log:S.log||{}};
+  if(S.profile||S.log){
+    const log={...(S.log||{})};
+    if(action==='log'&&S.slot&&log[S.slot.i]==null) log[S.slot.i]={at:Date.now(),elapsedMs:body.elapsedMs||0};
+    body.card={profile:S.profile||null,log};
+  }
   return body;
 }
 function report(action, extras){
   if(!tracking()||!S.me)return Promise.resolve(null);
   const body=buildReportBody(action, extras);
-  return apiPost(body).catch(err=>{
+  return apiPost(body).then(d=>{
+    if(shouldRetryReport(d)){
+      const q={...body}; delete q.pin;
+      queueAdd(q);
+    }
+    return d;
+  }).catch(err=>{
     const q={...body}; delete q.pin;
     queueAdd(q);
     throw err;
@@ -2036,7 +2071,8 @@ function plan(a){
         const r=await fetch('/api/me/update',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,league:S.me.league||'',
             startingWeight:start===''?'':Number(start),currentWeight:cur===''?'':Number(cur)})});
-        synced=!!(r&&r.ok);
+        const d=await r.json().catch(()=>null);
+        synced=!!(r&&r.ok&&d&&d.ok);
       }catch(e){ synced=false; }
     }
     try{ report('ping'); }catch(e){}
@@ -2378,7 +2414,7 @@ function paintStep(){
     </div>
     <div class="pbot">
       <button class="btn ghost sm" id="pause" style="flex:1" aria-pressed="${S.paused?'true':'false'}">${S.paused?'Resume':'Pause'}</button>
-      <button class="btn sm" id="skip" style="flex:1.6">${st.kind==='rest'?'Skip rest':'Done \u2192'}</button>
+      <button class="btn sm" id="skip" style="flex:1.6">${st.kind==='rest'?'Skip rest':'Skip move'}</button>
     </div>
     <details class="playermore">
       <summary>Session options</summary>
@@ -2512,6 +2548,15 @@ async function endSession(){
         coachCue('session-partial','Session ended early. Not credited.');
         return;
       }
+      if(!res || res.ok===false){
+        persistResume();
+        S.log[pendingKey]={at:Date.now(),elapsedMs:elapsed,pending:true};
+        save();
+        S.screen='done';
+        render();
+        coachCue('session-logged','Session saved locally. Syncing when online.');
+        return;
+      }
       // duplicate or success — credit once locally
       S.log[pendingKey]={at:Date.now(),elapsedMs:elapsed};
       clearResume();
@@ -2545,7 +2590,7 @@ function partialScreen(a){
   const sec=Math.round((info.elapsedMs||0)/1000);
   a.appendChild(el(`<div class="sheet">${head('PARTIAL SESSION')}
     <h2 class="display h-lg">Not enough<br>active time.</h2>
-    <p class="lede">You logged about ${sec}s of active work. Full credit needs roughly ${Math.round(info.minMs/1000)}s of the 9-minute card (paused time does not count). Rapid “Done →” skips do not earn a completed session.</p>
+    <p class="lede">You logged about ${sec}s of active work. Full credit needs roughly ${Math.round(info.minMs/1000)}s of the 9-minute card (paused time does not count). Rapid “Skip move” taps do not earn a completed session.</p>
     <div class="note">No session was added to your card or the league boards.</div>
     <div style="flex:1;min-height:20px"></div>
     <button class="btn accent" id="back">Back to the card</button></div>`));
