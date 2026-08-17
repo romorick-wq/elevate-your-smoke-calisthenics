@@ -1,0 +1,30 @@
+{
+  "title": "Website rebuild scope",
+  "question": "The public / page currently looks like a phone app (narrow cream column). What should become a real website?",
+  "options": [
+    {
+      "id": "marketing-only",
+      "label": "Marketing site only (/)",
+      "thesis": "Widen and restructure the public landing into a real website. Leave /app as the phone workout card.",
+      "viewport": "Full-width Society marketing page; /app stays phone-column PT card.",
+      "risk": "Two different shells if the handoff feels abrupt."
+    },
+    {
+      "id": "marketing-and-app-shell",
+      "label": "Marketing + soften /app shell",
+      "thesis": "Rebuild / as a real website, and stop framing /app as a fake phone device on desktop.",
+      "viewport": "Wide marketing site; workout usable on desktop without the device chrome.",
+      "risk": "Workout UX still needs phone-first density for training."
+    },
+    {
+      "id": "everything-website",
+      "label": "Everything feels like a website",
+      "thesis": "Marketing and workout both abandon the phone-column metaphor for a full web layout.",
+      "viewport": "Desktop-first Society site throughout; phone as responsive, not as the metaphor.",
+      "risk": "Timers and demos can lose focus if the layout gets too wide."
+    }
+  ],
+  "reroll": false,
+  "canon": false,
+  "steer": true
+}

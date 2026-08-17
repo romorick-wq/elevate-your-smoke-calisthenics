@@ -43,7 +43,7 @@ Confirmed:
 - Completion requires ~85% elapsed (`MIN_COMPLETE_MS`); resume must restore timing faithfully; no auto-pause on hide.
 - Public privacy: display name (or callsign), league, sessions, streak, points, hours, weightLostPct only. Private/organizer: callsign, phone, raw weights, id, quiz answers.
 - Inclusive onboarding: no male-only age copy; preserve named league labels only.
-- Self-service profile update/delete; organizer messaging via Messages/WhatsApp (Twilio optional).
+- Self-service profile update/delete; callsign + PIN login (`POST /api/me/login`) to restore a card on another device; organizer messaging via Messages/WhatsApp (Twilio optional).
 - Keep `app/index.html` ≡ `app/elevate-your-smoke.html`; bump service-worker cache on HTML/asset ships.
 - Production requires `ORGANIZER_CODE` (never commit).
 

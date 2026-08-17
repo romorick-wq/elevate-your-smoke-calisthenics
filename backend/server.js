@@ -8,6 +8,7 @@ const {
   clientIp,
   safeEqual,
   pinAllowed,
+  loginAllowed,
   visitIncrementAllowed,
   securityHeaders,
   corsOriginAllowed,
@@ -235,6 +236,47 @@ async function handleMeUpdate(req, res) {
   }
 }
 
+async function handleMeLogin(req, res) {
+  try {
+    const ip = clientIp(req);
+    if (!loginAllowed(ip)) {
+      return res.status(429).json({ ok: false, error: 'too many attempts' });
+    }
+    const body = parseBody(req) || {};
+    const result = await db.loginMember({
+      challenge: body.challenge,
+      name: body.name,
+      pin: body.pin,
+      league: body.league,
+    });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: 'server error' });
+  }
+}
+
+async function handleMePin(req, res) {
+  try {
+    const ip = clientIp(req);
+    if (!loginAllowed(ip)) {
+      return res.status(429).json({ ok: false, error: 'too many attempts' });
+    }
+    const body = parseBody(req) || {};
+    const result = await db.setMemberPin({
+      challenge: body.challenge,
+      id: body.id,
+      name: body.name,
+      pin: body.pin,
+      currentPin: body.currentPin,
+    });
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: 'server error' });
+  }
+}
+
 async function handleVisitsGet(req, res) {
   try {
     if (!dbReady) return res.json({ ok: true, visits: 0, pending: true });
@@ -301,6 +343,8 @@ app.post('/api/roster/sms', handleSms);
 app.get('/api/leaderboard', handleLeaderboard);
 app.post('/api/me/delete', handleMeDelete);
 app.post('/api/me/update', handleMeUpdate);
+app.post('/api/me/login', handleMeLogin);
+app.post('/api/me/pin', handleMePin);
 app.get('/api/visits', handleVisitsGet);
 app.post('/api/visits', handleVisitsPost);
 

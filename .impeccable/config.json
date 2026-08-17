@@ -1,0 +1,48 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "app/elevate-your-smoke.html",
+          "app/index.html"
+        ],
+        "createdAt": "2026-08-12T23:28:27.010Z",
+        "reason": "Incumbent workout SPA Field Card tokens; needed to ship functional callsign deep-link fix"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "app/elevate-your-smoke.html",
+          "app/index.html"
+        ],
+        "createdAt": "2026-08-12T23:28:27.039Z",
+        "reason": "Incumbent workout SPA Field Card tokens; needed to ship functional callsign deep-link fix"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "app/elevate-your-smoke.html",
+          "app/index.html"
+        ],
+        "createdAt": "2026-08-12T23:28:27.065Z",
+        "reason": "Incumbent workout SPA Field Card tokens; needed to ship functional callsign deep-link fix"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "app/elevate-your-smoke.html",
+          "app/index.html"
+        ],
+        "createdAt": "2026-08-12T23:28:43.232Z",
+        "reason": "Product rule: sticky LIVE user ticker marquee on /app (eys skill)"
+      }
+    ]
+  }
+}

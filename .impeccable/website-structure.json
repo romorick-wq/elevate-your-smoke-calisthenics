@@ -1,0 +1,75 @@
+{
+  "title": "Marketing site structure",
+  "question": "Keep Mission Poster Cascade for /, take a challenger form, or re-roll. Visual identity stays Field Card (olive field, cream paper, Society orange, Syne + Outfit).",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Mission Poster Cascade",
+      "kicker": "THE ROLL",
+      "lineage": "Full-bleed website bands — one claim per act",
+      "thesis": "The phone column dies. The landing is a cascade of full-bleed poster acts that prove the Society card, then stamp the CTA.",
+      "palette": ["#2F3B2A", "#ECEAE4", "#E85D04", "#101412"],
+      "materials": ["olive field bands", "cream paper islands", "ember seal CTAs", "full-bleed PT photo"],
+      "viewport": "Edge-to-edge hero: Elevate Your Smoke as the brand plane, one line of proof, Start CTA. No phone shell. No inset media card.",
+      "risk": "Too many stacked acts can feel like a long app scroll if bands stay narrow.",
+      "sketch": ".impeccable/sketches/website-assigned.webp"
+    },
+    {
+      "id": "challenger-saul-bass",
+      "label": "Cut-Paper Title Acts",
+      "kicker": "CHALLENGER",
+      "lineage": "Saul Bass title sequence grammar on Field Card colors",
+      "thesis": "Scroll advances hard cut-paper acts — one idea, one silhouette, one CTA — like a Society title sequence.",
+      "case": "Fuses cleanly with poster cascade topology; weaker Cigar Society / military identification than Field Card briefing culture.",
+      "palette": ["#E85D04", "#101412", "#F4F7EE", "#2F3B2A"],
+      "materials": ["flat color fields", "cut-paper silhouettes", "staccato band jumps"],
+      "viewport": "Burnt-orange full field with black cut-paper PT silhouette and Syne brand; CTA as ink stamp.",
+      "risk": "Can read as film titles, not Society PT, if silhouettes overpower the product facts.",
+      "sketch": ".impeccable/sketches/website-saul-bass.webp",
+      "hero": "https://impeccable.style/worlds/cards/posters-covers-sleeves-saul-bass-title-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/posters-covers-sleeves-saul-bass-title.webp"
+    },
+    {
+      "id": "challenger-coil-tower",
+      "label": "Ascending Coil Courses",
+      "kicker": "CHALLENGER",
+      "lineage": "Coiled earth tower as vertical website courses",
+      "thesis": "The page rises in coil courses — kickoff, card, leagues, boards — each seam a section join.",
+      "case": "Progression clarity is strong; coil grammar fights the established olive/cream Field Card unless heavily translated.",
+      "palette": ["#2F3B2A", "#3F4F38", "#ECEAE4", "#E85D04"],
+      "materials": ["banded horizontal courses", "slip seams as dividers", "live course marked damp"],
+      "viewport": "Wide olive course with brand stamp; cream course below carrying the 9-minute phases as one band.",
+      "risk": "Still vertical-only; may feel stacked rather than like a real wide website.",
+      "sketch": ".impeccable/sketches/website-coil.webp",
+      "hero": "https://impeccable.style/worlds/cards/clay-ceramics-fracture-coiled-earth-tower-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/clay-ceramics-fracture-coiled-earth-tower.webp"
+    },
+    {
+      "id": "challenger-darkroom",
+      "label": "Station Bay Sequence",
+      "kicker": "CHALLENGER",
+      "lineage": "Darkroom stations as join → train → board path",
+      "thesis": "Fixed stations in order: prove the offer, expose the card, develop the leagues, fix on live boards.",
+      "case": "Fuses poorly because amber safelight overrides Field Card olive; path clarity is good, Society identification is not.",
+      "palette": ["#2F3B2A", "#ECEAE4", "#E85D04", "#101412"],
+      "materials": ["ordered stations", "timer digits", "test-strip step bands"],
+      "viewport": "Wide station bay: brand + countdown as the expose timer; CTA commits the print.",
+      "risk": "Metaphor noise if stations feel like a wizard instead of a marketing site.",
+      "sketch": ".impeccable/sketches/website-darkroom.webp",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-darkroom-safelight-bay-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/signals-instruments-darkroom-safelight-bay.webp"
+    }
+  ],
+  "reroll": true,
+  "steer": true,
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "A competent fitness challenge landing: wide nav, hero, feature grid, testimonials, FAQ, CTA — executed impeccably.",
+    "viewport": "Full-width hero with brand and Start CTA; standard marketing sections below.",
+    "palette": ["#2F3B2A", "#ECEAE4", "#E85D04", "#101412"],
+    "materials": ["wide website shell", "hero photo", "section grid"],
+    "risk": "Reads like every other fitness landing if craft is only polish.",
+    "sketch": ".impeccable/sketches/website-canon.webp"
+  }
+}
