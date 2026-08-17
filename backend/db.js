@@ -12,6 +12,7 @@ const {
   challengeIsLive,
   KICKOFF_ISO,
 } = require('./workout');
+const { hashPin, verifyPin, normalizePin } = require('./security');
 
 let pool;
 
@@ -52,6 +53,8 @@ async function init() {
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS date_started DATE`);
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS league TEXT NOT NULL DEFAULT ''`);
   await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS display_name TEXT NOT NULL DEFAULT ''`);
+  await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS pin_hash TEXT`);
+  await db.query(`ALTER TABLE participants ADD COLUMN IF NOT EXISTS card_json TEXT`);
   await db.query(`
     CREATE TABLE IF NOT EXISTS sessions (
       id BIGSERIAL PRIMARY KEY,
@@ -187,6 +190,13 @@ async function upsertParticipant(body) {
     };
   }
 
+  let pinHash = null;
+  if (body.pin != null && String(body.pin).trim() !== '') {
+    pinHash = hashPin(body.pin);
+    if (!pinHash) return { ok: false, error: 'bad pin' };
+  }
+  const cardStr = body.card != null ? sanitizeCardJson(body.card) : null;
+
   const client = await db.connect();
   try {
     await client.query('BEGIN');
@@ -217,8 +227,8 @@ async function upsertParticipant(body) {
     await client.query(
       `INSERT INTO participants
          (id, challenge, name, joined, last_active, sessions, total, streak, day, per_week,
-          starting_weight, current_weight, league, display_name)
-       VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10, $11, $13)
+          starting_weight, current_weight, league, display_name, pin_hash, card_json)
+       VALUES ($1, $2, $3, NOW(), NOW(), $4, $5, $6, $7, $8, $9, $10, $11, $13, $15, $16)
        ON CONFLICT (id, challenge) DO UPDATE SET
          name = EXCLUDED.name,
          last_active = NOW(),
@@ -246,6 +256,16 @@ async function upsertParticipant(body) {
          display_name = CASE
            WHEN $14 THEN EXCLUDED.display_name
            ELSE participants.display_name
+         END,
+         pin_hash = CASE
+           WHEN EXCLUDED.pin_hash IS NOT NULL AND EXCLUDED.pin_hash <> ''
+             AND (participants.pin_hash IS NULL OR participants.pin_hash = '')
+           THEN EXCLUDED.pin_hash
+           ELSE participants.pin_hash
+         END,
+         card_json = CASE
+           WHEN EXCLUDED.card_json IS NOT NULL AND EXCLUDED.card_json <> '' THEN EXCLUDED.card_json
+           ELSE participants.card_json
          END`,
       [
         id,
@@ -262,6 +282,8 @@ async function upsertParticipant(body) {
         isLog,
         setDisplay ? displayIn || '' : '',
         setDisplay,
+        pinHash,
+        cardStr,
       ]
     );
 
@@ -571,6 +593,151 @@ async function updateOwnParticipant(challenge, id, details) {
   return { ok: true };
 }
 
+function sanitizeCardJson(card) {
+  if (!card || typeof card !== 'object') return null;
+  let profile = null;
+  if (card.profile && typeof card.profile === 'object') {
+    const p = card.profile;
+    profile = {
+      days: n(p.days),
+      level: n(p.level),
+      goal: String(p.goal || '').slice(0, 32),
+      gear: String(p.gear || '').slice(0, 32),
+      limit: String(p.limit || '').slice(0, 32),
+      age: String(p.age || '').slice(0, 32),
+      created: n(p.created) || Date.now(),
+    };
+  }
+  const log = {};
+  if (card.log && typeof card.log === 'object' && !Array.isArray(card.log)) {
+    for (const k of Object.keys(card.log).slice(0, 40)) {
+      const ki = Number(k);
+      if (!Number.isInteger(ki) || ki < 0 || ki > 40) continue;
+      const v = card.log[k];
+      const at = v && typeof v === 'object' ? n(v.at) : 0;
+      log[String(ki)] = { at: at || 0 };
+    }
+  }
+  return JSON.stringify({ profile, log }).slice(0, 12000);
+}
+
+function parseCardJson(raw) {
+  if (!raw) return { profile: null, log: {} };
+  try {
+    const d = typeof raw === 'object' ? raw : JSON.parse(String(raw));
+    return {
+      profile: d && d.profile && typeof d.profile === 'object' ? d.profile : null,
+      log: d && d.log && typeof d.log === 'object' && !Array.isArray(d.log) ? d.log : {},
+    };
+  } catch (e) {
+    return { profile: null, log: {} };
+  }
+}
+
+function dummyPinCheck(pin) {
+  verifyPin(pin || '0000', 'scrypt$AAAAAAAAAAAAAAAAAAAAAA==$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+}
+
+async function loginMember({ challenge, name, pin, league }) {
+  const pinNorm = normalizePin(pin);
+  if (!pinNorm) return { ok: false, error: 'bad pin' };
+  const c = String(challenge || '').slice(0, 64);
+  const personName = String(name || '').trim().slice(0, 32);
+  if (!c || personName.length < 2) return { ok: false, error: 'bad credentials' };
+  const lg = parseLeague(league);
+  const db = getPool();
+  const { rows } = await db.query(
+    `SELECT id, name, display_name, league, joined, sessions, total, streak, day, per_week,
+            starting_weight, current_weight, pin_hash, card_json
+     FROM participants
+     WHERE challenge = $1 AND lower(trim(name)) = lower(trim($2))
+       AND ($3 = '' OR league = $3)
+     ORDER BY sessions DESC, last_active DESC`,
+    [c, personName, lg]
+  );
+  if (!rows.length) {
+    dummyPinCheck(pinNorm);
+    return { ok: false, error: 'bad credentials' };
+  }
+  const withPin = rows.filter((r) => r.pin_hash);
+  if (!withPin.length) {
+    dummyPinCheck(pinNorm);
+    return { ok: false, error: 'no pin' };
+  }
+  let match = null;
+  for (const r of withPin) {
+    if (verifyPin(pinNorm, r.pin_hash)) {
+      match = r;
+      break;
+    }
+  }
+  if (!match) return { ok: false, error: 'bad credentials' };
+
+  const sess = await db.query(
+    `SELECT day, when_at FROM sessions WHERE participant_id = $1 AND challenge = $2 AND day > 0 ORDER BY day`,
+    [match.id, c]
+  );
+  const card = parseCardJson(match.card_json);
+  const log = { ...(card.log || {}) };
+  for (const s of sess.rows) {
+    const i = n(s.day) - 1;
+    if (i < 0) continue;
+    const at = s.when_at ? new Date(s.when_at).getTime() : 0;
+    log[String(i)] = { at };
+  }
+  await db.query(
+    `UPDATE participants SET last_active = NOW() WHERE id = $1 AND challenge = $2`,
+    [match.id, c]
+  );
+  return {
+    ok: true,
+    me: {
+      id: match.id,
+      name: match.name,
+      displayName: String(match.display_name || '').trim(),
+      league: parseLeague(match.league) || '',
+      joined: new Date(match.joined).getTime(),
+    },
+    profile: card.profile,
+    log,
+    weights: {
+      starting: match.starting_weight == null ? '' : Number(match.starting_weight),
+      current: match.current_weight == null ? '' : Number(match.current_weight),
+    },
+    sessions: n(match.sessions),
+    streak: n(match.streak),
+    total: n(match.total),
+    perWeek: n(match.per_week),
+  };
+}
+
+async function setMemberPin({ challenge, id, name, pin, currentPin }) {
+  const newHash = hashPin(pin);
+  if (!newHash) return { ok: false, error: 'bad pin' };
+  const c = String(challenge || '').slice(0, 64);
+  const pid = String(id || '').slice(0, 64);
+  const personName = String(name || '').trim();
+  if (!c || !pid || personName.length < 2) return { ok: false, error: 'bad request' };
+  const db = getPool();
+  const { rows } = await db.query(
+    `SELECT id, name, pin_hash FROM participants WHERE challenge = $1 AND id = $2 LIMIT 1`,
+    [c, pid]
+  );
+  if (!rows.length) return { ok: false, error: 'not found' };
+  const row = rows[0];
+  if (String(row.name || '').trim().toLowerCase() !== personName.toLowerCase()) {
+    return { ok: false, error: 'not found' };
+  }
+  if (row.pin_hash) {
+    if (!verifyPin(currentPin, row.pin_hash)) return { ok: false, error: 'bad pin' };
+  }
+  await db.query(
+    `UPDATE participants SET pin_hash = $3, last_active = NOW() WHERE challenge = $1 AND id = $2`,
+    [c, pid, newHash]
+  );
+  return { ok: true };
+}
+
 async function getVisitCount() {
   const db = getPool();
   const { rows } = await db.query(
@@ -600,6 +767,8 @@ module.exports = {
   resetParticipantProgress,
   deleteOwnParticipant,
   updateOwnParticipant,
+  loginMember,
+  setMemberPin,
   getVisitCount,
   recordVisit,
   SESSION_MINUTES,

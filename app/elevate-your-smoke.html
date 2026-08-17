@@ -385,7 +385,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.2.3',
+  VERSION:'1.2.6',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -396,7 +396,7 @@ const CONFIG={
 };
 
 const KEY='smoke30:v1';
-let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,slot:null,si:0,timeLeft:0,timeLeftMs:0,elapsedActiveMs:0,deadlineAt:null,lastTickAt:null,stepStartedAt:0,paused:false,muted:true,wakeLock:null,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points',boardLeague:'brothers',countdown:null,resume:null,joining:false,boardPeople:null,completing:false,lastWarnSec:null};
+let S={profile:null,log:{},screen:'cover',qi:0,answers:{},session:null,slot:null,si:0,timeLeft:0,timeLeftMs:0,elapsedActiveMs:0,deadlineAt:null,lastTickAt:null,stepStartedAt:0,paused:false,muted:true,wakeLock:null,tick:null,tipTick:null,rafs:[],back:'plan',weights:{starting:'',current:''},boardTab:'points',boardLeague:'brothers',countdown:null,resume:null,joining:false,logging:false,boardPeople:null,completing:false,lastWarnSec:null};
 
 /* ---------- movement library ---------- */
 const M={
@@ -1046,6 +1046,15 @@ function applyRoute(){
   if(h==='card'||h==='nine'||h==='workout'){ S.screen='card';S.back='cover';return true; }
   if(h==='privacy'){ S.screen='privacy';S.back=S.profile?'plan':'cover';return true; }
   if(h==='settings'||h==='profile'){ S.screen=S.me?'settings':'join';S.back=S.profile?'plan':'cover';return true; }
+  if(h==='login'||h==='signin'){ S.screen='login';S.back='cover';return true; }
+  if(h==='join'||h==='lock'||h==='callsign'){
+    S.screen=S.me?(S.profile?'plan':'quiz'):'join';
+    S.qi=0;S.answers={};S.back='cover';return true;
+  }
+  if(h==='active'||h==='plan'){
+    S.screen=S.me?(S.profile?'plan':'quiz'):'join';
+    S.qi=0;S.answers={};S.back='cover';return true;
+  }
   if(h==='admin'||h==='organizer'){ location.replace('/admin');return true; }
   return false;
 }
@@ -1113,7 +1122,7 @@ function render(){
   const a=app();if(!a)return;
   a.innerHTML='';
   try{
-    ({cover,join,quiz,build:building,plan,brief,done:doneScreen,partial:partialScreen,manual,board,card:cardScreen,privacy:privacyScreen,settings:settingsScreen}[S.screen]||cover)(a);
+    ({cover,join,login:loginScreen,quiz,build:building,plan,brief,done:doneScreen,partial:partialScreen,manual,board,card:cardScreen,privacy:privacyScreen,settings:settingsScreen}[S.screen]||cover)(a);
     const sheet=a.querySelector('.sheet');
     if(sheet&&!sheet.querySelector('.appfoot')) sheet.appendChild(el(foot()));
   }catch(err){
@@ -1234,7 +1243,11 @@ function challengeLive(now){ return launchParts(now).done; }
 function kickoffWaitCopy(){
   return 'Workouts open '+CONFIG.KICKOFF_LABEL+'. Sign up and build your card now — the 9-minute sessions unlock at kickoff.';
 }
-function primaryCtaLabel(){ return challengeLive() ? 'Go to active' : 'Lock callsign'; }
+function primaryCtaLabel(){
+  if(S.me&&S.profile) return 'Continue training';
+  if(S.me) return 'Finish mission check';
+  return challengeLive() ? 'Go to active' : 'Lock callsign';
+}
 function syncPrimaryCta(){
   if(!(S.screen==='cover' || !S.screen)) return;
   const label=primaryCtaLabel();
@@ -1336,7 +1349,9 @@ function cover(a){
     <p class="eyebrow">The Cigar Society \u00b7 Elevate Your Smoke</p>
     <h2 class="display h-xl">Two leagues.<br>One standard.</h2>
     <p class="quote">Brothers and Ladies run the same 9-minute card for thirty days. ${esc(CONFIG.KICKOFF_LABEL.split('·')[0].trim())} kickoff.</p>
+    ${S.me?`<p class="fine" style="margin:12px 0 0">Card on this browser: <b>${esc(boardNameOf(S.me))}</b>${S.profile?' · '+Object.keys(S.log||{}).length+' sessions logged':''}. Continue opens your field card. Set a PIN in Profile to open this same card on a PC or another phone.</p>`:`<p class="fine" style="margin:12px 0 0">New here — lock a callsign. Already on the roster — log in with callsign + PIN on this PC or phone.</p>`}
     <button class="btn accent" id="go" type="button" style="margin-top:16px">${esc(primaryCtaLabel())}</button>
+    <button class="btn ghost" id="loginbtn" type="button" style="margin-top:8px">Log in on this device</button>
     <div class="launch" id="launch" style="margin-top:14px">
       <p class="fine" style="margin:0 0 8px;color:var(--ink);font-weight:600">${esc(CONFIG.KICKOFF_LABEL)}</p>
       <div class="cd" id="cd-digits" aria-live="polite" ${live?'hidden':''}>
@@ -1375,9 +1390,13 @@ function cover(a){
   if(S.countdown) clearInterval(S.countdown);
   if(!live) S.countdown=setInterval(paintCountdown,1000);
   document.getElementById('demo').onclick=()=>showPromoDemo();
-  const start=()=>{clearHash();S.screen=S.me?(S.profile?'plan':'quiz'):'join';S.qi=0;S.answers={};render()};
+  const start=()=>{
+    history.replaceState(null,'',location.pathname+(S.me&&S.profile?'#active':'#join'));
+    S.screen=S.me?(S.profile?'plan':'quiz'):'join';S.qi=0;S.answers={};render();
+  };
   const openCard=()=>{history.replaceState(null,'',location.pathname+'#card');S.screen='card';S.back='cover';render()};
   document.getElementById('go').onclick=start;
+  document.getElementById('loginbtn').onclick=()=>{history.replaceState(null,'',location.pathname+'#login');S.screen='login';S.back='cover';render()};
   document.getElementById('seecard').onclick=openCard;
 }
 function quiz(a){
@@ -1401,7 +1420,13 @@ function quiz(a){
   });
   const bk=document.getElementById('back');if(bk)bk.onclick=()=>{S.qi--;render()};
 }
-function finishQuiz(){S.profile={...S.answers,created:Date.now()};S.log={};save();S.screen='build';render()}
+function finishQuiz(){
+  S.profile={...S.answers,created:(S.profile&&S.profile.created)||Date.now()};
+  if(!S.log)S.log={};
+  save();
+  report('ping');
+  S.screen='build';render();
+}
 function building(a){
   const p=S.profile;
   const lines=[['Mission length','30 days'],['Sessions per week',p.days],['Every session','9 min PT'],
@@ -1490,13 +1515,20 @@ function buildReportBody(action, extras){
   }
   if(S.weights&&S.weights.starting!==''&&S.weights.starting!=null)body.startingWeight=Number(S.weights.starting);
   if(S.weights&&S.weights.current!==''&&S.weights.current!=null)body.currentWeight=Number(S.weights.current);
+  if(extras&&extras.pin) body.pin=String(extras.pin);
+  if(S.profile||S.log) body.card={profile:S.profile||null,log:S.log||{}};
   return body;
 }
 function report(action, extras){
   if(!tracking()||!S.me)return Promise.resolve(null);
   const body=buildReportBody(action, extras);
-  return apiPost(body).catch(err=>{ queueAdd(body); throw err; });
+  return apiPost(body).catch(err=>{
+    const q={...body}; delete q.pin;
+    queueAdd(q);
+    throw err;
+  });
 }
+function pinDigits(v){ return String(v||'').replace(/\s+/g,''); }
 
 /* ---- join screen ---- */
 function join(a){
@@ -1504,6 +1536,7 @@ function join(a){
   a.appendChild(el(`<div class="sheet">${head('CALLSIGN')}
     <p class="eyebrow">The Cigar Society \u00b7 roster</p>
     <h2 class="display h-lg">Pick your league.<br>Lock your name.</h2>
+    ${S.me&&S.profile?`<p class="note" style="margin:12px 0 0">This phone already has <b>${esc(boardNameOf(S.me))}</b>. <button type="button" class="linkbtn" id="opencard">Open your card</button></p>`:''}
     <div class="rule"></div>
     <p class="eyebrow">League</p>
     <div class="leaguepick" id="leaguepick" role="group" aria-label="League">
@@ -1521,21 +1554,32 @@ function join(a){
       <p class="hint" id="dnhint">Optional. Blank = show callsign on boards.</p>
       <p class="errline" id="dnerr" role="alert"></p>
     </div>
+    ${tracking()&&!S.me?`<div class="field"><label for="pin">Card PIN (4–8 digits)</label>
+      <input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="e.g. 4821" aria-describedby="pinhint pinerr">
+      <p class="hint" id="pinhint">Opens this card on a PC or another phone. Not the organizer code.</p>
+      <p class="errline" id="pinerr" role="alert"></p></div>
+    <div class="field"><label for="pin2">Confirm PIN</label>
+      <input id="pin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="Re-enter PIN" aria-describedby="pin2err">
+      <p class="errline" id="pin2err" role="alert"></p></div>`:''}
     <div class="privacybox">
       <label><input type="checkbox" id="ack"> <span>I understand my display name (or callsign), league, progress, and weight-loss % (if logged) appear on public boards. Raw weights and phone stay private. Not medical advice.</span></label>
     </div>
     <p class="errline" id="ackerr" role="alert"></p>
     <div class="note">${tracking()
-      ? 'Mission-brief answers stay on this device. Full privacy details are under Privacy.'
+      ? 'Mission-brief answers sync with your card so you can log in elsewhere. Full privacy details are under Privacy.'
       : 'Roster tracking is off on this copy — your card saves on this device only.'}</div>
     <div style="flex:1;min-height:20px"></div>
     <button class="btn" id="go" disabled>Lock callsign</button>
+    <div style="text-align:center"><button class="linkbtn" id="openlogin">Already locked in? Log in</button></div>
     <div style="text-align:center"><button class="linkbtn" id="back">Back</button></div>
   </div>`));
   const inp=document.getElementById('nm');
   const din=document.getElementById('dn');
   const go=document.getElementById('go');
   const ack=document.getElementById('ack');
+  const pinEl=document.getElementById('pin');
+  const pin2=document.getElementById('pin2');
+  const needPin=!!(tracking()&&!S.me);
   if(S.me){inp.value=S.me.name; if(din) din.value=S.me.displayName||'';}
   const valid=()=>{
     const v=inp.value.trim();
@@ -1544,12 +1588,17 @@ function join(a){
     const okName=v.length>=2&&v.length<=32;
     const okDisp=!d||(d.length>=2&&d.length<=32);
     const okAck=ack.checked;
-    go.disabled=!(okLeague&&okName&&okDisp&&okAck)||S.joining;
+    const p1=pinEl?pinDigits(pinEl.value):'';
+    const p2=pin2?pinDigits(pin2.value):'';
+    const okPin=!needPin||(/^\d{4,8}$/.test(p1)&&p1===p2);
+    go.disabled=!(okLeague&&okName&&okDisp&&okAck&&okPin)||S.joining;
     document.getElementById('leagueerr').textContent=okLeague?'':'Pick Brothers or Ladies of the League.';
     document.getElementById('nmerr').textContent=inp.value&&!okName?'Callsign must be 2–32 characters.':'';
     document.getElementById('dnerr').textContent=d&&!okDisp?'Display name must be 2–32 characters (or blank).':'';
     document.getElementById('ackerr').textContent=(!okAck&&(okLeague||okName))?'Confirm the privacy note to continue.':'';
-    return okLeague&&okName&&okDisp&&okAck;
+    if(document.getElementById('pinerr')) document.getElementById('pinerr').textContent=(needPin&&p1&&!/^\d{4,8}$/.test(p1))?'PIN must be 4–8 digits.':'';
+    if(document.getElementById('pin2err')) document.getElementById('pin2err').textContent=(needPin&&p2&&p1!==p2)?'PINs must match.':'';
+    return okLeague&&okName&&okDisp&&okAck&&okPin;
   };
   document.getElementById('leaguepick').onclick=e=>{
     const b=e.target.closest('button[data-league]'); if(!b)return;
@@ -1559,15 +1608,27 @@ function join(a){
     });
     valid();
   };
-  inp.oninput=valid; if(din) din.oninput=valid; ack.onchange=valid; valid();
+  inp.oninput=valid; if(din) din.oninput=valid; ack.onchange=valid;
+  if(pinEl) pinEl.oninput=valid; if(pin2) pin2.oninput=valid;
+  valid();
   go.onclick=async()=>{
     if(!valid()||S.joining)return;
     S.joining=true; go.disabled=true; go.textContent='Locking…';
     const v=inp.value.trim();
     const d=(din&&din.value.trim())||'';
+    const p1=pinEl?pinDigits(pinEl.value):'';
     try{
       setMe(v,league,d);
-      report('join');
+      const r=await report('join', needPin?{pin:p1}:undefined);
+      if(tracking() && (!r || r.ok===false)){
+        const msg=r&&r.error==='bad pin'?'PIN must be 4–8 digits.':'Could not save. Check your connection and try again.';
+        const slot=document.getElementById('pinerr')||document.getElementById('nmerr');
+        if(slot) slot.textContent=msg;
+        go.textContent='Lock callsign'; S.joining=false; valid();
+        return;
+      }
+      if(needPin){ S.me.hasPin=true; save(); }
+      S.joining=false;
       S.screen=S.profile?'plan':'quiz';S.qi=0;S.answers={};render();
     }catch(e){
       document.getElementById('nmerr').textContent='Could not save. Check your connection and try again.';
@@ -1577,6 +1638,102 @@ function join(a){
   inp.onkeydown=e=>{if(e.key==='Enter')go.click()};
   if(din) din.onkeydown=e=>{if(e.key==='Enter')go.click()};
   document.getElementById('back').onclick=()=>{S.screen='cover';render()};
+  const openLogin=document.getElementById('openlogin');
+  if(openLogin) openLogin.onclick=()=>{history.replaceState(null,'',location.pathname+'#login');S.screen='login';render()};
+  const openExisting=document.getElementById('opencard');
+  if(openExisting) openExisting.onclick=()=>{history.replaceState(null,'',location.pathname+'#active');S.screen='plan';render()};
+}
+function applyLoginPayload(d){
+  const me=d&&d.me||{};
+  S.me={id:me.id,name:me.name,displayName:me.displayName||'',league:me.league||'',joined:me.joined||Date.now(),hasPin:true};
+  S.profile=d.profile&&typeof d.profile==='object'?d.profile:null;
+  S.log=d.log&&typeof d.log==='object'?d.log:{};
+  const w=d.weights||{};
+  S.weights={starting:w.starting==null||w.starting===''?'':w.starting,current:w.current==null||w.current===''?'':w.current};
+  S.resume=null;
+  save();
+}
+function loginScreen(a){
+  let league='';
+  a.appendChild(el(`<div class="sheet">${head('LOG IN')}
+    <p class="eyebrow">The Cigar Society \u00b7 any device</p>
+    <h2 class="display h-lg">Open your card<br>on this browser.</h2>
+    ${S.me?`<p class="note" style="margin:12px 0 0">This browser already has <b>${esc(boardNameOf(S.me))}</b>. Logging in as someone else replaces the local card.</p>`:''}
+    <div class="rule"></div>
+    <p class="eyebrow">League</p>
+    <div class="leaguepick" id="leaguepick" role="group" aria-label="League">
+      <button type="button" data-league="brothers" aria-pressed="false">Brothers of the League<small>Men\u2019s board</small></button>
+      <button type="button" data-league="ladies" aria-pressed="false">Ladies of the League<small>Ladies\u2019 board</small></button>
+    </div>
+    <p class="field errline" id="leagueerr" role="alert"></p>
+    <div class="field"><label for="lnm">Callsign</label>
+      <input id="lnm" maxlength="32" autocomplete="username" autocapitalize="words" placeholder="The name you locked" aria-describedby="lnmerr">
+      <p class="errline" id="lnmerr" role="alert"></p>
+    </div>
+    <div class="field"><label for="lpin">Card PIN</label>
+      <input id="lpin" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password" placeholder="4–8 digits" aria-describedby="lpinerr">
+      <p class="hint">Set in Profile on the phone you already use if you locked in before PINs.</p>
+      <p class="errline" id="lpinerr" role="alert"></p>
+    </div>
+    <div style="flex:1;min-height:20px"></div>
+    <button class="btn accent" id="go" type="button" disabled>Log in</button>
+    <div style="text-align:center"><button class="linkbtn" id="tojoin">Need a new callsign?</button></div>
+    <div style="text-align:center"><button class="linkbtn" id="back">Back</button></div>
+  </div>`));
+  const inp=document.getElementById('lnm');
+  const pinEl=document.getElementById('lpin');
+  const go=document.getElementById('go');
+  const valid=()=>{
+    const v=inp.value.trim();
+    const p=pinDigits(pinEl.value);
+    const okName=v.length>=2&&v.length<=32;
+    const okPin=/^\d{4,8}$/.test(p);
+    go.disabled=!(okName&&okPin)||S.logging;
+    document.getElementById('lnmerr').textContent=inp.value&&!okName?'Callsign must be 2–32 characters.':'';
+    document.getElementById('lpinerr').textContent=pinEl.value&&!okPin?'PIN must be 4–8 digits.':'';
+    return okName&&okPin;
+  };
+  document.getElementById('leaguepick').onclick=e=>{
+    const b=e.target.closest('button[data-league]'); if(!b)return;
+    league=league===b.dataset.league?'':b.dataset.league;
+    document.querySelectorAll('#leaguepick button').forEach(x=>{
+      const on=x.dataset.league===league; x.classList.toggle('on',on); x.setAttribute('aria-pressed',on?'true':'false');
+    });
+  };
+  inp.oninput=valid; pinEl.oninput=valid; valid();
+  go.onclick=async()=>{
+    if(!valid()||S.logging)return;
+    if(S.me && !confirm('Replace the card on this browser with the roster card you are logging in as?'))return;
+    S.logging=true; go.disabled=true; go.textContent='Opening…';
+    const err=document.getElementById('lpinerr');
+    try{
+      const r=await fetch('/api/me/login',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({challenge:CONFIG.CHALLENGE,name:inp.value.trim(),pin:pinDigits(pinEl.value),league})});
+      const d=await r.json().catch(()=>null);
+      if(r.status===429){err.textContent='Too many tries. Wait 15 minutes.';S.logging=false;go.textContent='Log in';valid();return}
+      if(!d||!d.ok){
+        const e=d&&d.error;
+        err.textContent=e==='no pin'
+          ? 'This callsign has no PIN yet. Open Profile on the original phone and set one.'
+          : e==='bad pin' ? 'PIN must be 4–8 digits.'
+          : 'Callsign or PIN did not match.';
+        S.logging=false; go.textContent='Log in'; valid(); return;
+      }
+      applyLoginPayload(d);
+      S.logging=false;
+      history.replaceState(null,'',location.pathname+(profileReady(S.profile)?'#active':'#join'));
+      S.screen=profileReady(S.profile)?'plan':'quiz';
+      S.qi=0;S.answers=S.profile?{...S.profile}:{};
+      render();
+    }catch(e){
+      err.textContent='Could not reach the roster. Check your connection.';
+      S.logging=false; go.textContent='Log in'; valid();
+    }
+  };
+  inp.onkeydown=e=>{if(e.key==='Enter')go.click()};
+  pinEl.onkeydown=e=>{if(e.key==='Enter')go.click()};
+  document.getElementById('tojoin').onclick=()=>{history.replaceState(null,'',location.pathname+'#join');S.screen='join';render()};
+  document.getElementById('back').onclick=()=>{clearHash();S.screen='cover';render()};
 }
 function renderRoster(body,people){
   body.innerHTML='';
@@ -2438,7 +2595,8 @@ function privacyScreen(a){
     <h2 class="display h-lg">What stays<br>visible.</h2>
     <p class="fine" style="margin:12px 0 0"><b>League boards (public):</b> display name (or callsign if none), league, sessions, streak, points, hours, and weight-loss percent if logged (never raw lbs).</p>
     <p class="fine"><b>Organizers:</b> callsign, display name, league, progress, phone and raw weights if entered in CRM, last active.</p>
-    <p class="fine"><b>This device only:</b> mission-brief answers (goal, level, age band, injuries).</p>
+    <p class="fine"><b>Card PIN:</b> 4–8 digits you set at lock-in (or later in Profile). The server stores a hash, never the PIN itself. Callsign + PIN restores your card on a PC or another phone. Do not share your PIN.</p>
+    <p class="fine"><b>This device:</b> a copy of your card also stays in this browser so you can train offline.</p>
     <p class="fine"><b>Bodyweight:</b> optional. Scoring awards loss only (gain = 0). Public metric is loss percent; raw starting/current lbs stay private.</p>
     <p class="fine"><b>Retention:</b> roster data stays for the challenge until organizer or self-delete from Profile.</p>
     <p class="fine"><b>Callsign / leave:</b> update or delete from Profile.</p>
@@ -2463,6 +2621,20 @@ function settingsScreen(a){
     </div>
     <p class="fine" id="serr" style="min-height:16px"></p>
     <button class="btn accent" id="savep" type="button">Save profile</button>
+    <div class="rule"></div>
+    <p class="eyebrow">Card PIN</p>
+    <p class="fine" style="margin:8px 0 0">Set a 4–8 digit PIN to open this same card on a PC or another phone. Required if you locked in before PINs existed.</p>
+    <div class="field"><label for="curpin">Current PIN</label>
+      <input id="curpin" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password" placeholder="Leave blank if you have not set one">
+    </div>
+    <div class="field"><label for="newpin">New PIN</label>
+      <input id="newpin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" placeholder="4–8 digits">
+    </div>
+    <div class="field"><label for="newpin2">Confirm new PIN</label>
+      <input id="newpin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password">
+      <p class="errline" id="pinseterr" role="alert"></p>
+    </div>
+    <button class="btn ghost" id="savepin" type="button">Save PIN</button>
     <button class="btn ghost" id="leave" type="button" style="margin-top:8px">Leave challenge / delete roster</button>
     <div style="text-align:center;margin-top:12px"><button class="linkbtn" id="back">Back to the card</button></div>
   </div>`));
@@ -2487,6 +2659,31 @@ function settingsScreen(a){
       }catch(e){}
     }
     err.style.color='var(--olive-soft)'; err.textContent='Saved. Board shows “'+boardNameOf(S.me)+'”.';
+  };
+  document.getElementById('savepin').onclick=async()=>{
+    const err=document.getElementById('pinseterr');
+    const np=pinDigits(document.getElementById('newpin').value);
+    const np2=pinDigits(document.getElementById('newpin2').value);
+    const cur=pinDigits(document.getElementById('curpin').value);
+    err.style.color='';
+    if(!/^\d{4,8}$/.test(np)){err.textContent='New PIN must be 4–8 digits.';return}
+    if(np!==np2){err.textContent='PINs must match.';return}
+    if(!tracking()){err.textContent='Roster tracking is off on this copy.';return}
+    try{
+      const r=await fetch('/api/me/pin',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({challenge:CONFIG.CHALLENGE,id:S.me.id,name:S.me.name,pin:np,currentPin:cur})});
+      const d=await r.json();
+      if(r.status===429){err.textContent='Too many tries. Wait and try again.';return}
+      if(!d||!d.ok){
+        err.textContent=d&&d.error==='bad pin'?'Current PIN rejected, or the new PIN is invalid.':'Could not save PIN. Confirm you are on the original card.';
+        return;
+      }
+      S.me.hasPin=true; save();
+      err.style.color='var(--olive-soft)'; err.textContent='PIN saved. Use callsign + PIN to log in on another device.';
+      document.getElementById('newpin').value='';
+      document.getElementById('newpin2').value='';
+      document.getElementById('curpin').value='';
+    }catch(e){err.textContent='Could not reach the roster.'}
   };
   document.getElementById('leave').onclick=async()=>{
     if(!confirm('Delete your roster entry for this challenge? Local card data on this device will also clear.'))return;

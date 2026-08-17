@@ -42,8 +42,48 @@ function makeLimiter({ windowMs, max }) {
 }
 
 const pinAllowed = makeLimiter({ windowMs: 15 * 60 * 1000, max: 12 });
+const loginAllowed = makeLimiter({ windowMs: 15 * 60 * 1000, max: 8 });
 const apiWriteAllowed = makeLimiter({ windowMs: 60 * 1000, max: 120 });
 const visitIncrementAllowed = makeLimiter({ windowMs: 30 * 60 * 1000, max: 1 });
+
+/** Member card PIN: 4–8 digits, no spaces. */
+function normalizePin(pin) {
+  const s = String(pin || '').replace(/\s+/g, '');
+  if (!/^\d{4,8}$/.test(s)) return null;
+  return s;
+}
+
+function hashPin(pin) {
+  const n = normalizePin(pin);
+  if (!n) return null;
+  const salt = crypto.randomBytes(16);
+  const hash = crypto.scryptSync(n, salt, 32, { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+  return 'scrypt$' + salt.toString('base64') + '$' + hash.toString('base64');
+}
+
+function verifyPin(pin, stored) {
+  const n = normalizePin(pin);
+  const raw = String(stored || '');
+  const parts = raw.split('$');
+  if (!n || parts.length !== 3 || parts[0] !== 'scrypt') {
+    try {
+      crypto.scryptSync('0000', Buffer.alloc(16), 32, { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+    } catch (e) {}
+    return false;
+  }
+  let salt;
+  let expected;
+  try {
+    salt = Buffer.from(parts[1], 'base64');
+    expected = Buffer.from(parts[2], 'base64');
+  } catch (e) {
+    return false;
+  }
+  if (!salt.length || !expected.length) return false;
+  const hash = crypto.scryptSync(n, salt, expected.length, { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+  if (hash.length !== expected.length) return false;
+  return crypto.timingSafeEqual(hash, expected);
+}
 
 function securityHeaders(_req, res, next) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -114,8 +154,12 @@ module.exports = {
   clientIp,
   safeEqual,
   pinAllowed,
+  loginAllowed,
   visitIncrementAllowed,
   securityHeaders,
   corsOriginAllowed,
   apiWriteGuard,
+  normalizePin,
+  hashPin,
+  verifyPin,
 };

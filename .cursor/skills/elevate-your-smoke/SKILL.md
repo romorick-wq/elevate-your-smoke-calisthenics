@@ -74,7 +74,7 @@ Optional Railway setting: health check path `/api/health`.
 - **Privacy public**: board display name (or callsign), league, sessions, streak, points, hours, weightLostPct. Private/organizer: callsign, phone, raw weights, id, quiz answers.
 - **Inclusive onboarding**: no male-only age copy; preserve named league labels only.
 - **Kickoff**: `CONFIG.KICKOFF_ISO` / `CONFIG.KICKOFF_LABEL`.
-- **Self-service**: `POST /api/me/update`, `POST /api/me/delete`.
+- **Self-service**: `POST /api/me/update`, `POST /api/me/delete`, `POST /api/me/login` (callsign + PIN), `POST /api/me/pin`. PIN is scrypt-hashed; never returned on boards.
 - **Messaging (free)**: Admin Text tab + CRM **Text** / **WhatsApp**. Messages uses `sms:` (group); WhatsApp uses `wa.me` (one chat at a time + Open next). Same CRM phones. Twilio optional paid SMS only.
 - **User ticker**: Sticky bottom marquee on `/app` (`#userticker`) — public board names/pts from `/api/leaderboard`; tap opens `#board`. Hidden under workout player.
 
