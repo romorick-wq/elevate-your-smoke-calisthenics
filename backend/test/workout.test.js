@@ -9,6 +9,7 @@ const {
   expectedSessionsFromPerWeek,
   resolveScheduleTotal,
   idempotencyKey,
+  initialSessionCount,
 } = require('../workout');
 
 // Exact 540s for every level
@@ -47,6 +48,8 @@ assert.strictEqual(challengeIsLive(KICKOFF_AT + 1000), true);
 assert.strictEqual(resolveScheduleTotal(0, 0), 0);
 
 assert.strictEqual(idempotencyKey('p1', 'c', 5), 'p1::c::5');
+assert.strictEqual(initialSessionCount(false), 0);
+assert.strictEqual(initialSessionCount(true), 1);
 
 // Resume: 15s remaining on 30s interval stays ~15s after refresh (paused)
 {
@@ -115,6 +118,32 @@ assert.strictEqual(idempotencyKey('p1', 'c', 5), 'p1::c::5');
   );
   assert.strictEqual(p.remainingMs, 15000);
   assert.strictEqual(p.elapsedActiveMs, 15000);
+}
+
+// remainingMs 0 means the current interval already ended — do not refill it
+{
+  const steps = [{ sec: 10 }, { sec: 10 }];
+  const savedAt = 1_000_000;
+  const ended = advanceResumeState(
+    { si: 0, remainingMs: 0, elapsedActiveMs: 10000, paused: false, savedAt },
+    steps,
+    savedAt + 100
+  );
+  assert.strictEqual(ended.si, 1);
+  assert.ok(Math.abs(ended.remainingMs - 9900) <= 100);
+  assert.strictEqual(ended.done, false);
+}
+
+// Missing remaining on a fresh step uses the full duration
+{
+  const steps = [{ sec: 20 }, { sec: 10 }];
+  const fresh = advanceResumeState(
+    { si: 0, elapsedActiveMs: 0, paused: false, savedAt: 1_000_000 },
+    steps,
+    1_000_000
+  );
+  assert.strictEqual(fresh.si, 0);
+  assert.strictEqual(fresh.remainingMs, 20000);
 }
 
 // Progression block: days 21–30 are indices 20–29 (ten days)

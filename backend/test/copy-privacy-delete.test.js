@@ -105,6 +105,10 @@ assert.ok(adminHtml.includes('Display name (public board)'));
 assert.ok(indexHtml.includes('Display name (public board)'));
 assert.ok(indexHtml.includes('boardNameOf'));
 assert.ok(indexHtml.includes('id="userticker"'));
+assert.ok(indexHtml.includes('stopPlayerOverlay'));
+assert.ok(indexHtml.includes('resetActiveWorkout'));
+assert.ok(indexHtml.includes('if(!S.deadlineAt) syncDeadlineFromRemaining()'));
+assert.ok(indexHtml.includes("VERSION:'1.2.8'"));
 assert.ok(indexHtml.includes('mountUserTicker'));
 assert.ok(indexHtml.includes('refreshUserTicker'));
 
