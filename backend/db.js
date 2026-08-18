@@ -11,6 +11,7 @@ const {
   resolveScheduleTotal,
   challengeIsLive,
   KICKOFF_ISO,
+  initialSessionCount,
 } = require('./workout');
 const { hashPin, verifyPin, normalizePin } = require('./security');
 
@@ -166,7 +167,7 @@ async function upsertParticipant(body) {
   const day = n(body.day);
   const elapsedMs = n(body.elapsedMs);
   const idem = String(body.idempotencyKey || `${id}::${challenge}::${day}`).slice(0, 160);
-  const sessionsIn = n(body.sessions);
+  const sessionsIn = initialSessionCount(isLog);
   const totalIn = resolveScheduleTotal(n(body.total), n(body.perWeek)) || n(body.total);
 
   if (isLog && !challengeIsLive()) {

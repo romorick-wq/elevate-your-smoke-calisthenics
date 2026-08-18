@@ -385,7 +385,7 @@ body:has(.player) .userticker{visibility:hidden;pointer-events:none}
 const CONFIG={
   SYNC_URL:'/api',
   CHALLENGE:'smoke-30',
-  VERSION:'1.2.7',
+  VERSION:'1.2.8',
   KICKOFF_ISO:'2026-08-15T09:00:00-05:00',
   KICKOFF_LABEL:'Saturday, August 15, 2026 · 9:00 a.m. CDT (America/Chicago)',
   SESSION_SEC:540,
@@ -1012,20 +1012,40 @@ function persistResume(){
 }
 function clearResume(){S.resume=null;S.elapsedActiveMs=0;S.timeLeftMs=0;S.deadlineAt=null;save()}
 function sessionTotalSec(sess){return (sess.steps||[]).reduce((a,b)=>a+(b.sec||0),0)}
+function stepDurationMs(steps,i){
+  if(!steps||i<0||i>=steps.length) return 0;
+  return Math.round((steps[i].sec||0)*1000);
+}
+function stopPlayerOverlay(){
+  clearPlayerTimers(); clearRafs(); releaseWakeLock();
+  document.querySelectorAll('.player').forEach(n=>n.remove());
+}
+function resetActiveWorkout(){
+  stopPlayerOverlay();
+  S.paused=false; S.session=null; S.slot=null; S.si=0;
+  S.timeLeft=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastTickAt=null;
+  S.elapsedActiveMs=0; S.lastWarnSec=null; S._coachPhase=null;
+}
 function advanceResumeAcrossGap(resume, steps, now){
   if(!resume||!steps||!steps.length) return null;
   if(resume.v!==RESUME_VERSION) return null;
   let si=Math.max(0, Number(resume.si)||0);
-  let remainingMs=Math.max(0, Number(resume.remainingMs)||0);
   let elapsed=Math.max(0, Number(resume.elapsedActiveMs)||0);
   const paused=!!resume.paused;
+  const savedAt=Number(resume.savedAt)||now;
+  const hasRemaining=resume.remainingMs!=null && resume.remainingMs!=='';
+  let remainingMs=hasRemaining?Number(resume.remainingMs):stepDurationMs(steps,si);
+  if(!Number.isFinite(remainingMs)||remainingMs<0) remainingMs=stepDurationMs(steps,si);
   if(si>=steps.length) return {si, remainingMs:0, elapsedActiveMs:elapsed, paused:false, done:true};
-  if(!remainingMs) remainingMs=Math.round((steps[si].sec||0)*1000);
   if(!paused){
-    let gap=Math.max(0, now-(Number(resume.savedAt)||now));
+    let gap=Math.max(0, now-savedAt);
+    if(remainingMs===0 && si<steps.length){
+      si+=1; remainingMs=stepDurationMs(steps,si);
+    }
     while(gap>0 && si<steps.length){
+      if(remainingMs<=0){ si+=1; remainingMs=stepDurationMs(steps,si); continue; }
       if(gap<remainingMs){ remainingMs-=gap; elapsed+=gap; gap=0; }
-      else { gap-=remainingMs; elapsed+=remainingMs; si++; remainingMs=si<steps.length?Math.round((steps[si].sec||0)*1000):0; }
+      else { gap-=remainingMs; elapsed+=remainingMs; si+=1; remainingMs=stepDurationMs(steps,si); }
     }
   }
   return {si, remainingMs:Math.round(remainingMs), elapsedActiveMs:Math.round(elapsed), paused, done:si>=steps.length};
@@ -1046,7 +1066,11 @@ function applyRoute(){
   if(h==='card'||h==='nine'||h==='workout'){ S.screen='card';S.back='cover';return true; }
   if(h==='privacy'){ S.screen='privacy';S.back=S.profile?'plan':'cover';return true; }
   if(h==='settings'||h==='profile'){ S.screen=S.me?'settings':'join';S.back=S.profile?'plan':'cover';return true; }
-  if(h==='login'||h==='signin'){ S.screen='login';S.back='cover';return true; }
+  if(h==='login'||h==='signin'){
+    if(document.getElementById('player')) persistResume();
+    stopPlayerOverlay();
+    S.screen='login';S.back='cover';return true;
+  }
   if(h==='join'||h==='lock'||h==='callsign'){
     S.screen=S.me?(S.profile?'plan':'quiz'):'join';
     S.qi=0;S.answers={};S.back='cover';return true;
@@ -1679,9 +1703,14 @@ function join(a){
   if(openExisting) openExisting.onclick=()=>{history.replaceState(null,'',location.pathname+'#active');S.screen='plan';render()};
 }
 function applyLoginPayload(d){
+  resetActiveWorkout();
   const me=d&&d.me||{};
   S.me={id:me.id,name:me.name,displayName:me.displayName||'',league:me.league||'',joined:me.joined||Date.now(),hasPin:true};
   S.profile=d.profile&&typeof d.profile==='object'?d.profile:null;
+  if(S.profile){
+    if(S.profile.days!=null) S.profile.days=Number(S.profile.days);
+    if(S.profile.level!=null) S.profile.level=Number(S.profile.level);
+  }
   S.log=d.log&&typeof d.log==='object'?d.log:{};
   const w=d.weights||{};
   S.weights={starting:w.starting==null||w.starting===''?'':w.starting,current:w.current==null||w.current===''?'':w.current};
@@ -2111,7 +2140,7 @@ function plan(a){
         startSession(true); endSession(); return;
       }
       S.si=adv.si; S.timeLeftMs=adv.remainingMs; S.elapsedActiveMs=adv.elapsedActiveMs;
-      S.paused=!!adv.paused; S.timeLeft=Math.max(0,Math.ceil(adv.remainingMs/1000));
+      S.paused=false; S.timeLeft=Math.max(0,Math.ceil(adv.remainingMs/1000));
       S.deadlineAt=null; S.lastTickAt=Date.now();
       startSession(true);
     };
@@ -2296,12 +2325,17 @@ function applyAdvancedState(adv){
 function catchUpRunning(){
   if(S.paused||!S.session) return {changed:false,done:false};
   const now=Date.now();
-  const rem=S.deadlineAt!=null
-    ? Math.max(0, Math.round(S.deadlineAt-(S.lastTickAt||now)))
-    : Math.max(0, Math.round(S.timeLeftMs||0));
+  if(S.deadlineAt && now<S.deadlineAt){
+    S.timeLeftMs=Math.max(0, Math.round(S.deadlineAt-now));
+    S.timeLeft=Math.max(0, Math.ceil(S.timeLeftMs/1000));
+    S.lastTickAt=now;
+    return {changed:false,done:false};
+  }
+  const remainingMs=S.deadlineAt?0:Math.max(0, Math.round(S.timeLeftMs||0));
+  const savedAt=S.deadlineAt||S.lastTickAt||now;
   const adv=advanceResumeAcrossGap({
-    v:RESUME_VERSION, si:S.si, remainingMs:rem,
-    elapsedActiveMs:S.elapsedActiveMs||0, paused:false, savedAt:S.lastTickAt||now
+    v:RESUME_VERSION, si:S.si, remainingMs,
+    elapsedActiveMs:S.elapsedActiveMs||0, paused:false, savedAt
   }, S.session.steps, now);
   if(!adv) return {changed:false,done:false};
   const prevSi=S.si;
@@ -2309,7 +2343,6 @@ function catchUpRunning(){
   applyAdvancedState(adv);
   S.lastTickAt=now;
   if(adv.done) return {changed:true,done:true};
-  // Next step's coach voice carries the handoff — no "complete" chirp that gets cut off.
   return {changed, done:false};
 }
 function advanceRunningClock(){
@@ -2320,14 +2353,15 @@ function advanceRunningClock(){
 }
 function startSession(fromResume){
   if(!challengeLive()){
-    clearPlayerTimers(); clearRafs(); releaseWakeLock();
-    document.querySelectorAll('.player').forEach(n=>n.remove());
-    S.session=null; S.slot=null; S.screen='plan'; render();
+    resetActiveWorkout();
+    S.screen='plan'; render();
     return;
   }
   if(!fromResume){
-    S.si=0; S.paused=false; S.elapsedActiveMs=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastWarnSec=null; S._coachPhase=null;
+    S.si=0; S.elapsedActiveMs=0; S.timeLeftMs=0; S.deadlineAt=null; S.lastWarnSec=null; S._coachPhase=null;
   }
+  S.paused=false;
+  S.lastTickAt=Date.now();
   document.querySelectorAll('.player').forEach(n=>n.remove());
   document.body.appendChild(el('<div class="player" id="player" role="dialog" aria-modal="true" aria-label="Nine minute workout"></div>'));
   requestWakeLock();
@@ -2341,6 +2375,7 @@ function startSession(fromResume){
       } else {
         requestWakeLock();
         if(!S.paused){
+          if(!S.deadlineAt) syncDeadlineFromRemaining();
           const r=catchUpRunning();
           if(r.done || !(S.session&&S.session.steps[S.si])){ endSession(); return; }
           if(r.changed){ beginStep(true); }
@@ -2366,23 +2401,29 @@ function beginStep(keepTime){
   }
   S.timeLeft=Math.max(0, Math.ceil(S.timeLeftMs/1000));
   syncDeadlineFromRemaining();
-  paintStep();
+  try{ paintStep(); }catch(e){ console.error(e); }
   persistResume();
   clearPlayerTimers();
   let lastPersist=Date.now();
   S.tick=setInterval(()=>{
     if(!document.getElementById('player')){ clearPlayerTimers(); return; }
     if(S.paused) return;
+    if(!S.deadlineAt) syncDeadlineFromRemaining();
+    const rem=remainingMsNow();
+    if(rem>0){
+      paintTimerUI(S.session.steps[S.si]||st);
+      if(Date.now()-lastPersist>2000){ persistResume(); lastPersist=Date.now(); }
+      return;
+    }
     const changed=advanceRunningClock();
     if(changed==='done' || !(S.session&&S.session.steps[S.si])){
       clearPlayerTimers(); endSession(); return;
     }
     paintTimerUI(S.session.steps[S.si]||st);
-    const now=Date.now();
-    if(now-lastPersist>2000){ persistResume(); lastPersist=now; }
+    persistResume();
     if(changed){
       clearPlayerTimers();
-      beginStep(false);
+      beginStep(true);
     }
   },200);
 }

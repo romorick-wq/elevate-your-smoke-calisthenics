@@ -36,23 +36,38 @@ function idempotencyKey(participantId, challenge, day) {
   return `${String(participantId)}::${String(challenge)}::${Number(day) || 0}`;
 }
 
-/** Advance resume state across gaps while running (not paused). */
+function stepDurationMs(steps, i) {
+  if (!steps || i < 0 || i >= steps.length) return 0;
+  return Math.round((steps[i].sec || 0) * 1000);
+}
+
+/** Advance resume state across gaps while running (not paused). remainingMs 0 = interval complete. */
 function advanceResumeState(state, steps, nowMs) {
   if (!state || !steps || !steps.length) return null;
   let si = Math.max(0, Number(state.si) || 0);
-  let remainingMs = Math.max(0, Number(state.remainingMs) || 0);
   let elapsedActiveMs = Math.max(0, Number(state.elapsedActiveMs) || 0);
   const paused = !!state.paused;
   const savedAt = Number(state.savedAt) || nowMs;
+  const hasRemaining = state.remainingMs != null && state.remainingMs !== '';
+  let remainingMs = hasRemaining ? Number(state.remainingMs) : stepDurationMs(steps, si);
+  if (!Number.isFinite(remainingMs) || remainingMs < 0) remainingMs = stepDurationMs(steps, si);
 
   if (si >= steps.length) {
     return { ...state, si, remainingMs: 0, elapsedActiveMs, done: true, paused: false };
   }
-  if (!remainingMs) remainingMs = Math.round((steps[si].sec || 0) * 1000);
 
   if (!paused) {
     let gap = Math.max(0, nowMs - savedAt);
+    if (remainingMs === 0 && si < steps.length) {
+      si += 1;
+      remainingMs = stepDurationMs(steps, si);
+    }
     while (gap > 0 && si < steps.length) {
+      if (remainingMs <= 0) {
+        si += 1;
+        remainingMs = stepDurationMs(steps, si);
+        continue;
+      }
       if (gap < remainingMs) {
         remainingMs -= gap;
         elapsedActiveMs += gap;
@@ -61,7 +76,7 @@ function advanceResumeState(state, steps, nowMs) {
         gap -= remainingMs;
         elapsedActiveMs += remainingMs;
         si += 1;
-        remainingMs = si < steps.length ? Math.round((steps[si].sec || 0) * 1000) : 0;
+        remainingMs = stepDurationMs(steps, si);
       }
     }
   }
@@ -95,6 +110,11 @@ function resolveScheduleTotal(total, perWeek) {
   return expectedSessionsFromPerWeek(perWeek) || 0;
 }
 
+/** New roster rows never trust client session counts. Credit comes from verified logs only. */
+function initialSessionCount(isLog) {
+  return isLog ? 1 : 0;
+}
+
 /** Kickoff — workouts credit only after this instant (America/Chicago). Override with KICKOFF_ISO. */
 const KICKOFF_ISO = process.env.KICKOFF_ISO || '2026-08-15T09:00:00-05:00';
 const KICKOFF_AT = new Date(KICKOFF_ISO).getTime();
@@ -120,4 +140,5 @@ module.exports = {
   DAYS,
   expectedSessionsFromPerWeek,
   resolveScheduleTotal,
+  initialSessionCount,
 };
